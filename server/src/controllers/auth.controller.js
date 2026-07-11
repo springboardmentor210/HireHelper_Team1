@@ -6,6 +6,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import generateOTP from "../utils/generateOTP.js";
+import generateToken from "../utils/generateToken.js";
 
 import { sendOTPEmail } from "../services/email.service.js";
 
@@ -229,6 +230,93 @@ export const resendOTP = asyncHandler(async (req, res) => {
             200,
 
             "OTP resent successfully."
+
+        )
+
+    );
+
+});
+
+export const login = asyncHandler(async (req, res) => {
+
+    const { email, password } = req.body;
+
+    // Validate Input
+    if (!email || !password) {
+        return res
+            .status(400)
+            .json(
+                new ApiError(
+                    400,
+                    "Email and password are required"
+                )
+            );
+    }
+
+    // Find User
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return res
+            .status(404)
+            .json(
+                new ApiError(
+                    404,
+                    "Invalid email or password"
+                )
+            );
+    }
+
+    // Check Email Verification
+    if (!user.isVerified) {
+        return res
+            .status(403)
+            .json(
+                new ApiError(
+                    403,
+                    "Please verify your email first"
+                )
+            );
+    }
+
+    // Compare Password
+    const isPasswordCorrect =
+        await bcrypt.compare(
+            password,
+            user.password
+        );
+
+    if (!isPasswordCorrect) {
+        return res
+            .status(401)
+            .json(
+                new ApiError(
+                    401,
+                    "Invalid email or password"
+                )
+            );
+    }
+
+    // Generate JWT
+    const token = generateToken(user._id);
+
+    // Remove Sensitive Data
+    const loggedInUser =
+        await User.findById(user._id)
+            .select("-password -otp -otpExpiry");
+
+    return res.status(200).json(
+
+        new ApiResponse(
+
+            200,
+
+            "Login successful",
+
+            {
+                token,
+                user: loggedInUser,
+            }
 
         )
 
