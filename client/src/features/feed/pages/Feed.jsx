@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   Bell,
   Search,
@@ -14,6 +15,16 @@ import {
 
 import "../styles/Feed.css";
 
+import movingImage from "../../../assets/images/moving.png";
+import paintingImage from "../../../assets/images/painting.png";
+import packingImage from "../../../assets/images/packing.png";
+import plumbingImage from "../../../assets/images/plumbing.png";
+import cleaningImage from "../../../assets/images/cleaning.png";
+import deliveryImage from "../../../assets/images/delivery.png";
+import gardeningImage from "../../../assets/images/gardening.png";
+import garageCleaningImage from "../../../assets/images/garagecleaning.png";
+import gardenCleaningImage from "../../../assets/images/gardencleaning.png";
+
 const tasks = [
   {
     id: 1,
@@ -25,7 +36,7 @@ const tasks = [
     date: "Jul 5, 2026",
     time: "2:00 PM - 6:00 PM",
     user: "Robert Wilson",
-    image: null,
+    image: movingImage,
   },
   {
     id: 2,
@@ -37,7 +48,7 @@ const tasks = [
     date: "Jul 5, 2026",
     time: "2:00 PM - 6:00 PM",
     user: "Robert Wilson",
-    image: null,
+    image: paintingImage,
   },
   {
     id: 3,
@@ -49,7 +60,7 @@ const tasks = [
     date: "Jul 5, 2026",
     time: "11:00 AM - 3:00 PM",
     user: "Robert Wilson",
-    image: null,
+    image: packingImage,
   },
   {
     id: 4,
@@ -61,7 +72,7 @@ const tasks = [
     date: "Jul 6, 2026",
     time: "2:00 PM - 5:00 PM",
     user: "David Miller",
-    image: null,
+    image: plumbingImage,
   },
   {
     id: 5,
@@ -73,7 +84,7 @@ const tasks = [
     date: "Jul 6, 2026",
     time: "10:00 AM - 2:00 PM",
     user: "Sophia Brown",
-    image: null,
+    image: paintingImage,
   },
   {
     id: 6,
@@ -85,7 +96,7 @@ const tasks = [
     date: "Jul 5, 2026",
     time: "9:00 AM - 1:00 PM",
     user: "Robert Wilson",
-    image: null,
+    image: gardenCleaningImage,
   },
   {
     id: 7,
@@ -97,7 +108,7 @@ const tasks = [
     date: "Jul 6, 2026",
     time: "10:00 AM - 12:00 PM",
     user: "Emily Davis",
-    image: null,
+    image: deliveryImage,
   },
   {
     id: 8,
@@ -109,7 +120,7 @@ const tasks = [
     date: "Jul 7, 2026",
     time: "8:00 AM - 11:00 AM",
     user: "Michael Brown",
-    image: null,
+    image: gardeningImage,
   },
   {
     id: 9,
@@ -121,7 +132,7 @@ const tasks = [
     date: "Jul 8, 2026",
     time: "3:00 PM - 6:00 PM",
     user: "Sarah Miller",
-    image: null,
+    image: garageCleaningImage,
   },
 ];
 
@@ -222,17 +233,11 @@ function Feed() {
             {filteredTasks.map((task) => (
               <article className="task-card" key={task.id}>
                 <div className="task-image-container">
-                  {task.image ? (
-                    <img
-                      className="task-image"
-                      src={task.image}
-                      alt={task.title}
-                    />
-                  ) : (
-                    <div className="task-image-placeholder">
-                      <span>Task Image</span>
-                    </div>
-                  )}
+                  <img
+                    className="task-image"
+                    src={task.image}
+                    alt={task.title}
+                  />
                 </div>
 
                 <div className="task-body">
@@ -264,6 +269,7 @@ function Feed() {
                   <div className="task-footer">
                     <div className="task-user">
                       <div className="user-avatar"></div>
+
                       <span>{task.user}</span>
                     </div>
 
