@@ -5,6 +5,9 @@ import User from "../models/User.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import generateOTP from "../utils/generateOTP.js";
+
+import { sendOTPEmail } from "../services/email.service.js";
 
 const SALT_ROUNDS = 10;
 
@@ -37,6 +40,12 @@ export const register = asyncHandler(async (req, res) => {
   // Hash Password
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
+  // Generate OTP
+  const otp = generateOTP();
+
+  // OTP expires in 10 minutes
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
   // Create User
   const user = await User.create({
     firstName,
@@ -44,24 +53,27 @@ export const register = asyncHandler(async (req, res) => {
     email,
     phone,
     password: hashedPassword,
+    otp,
+    otpExpiry,
   });
 
-  // Fetch created user without sensitive fields
-  const createdUser = await User.findById(user._id).select(
-    "-password -otp -otpExpiry"
-  );
+  // Send OTP Email
+  try {
+    await sendOTPEmail(user.email, otp);
+  } catch (error) {
+    // Rollback user creation if email fails
+    await User.findByIdAndDelete(user._id);
 
-  if (!createdUser) {
     return res
       .status(500)
-      .json(new ApiError(500, "Failed to create user"));
+      .json(new ApiError(500, "Failed to send OTP email"));
   }
 
+  // Success Response
   return res.status(201).json(
     new ApiResponse(
       201,
-      "User registered successfully",
-      createdUser
+      "Registration successful. OTP sent to your email."
     )
   );
 });
