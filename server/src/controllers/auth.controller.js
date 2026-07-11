@@ -341,3 +341,12 @@ export const getProfile = asyncHandler(async (req, res) => {
     );
 
 });
+
+export const logout = asyncHandler(async (req, res) => {
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Logged out successfully"
+    )
+  );
+});

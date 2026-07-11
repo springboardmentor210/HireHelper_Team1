@@ -5,7 +5,8 @@ import {
   verifyOTP,
   resendOTP,
   login,
-  getProfile
+  getProfile,
+  logout,
 } from "../controllers/auth.controller.js";
 
 import { protect } from "../middleware/auth.middleware.js";
@@ -21,5 +22,7 @@ router.post("/resend-otp", resendOTP);
 router.post("/login", login);
 
 router.get("/profile", protect, getProfile);
+
+router.post("/logout", protect, logout);
 
 export default router;
