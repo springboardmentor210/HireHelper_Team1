@@ -10,7 +10,9 @@ const Home = () => {
         <Link to="/login" style={{ padding: '10px 20px', background: '#111', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
           Go to Login
         </Link>
-        
+        <Link to="/register" style={{ padding: '10px 20px', background: '#111', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+          Go to Register
+        </Link>
       </div>
     </div>
   );
