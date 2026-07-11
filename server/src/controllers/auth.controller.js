@@ -22,11 +22,15 @@ export const register = asyncHandler(async (req, res) => {
   }
 
   // Check existing user
-  const existingUser = await User.findOne({
-    $or: [{ email }, { phone }],
-  });
+ const existingUser = await User.findOne({
+  $or: [{ email }, { phone }],
+});
 
-  if (existingUser) {
+// Existing User Found
+if (existingUser) {
+
+  // User already verified
+  if (existingUser.isVerified) {
     return res
       .status(409)
       .json(
@@ -36,6 +40,32 @@ export const register = asyncHandler(async (req, res) => {
         )
       );
   }
+
+  // User exists but NOT verified
+
+  const otp = generateOTP();
+
+  const otpExpiry = new Date(
+    Date.now() + 10 * 60 * 1000
+  );
+
+  existingUser.otp = otp;
+  existingUser.otpExpiry = otpExpiry;
+
+  await existingUser.save();
+
+  await sendOTPEmail(
+    existingUser.email,
+    otp
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Account already exists but is not verified. A new OTP has been sent."
+    )
+  );
+}
 
   // Hash Password
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -76,4 +106,132 @@ export const register = asyncHandler(async (req, res) => {
       "Registration successful. OTP sent to your email."
     )
   );
+});
+
+
+
+export const verifyOTP = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "Email and OTP are required"));
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res
+      .status(404)
+      .json(new ApiError(404, "User not found"));
+  }
+
+  if (user.isVerified) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "User already verified"));
+  }
+
+  if (String(user.otp) !== String(otp)) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "Invalid OTP"));
+  }
+
+  if (user.otpExpiry < new Date()) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "OTP has expired"));
+  }
+
+  user.isVerified = true;
+  user.otp = null;
+  user.otpExpiry = null;
+
+  await user.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Email verified successfully"
+    )
+  );
+});
+
+export const resendOTP = asyncHandler(async (req, res) => {
+
+    const { email } = req.body;
+
+    // Check Email
+    if (!email) {
+        return res
+            .status(400)
+            .json(
+                new ApiError(
+                    400,
+                    "Email is required"
+                )
+            );
+    }
+
+    // Find User
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return res
+            .status(404)
+            .json(
+                new ApiError(
+                    404,
+                    "User not found"
+                )
+            );
+    }
+
+    // Already Verified
+    if (user.isVerified) {
+        return res
+            .status(400)
+            .json(
+                new ApiError(
+                    400,
+                    "User is already verified"
+                )
+            );
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+
+    // Expiry
+    const otpExpiry = new Date(
+        Date.now() + 10 * 60 * 1000
+    );
+
+    // Save OTP
+    user.otp = otp;
+
+    user.otpExpiry = otpExpiry;
+
+    await user.save();
+
+    // Send Email
+    await sendOTPEmail(
+        user.email,
+        otp
+    );
+
+    return res.status(200).json(
+
+        new ApiResponse(
+
+            200,
+
+            "OTP resent successfully."
+
+        )
+
+    );
+
 });
