@@ -14,7 +14,16 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      const onlyNumbers = value.replace(/[^0-9]/g, '');
+      if(onlyNumbers.length <= 10) {
+        setFormData({ ...formData, [name]: onlyNumbers });
+      }
+    }
+    else{
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = (e) => {
