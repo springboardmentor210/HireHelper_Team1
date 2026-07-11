@@ -4,8 +4,11 @@ import {
   register,
   verifyOTP,
   resendOTP,
-  login
+  login,
+  getProfile
 } from "../controllers/auth.controller.js";
+
+import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -16,5 +19,7 @@ router.post("/verify-otp", verifyOTP);
 router.post("/resend-otp", resendOTP);
 
 router.post("/login", login);
+
+router.get("/profile", protect, getProfile);
 
 export default router;
