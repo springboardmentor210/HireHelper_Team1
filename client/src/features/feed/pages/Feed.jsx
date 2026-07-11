@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import {
@@ -14,16 +15,15 @@ import {
 } from "lucide-react";
 
 import "../styles/Feed.css";
-
 import movingImage from "../../../assets/images/moving.png";
 import paintingImage from "../../../assets/images/painting.png";
 import packingImage from "../../../assets/images/packing.png";
 import plumbingImage from "../../../assets/images/plumbing.png";
-import cleaningImage from "../../../assets/images/cleaning.png";
 import deliveryImage from "../../../assets/images/delivery.png";
 import gardeningImage from "../../../assets/images/gardening.png";
 import garageCleaningImage from "../../../assets/images/garagecleaning.png";
 import gardenCleaningImage from "../../../assets/images/gardencleaning.png";
+import hireHelperLogo from "../../../assets/images/hirehelper-logo.png";
 
 const tasks = [
   {
@@ -138,6 +138,7 @@ const tasks = [
 
 function Feed() {
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   const filteredTasks = tasks.filter((task) => {
     const searchValue = search.toLowerCase();
@@ -154,8 +155,14 @@ function Feed() {
       <aside className="feed-sidebar">
         <div>
           <div className="brand">
-            <h2>Hire-a-Helper</h2>
-          </div>
+  <img
+    src={hireHelperLogo}
+    alt="Hire-a-Helper"
+    className="brand-logo"
+  />
+
+  <h2>Hire-a-Helper</h2>
+</div>
 
           <nav className="sidebar-nav">
             <a className="nav-item active">
@@ -191,15 +198,21 @@ function Feed() {
         </div>
 
         <div className="sidebar-profile">
-          <div className="profile-avatar"></div>
+  <div className="profile-avatar"></div>
 
-          <div className="profile-info">
-            <span>Jon Doe</span>
-            <small>test@gmail.com</small>
-          </div>
+  <div className="profile-info">
+    <span>Jon Doe</span>
+    <small>test@gmail.com</small>
+  </div>
 
-          <LogOut size={18} />
-        </div>
+  <button
+    type="button"
+    className="logout-btn"
+    onClick={() => navigate("/")}
+  >
+    <LogOut size={18} />
+  </button>
+</div>
       </aside>
 
       <main className="feed-main">
