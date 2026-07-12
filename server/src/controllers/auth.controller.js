@@ -8,7 +8,12 @@ import asyncHandler from "../utils/asyncHandler.js";
 import generateOTP from "../utils/generateOTP.js";
 import generateToken from "../utils/generateToken.js";
 
-import { sendOTPEmail } from "../services/email.service.js";
+import generateResetToken from "../utils/generateResetToken.js";
+
+import {
+  sendOTPEmail,
+  sendResetPasswordEmail,
+} from "../services/email.service.js";
 
 const SALT_ROUNDS = 10;
 
@@ -349,4 +354,149 @@ export const logout = asyncHandler(async (req, res) => {
       "Logged out successfully"
     )
   );
+});
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  // Validate Email
+  if (!email) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "Email is required"));
+  }
+
+  // Find User
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res
+      .status(404)
+      .json(new ApiError(404, "User not found"));
+  }
+
+  // Check if account is verified
+  if (!user.isVerified) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "Please verify your email first"));
+  }
+
+  // Generate Reset Token
+  const resetToken = generateResetToken();
+
+  // Token expires in 15 minutes
+  const resetPasswordTokenExpiry = new Date(
+    Date.now() + 15 * 60 * 1000
+  );
+
+  // Save token
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordTokenExpiry = resetPasswordTokenExpiry;
+
+  await user.save();
+
+  // Reset Link
+  const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+  // Send Email
+  await sendResetPasswordEmail(user.email, resetLink);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Password reset link sent successfully."
+    )
+  );
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+
+    const { token } = req.params;
+
+    const { password, confirmPassword } = req.body;
+
+    // Validate Passwords
+    if (!password || !confirmPassword) {
+        return res
+            .status(400)
+            .json(
+                new ApiError(
+                    400,
+                    "Password and Confirm Password are required"
+                )
+            );
+    }
+
+    if (password !== confirmPassword) {
+        return res
+            .status(400)
+            .json(
+                new ApiError(
+                    400,
+                    "Passwords do not match"
+                )
+            );
+    }
+
+    // Find User
+    const user = await User.findOne({
+        resetPasswordToken: token,
+    });
+
+    if (!user) {
+        return res
+            .status(404)
+            .json(
+                new ApiError(
+                    404,
+                    "Invalid reset link"
+                )
+            );
+    }
+
+    // Check Expiry
+    if (user.resetPasswordTokenExpiry < new Date()) {
+
+        user.resetPasswordToken = null;
+        user.resetPasswordTokenExpiry = null;
+
+        await user.save();
+
+        return res
+            .status(400)
+            .json(
+                new ApiError(
+                    400,
+                    "Reset link has expired"
+                )
+            );
+    }
+
+    // Hash Password
+    const hashedPassword = await bcrypt.hash(
+        password,
+        SALT_ROUNDS
+    );
+
+    user.password = hashedPassword;
+
+    // Clear Reset Token
+    user.resetPasswordToken = null;
+    user.resetPasswordTokenExpiry = null;
+
+    await user.save();
+
+    return res.status(200).json(
+
+        new ApiResponse(
+
+            200,
+
+            "Password reset successfully"
+
+        )
+
+    );
+
 });
