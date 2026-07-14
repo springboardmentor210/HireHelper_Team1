@@ -1,0 +1,24 @@
+.stat-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+  height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-card h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.stat-card p {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 15px;
+}

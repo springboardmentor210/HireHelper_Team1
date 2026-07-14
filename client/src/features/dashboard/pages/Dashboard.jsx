@@ -1,85 +1,113 @@
-import "./Dashboard.css";
+import Sidebar from "../../../components/layout/Sidebar";
+import TopNavbar from "../components/TopNavbar";
+
+import "../../../styles/Dashboard.css";
+
 import StatCard from "../components/StatCard";
-import { dashboardData } from "../data/dashboardData";
-import RecentTaskCard from "../components/RecentTaskCard";
-import NotificationCard from "../components/NotificationCard";
 import QuickActions from "../components/QuickActions";
-import ActivityCard from "../components/ActivityCard";
+import UpcomingTasks from "../components/UpcomingTasks";
+import RecentActivity from "../components/RecentActivity";
+import RecommendedTasks from "../components/RecommendedTasks";
+import { dashboardData } from "../data/dashboardData";
 
 export default function Dashboard() {
   return (
-    <div className="dashboard">
-      {/* Header */}
-      <div className="dashboard-header">
-        <h1>Dashboard</h1>
-        <p>Welcome back, {dashboardData.userName} 👋</p>
-      </div>
+    <div
+      style={{
+        display: "flex",
+        background: "#f8fafc",
+      }}
+    >
+      <Sidebar />
 
-      {/* Statistics */}
-      <div className="stats-grid">
-        <StatCard
-          title="Tasks Posted"
-          value={dashboardData.stats.tasksPosted}
-        />
+      <main
+        style={{
+          flex: 1,
+          padding: "35px 40px",
+        }}
+      >
+        {/* Top Navbar */}
+        <TopNavbar />
 
-        <StatCard
-          title="Active Requests"
-          value={dashboardData.stats.activeRequests}
-        />
+        {/* Welcome */}
+        <div style={{ marginTop: "20px" }}>
+          <h1
+            style={{
+              fontSize: "36px",
+              fontWeight: "700",
+              color: "#111827",
+              marginBottom: "8px",
+            }}
+          >
+            Welcome, {dashboardData.userName} 👋
+          </h1>
 
-        <StatCard
-          title="Completed Tasks"
-          value={dashboardData.stats.completedTasks}
-        />
-
-        <StatCard
-          title="Pending Requests"
-          value={dashboardData.stats.pendingRequests}
-        />
-      </div>
-
-      {/* Dashboard Content */}
-      <div className="dashboard-grid">
-        {/* Left Column */}
-        <div>
-          <div className="section">
-            <h2>Recent Tasks</h2>
-
-            {dashboardData.recentTasks.map((task) => (
-              <RecentTaskCard key={task.id} task={task} />
-            ))}
-          </div>
-
-          <div className="section" style={{ marginTop: "25px" }}>
-            <h2>Recent Activity</h2>
-
-            {dashboardData.activities.map((activity) => (
-              <ActivityCard
-                key={activity.id}
-                activity={activity}
-              />
-            ))}
-          </div>
+          <p
+            style={{
+              color: "#6b7280",
+              fontSize: "16px",
+              marginBottom: "30px",
+            }}
+          >
+            Manage your tasks efficiently.
+          </p>
         </div>
 
-        {/* Right Column */}
-        <div>
-          <div className="section">
-            <h2>Notifications</h2>
+        {/* Statistics */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "20px",
+            marginBottom: "40px",
+          }}
+        >
+          <StatCard
+            title="Tasks Posted"
+            value={dashboardData.stats.tasksPosted}
+          />
 
-            {dashboardData.notifications.map((notification) => (
-              <NotificationCard
-                key={notification.id}
-                notification={notification}
-              />
-            ))}
-          </div>
+          <StatCard
+            title="Active Requests"
+            value={dashboardData.stats.activeRequests}
+          />
 
-          <div className="section" style={{ marginTop: "25px" }}>
-            <QuickActions />
-          </div>
+          <StatCard
+            title="Completed Tasks"
+            value={dashboardData.stats.completedTasks}
+          />
+
+          <StatCard
+            title="Pending Requests"
+            value={dashboardData.stats.pendingRequests}
+          />
         </div>
-      </div>
+
+        {/* Quick Actions */}
+        <QuickActions />
+
+        {/* Upcoming Tasks & Recent Activity */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr 1fr",
+            gap: "20px",
+            marginTop: "30px",
+          }}
+        >
+          <UpcomingTasks />
+          <RecentActivity />
+        </div>
+
+        {/* Recommended Tasks */}
+        <div
+          style={{
+            marginTop: "30px",
+          }}
+        >
+          <RecommendedTasks />
+        </div>
+      </main>
     </div>
   );
 }
