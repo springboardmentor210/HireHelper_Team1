@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { HandHeart } from 'lucide-react';
 import './Settings.css';
 
 export default function Settings() {
@@ -111,7 +112,7 @@ export default function Settings() {
     <div className="hire-wrapper">
       <aside className="sidebar">
         <div className="logo">
-          <div className="logo-circle">❤</div>
+          <HandHeart color="#4f46e5" size={28} strokeWidth={1.5} />
           <div>
             <h2>Hire-a-Helper</h2>
           </div>
