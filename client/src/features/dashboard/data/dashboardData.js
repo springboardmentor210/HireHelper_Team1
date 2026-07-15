@@ -1,84 +1,123 @@
-export const dashboardData = {
-  userName: "Shameen",
-
-  stats: {
-    tasksPosted: 12,
-    activeRequests: 8,
-    completedTasks: 24,
-    pendingRequests: 5,
+export const guestData = {
+  hero: {
+    title: "Get help with everyday tasks, easily.",
+    subtitle:
+      "Find trusted helpers for your home, garden, painting, moving and more - or earn by helping others.",
   },
 
-  recentTasks: [
+  stats: {
+    customers: "10,000+",
+    completed: "25,000+",
+    rating: "4.8",
+    helpers: "5,000+",
+  },
+};
+
+export const newUserData = {
+  userName: "Shameen",
+
+  stats: [
+    { id: 1, title: "Active Tasks", value: 0, icon: "📋" },
+    { id: 2, title: "Pending Requests", value: 0, icon: "⏳" },
+    { id: 3, title: "Completed Tasks", value: 0, icon: "✅" },
+    { id: 4, title: "Money Saved", value: "₹0", icon: "💰" },
+  ],
+
+  quickActions: [
+    { id: 1, title: "Post a Task", icon: "📝" },
+    { id: 2, title: "Browse Feed", icon: "🔍" },
+    { id: 3, title: "Become a Helper", icon: "🧑‍🔧" },
+    { id: 4, title: "My Tasks", icon: "📋" },
+  ],
+};
+
+export const returningUserData = {
+  userName: "Shameen",
+
+  stats: [
+    { id: 1, title: "Active Tasks", value: 3, icon: "📋" },
+    { id: 2, title: "Pending Requests", value: 8, icon: "⏳" },
+    { id: 3, title: "Completed Tasks", value: 21, icon: "✅" },
+    { id: 4, title: "Money Saved", value: "₹4,200", icon: "💰" },
+  ],
+
+  upcomingTasks: [
     {
       id: 1,
-      title: "Fix Washing Machine",
-      category: "Appliance Repair",
-      status: "Pending",
-      budget: "₹500",
-      location: "Hyderabad",
-      date: "10 Jul 2026",
+      title: "Room Cleaning",
+      day: "Tomorrow",
+      date: "May 8",
+      time: "9:00 AM",
+      helper: "Mita Das",
+      type: "cleaning",
     },
     {
       id: 2,
-      title: "House Cleaning",
-      category: "Cleaning",
-      status: "Completed",
-      budget: "₹1200",
-      location: "Bengaluru",
-      date: "08 Jul 2026",
+      title: "Furniture Moving",
+      day: "Tomorrow",
+      date: "May 8",
+      time: "4:00 PM",
+      helper: "Ramesh Yadav",
+      type: "moving",
     },
     {
       id: 3,
-      title: "Electrician Needed",
-      category: "Electrical",
-      status: "In Progress",
-      budget: "₹800",
-      location: "Chennai",
-      date: "09 Jul 2026",
+      title: "Painting Project",
+      day: "Saturday",
+      date: "May 10",
+      time: "10:00 AM",
+      helper: "Mukesh Kumar",
+      type: "painting",
+    },
+  ],
+
+  recentActivity: [
+    {
+      id: 1,
+      text: "Mita accepted your cleaning request",
+      type: "accepted",
+    },
+    {
+      id: 2,
+      text: "Payment of ₹850 completed",
+      type: "payment",
+    },
+    {
+      id: 3,
+      text: "Garden cleanup task marked as complete",
+      type: "completed",
     },
     {
       id: 4,
-      title: "AC Installation",
-      category: "Home Service",
-      status: "Accepted",
-      budget: "₹1500",
-      location: "Pune",
-      date: "07 Jul 2026",
+      text: "New request received for painting project",
+      type: "request",
     },
   ],
 
-  notifications: [
-    {
-      id: 1,
-      message: "Your task 'House Cleaning' has been completed.",
-      time: "2 hours ago",
-    },
-    {
-      id: 2,
-      message: "A helper accepted your Electrician request.",
-      time: "5 hours ago",
-    },
-    {
-      id: 3,
-      message: "Payment for AC Installation is pending.",
-      time: "Yesterday",
-    },
-  ],
-  activities: [
+  recommendedTasks: [
   {
     id: 1,
-    action: "New helper accepted your request",
-    time: "10 mins ago",
+    title: "Furniture Repairing",
+    image: "/furniture.jpg",
+    location: "Downtown Seattle",
+    schedule: "Jul 5 • 2:00 PM - 6:00 PM",
+    price: "₹1,200",
   },
   {
     id: 2,
-    action: "Payment received",
-    time: "1 hour ago",
+    title: "AC Cleanup",
+    image: "/ac.jpg",
+    location: "Downtown Seattle",
+    schedule: "Jul 7 • 9:00 AM - 1:00 PM",
+    price: "₹2,000",
   },
   {
     id: 3,
-    action: "Electrician task completed",
-    time: "Yesterday",
+    title: "Kitchen Cleaning",
+    image: "/kitchen.jpg",
+    location: "Downtown Seattle",
+    schedule: "Jul 9 • 8:00 AM - 5:00 PM",
+    price: "₹3,500",
   },
 ],
 };

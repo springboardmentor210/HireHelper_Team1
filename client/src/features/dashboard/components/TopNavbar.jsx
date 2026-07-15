@@ -1,48 +1,55 @@
+import "../styles/Navbar.css";
+
+import {
+  FiSearch,
+  FiMessageCircle,
+  FiBell,
+  FiChevronDown,
+} from "react-icons/fi";
+
 export default function TopNavbar() {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        width: "100%",
-        marginBottom: "30px",
-      }}
-    >
-      <input
-        type="text"
-        id="task-search"
-        name="taskSearch"
-        placeholder="Search tasks..."
-        style={{
-          width: "350px",
-          padding: "12px",
-          border: "1px solid #d1d5db",
-          borderRadius: "10px",
-          outline: "none",
-        }}
-      />
+    <header className="top-navbar">
+      {/* Left */}
+      <div className="logo">
+  <img
+  src="/logo.png"
+  alt="HireHelper"
+  className="logo-img"
+/>
+    
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "20px",
-        }}
-      >
-        <span style={{ fontSize: "22px", cursor: "pointer" }}>🔔</span>
+</div>
 
-        <img
-          src="https://i.pravatar.cc/100"
-          alt="Profile"
-          style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            objectFit: "cover",
-          }}
-        />
+      {/* Right */}
+      <div className="navbar-right">
+
+        <div className="search-box">
+          <FiSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search..."
+          />
+        </div>
+
+        <button className="icon-btn">
+          <FiMessageCircle />
+        </button>
+
+        <button className="icon-btn">
+          <FiBell />
+        </button>
+
+        <div className="profile-menu">
+          <img
+            src="https://i.pravatar.cc/150?img=12"
+            alt="Profile"
+          />
+
+          <FiChevronDown />
+        </div>
+
       </div>
-    </div>
+    </header>
   );
 }

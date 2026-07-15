@@ -1,59 +1,72 @@
+import { returningUserData } from "../data/dashboardData";
+import "../styles/Dashboard.css";
+
+import {
+  FaBroom,
+  FaTruckMoving,
+  FaPaintRoller
+} from "react-icons/fa";
+
 export default function UpcomingTasks() {
-  const tasks = [
-    {
-      title: "House Cleaning",
-      date: "Today • 10:00 AM",
-      status: "Pending",
-    },
-    {
-      title: "AC Repair",
-      date: "Tomorrow • 2:00 PM",
-      status: "Confirmed",
-    },
-    {
-      title: "Furniture Assembly",
-      date: "16 Jul • 11:30 AM",
-      status: "Pending",
-    },
-  ];
+
+  const getIcon = (type) => {
+    switch (type) {
+      case "cleaning":
+        return <FaBroom />;
+
+      case "moving":
+        return <FaTruckMoving />;
+
+      case "painting":
+        return <FaPaintRoller />;
+
+      default:
+        return <FaBroom />;
+    }
+  };
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        borderRadius: "16px",
-        padding: "20px",
-        boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-      }}
-    >
-      <h3>Upcoming Tasks</h3>
+    <section className="dashboard-card">
 
-      {tasks.map((task, index) => (
-        <div
-          key={index}
-          style={{
-            marginTop: "18px",
-            paddingBottom: "12px",
-            borderBottom: "1px solid #eee",
-          }}
-        >
-          <h4>{task.title}</h4>
+      <div className="card-header">
+        <h2>Upcoming Tasks</h2>
+        <span>View all</span>
+      </div>
 
-          <p>{task.date}</p>
+      <div className="timeline">
 
-          <span
-            style={{
-              color:
-                task.status === "Confirmed"
-                  ? "green"
-                  : "orange",
-              fontWeight: "600",
-            }}
-          >
-            {task.status}
-          </span>
-        </div>
-      ))}
-    </div>
+        {returningUserData.upcomingTasks.map((task) => (
+
+          <div className="timeline-item" key={task.id}>
+
+            <div className="timeline-date">
+              <div>{task.day}</div>
+              <div>{task.date}</div>
+            </div>
+
+            <div className="timeline-center">
+              <div className="timeline-dot"></div>
+            </div>
+
+            <div className="timeline-icon">
+              {getIcon(task.type)}
+            </div>
+
+            <div className="timeline-content">
+              <h4>{task.title}</h4>
+              <p>{task.helper}</p>
+            </div>
+
+            <div className="timeline-time">
+              {task.time}
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </section>
   );
 }

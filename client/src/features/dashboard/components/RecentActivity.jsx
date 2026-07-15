@@ -1,33 +1,62 @@
+import "../styles/Dashboard.css";
+import { returningUserData } from "../data/dashboardData";
+
+import {
+  FaCheckCircle,
+  FaWallet,
+  FaLeaf,
+  FaBell,
+} from "react-icons/fa";
+
 export default function RecentActivity() {
-  const activities = [
-    "Task completed successfully",
-    "New helper accepted your request",
-    "Payment received",
-    "Profile updated",
-  ];
+
+  const getIcon = (type) => {
+    switch (type) {
+      case "accepted":
+        return <FaCheckCircle />;
+
+      case "payment":
+        return <FaWallet />;
+
+      case "completed":
+        return <FaLeaf />;
+
+      case "request":
+        return <FaBell />;
+
+      default:
+        return <FaCheckCircle />;
+    }
+  };
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        borderRadius: "16px",
-        padding: "20px",
-        boxShadow: "0 2px 8px rgba(0,0,0,.08)",
-      }}
-    >
-      <h3>Recent Activity</h3>
+    <section className="dashboard-card">
 
-      {activities.map((activity, index) => (
-        <p
-          key={index}
-          style={{
-            marginTop: "16px",
-            color: "#555",
-          }}
-        >
-          • {activity}
-        </p>
-      ))}
-    </div>
+      <div className="card-header">
+        <h2 className="section-title">Recent Activity</h2>
+        <span>View all</span>
+      </div>
+
+      <div className="activity-list">
+
+        {returningUserData.recentActivity.map((activity) => (
+
+          <div key={activity.id} className="activity-item">
+
+            <div className="activity-icon">
+              {getIcon(activity.type)}
+            </div>
+
+            <div className="activity-content">
+              <p>{activity.text}</p>
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </section>
   );
 }

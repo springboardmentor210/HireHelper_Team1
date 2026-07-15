@@ -1,47 +1,50 @@
+import {
+  FiPlusCircle,
+  FiSearch,
+  FiUserCheck,
+  FiClipboard,
+} from "react-icons/fi";
+
 export default function QuickActions() {
   const actions = [
-    "➕ Add Task",
-    "📋 View Tasks",
-    "📨 Requests",
-    "⚙️ Settings",
+    {
+      title: "Post a Task",
+      icon: <FiPlusCircle />,
+    },
+    {
+      title: "Browse Feed",
+      icon: <FiSearch />,
+    },
+    {
+      title: "Become a Helper",
+      icon: <FiUserCheck />,
+    },
+    {
+      title: "My Tasks",
+      icon: <FiClipboard />,
+    },
   ];
 
   return (
-    <div
-      style={{
-        background: "#ffffff",
-        padding: "20px",
-        borderRadius: "12px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-      }}
-    >
-      <h2>Quick Actions</h2>
+    <section className="quick-actions">
+      <h2 className="section-title">Quick Actions</h2>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2,1fr)",
-          gap: "15px",
-          marginTop: "20px",
-        }}
-      >
-        {actions.map((action) => (
+      <div className="quick-actions-grid">
+        {actions.map((action, index) => (
           <button
-            key={action}
-            style={{
-              padding: "14px",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer",
-              background: "#2563eb",
-              color: "white",
-              fontWeight: "600",
-            }}
+            key={index}
+            className="quick-action-card"
           >
-            {action}
+            <div className="quick-action-icon">
+              {action.icon}
+            </div>
+
+            <span className="quick-action-title">
+              {action.title}
+            </span>
           </button>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

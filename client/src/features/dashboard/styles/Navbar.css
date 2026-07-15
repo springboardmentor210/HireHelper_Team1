@@ -1,0 +1,150 @@
+/* ===========================
+   TOP NAVBAR
+=========================== */
+
+.top-navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:35px;
+}
+
+.logo h1{
+    font-size:58px;
+    font-weight:900;
+    letter-spacing:-2px;
+    color:#000;
+    margin:0;
+}
+
+/* Right Side */
+
+.navbar-right{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+/* Search */
+
+.search-box{
+
+    width:340px;
+    height:52px;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 18px;
+
+    border:1px solid #E5E7EB;
+    border-radius:28px;
+
+    background:#fff;
+}
+
+.search-icon{
+    color:#9CA3AF;
+    font-size:18px;
+}
+
+.search-box input{
+
+    flex:1;
+    margin-left:10px;
+
+    border:none;
+    outline:none;
+
+    background:transparent;
+
+    font-size:15px;
+}
+
+.search-box input::placeholder{
+    color:#9CA3AF;
+}
+
+/* Icons */
+
+.icon-btn{
+
+    width:46px;
+    height:46px;
+
+    border:1px solid #ECECEC;
+    border-radius:50%;
+
+    background:#fff;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    font-size:18px;
+}
+
+.icon-btn:hover{
+    background:#F8F8F8;
+}
+
+/* Profile */
+
+.profile-menu{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    cursor:pointer;
+}
+
+.profile-menu img{
+
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.profile-menu svg{
+    color:#6B7280;
+    font-size:16px;
+}
+
+/* Responsive */
+
+@media(max-width:1100px){
+
+    .top-navbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:20px;
+    }
+
+    .navbar-right{
+        width:100%;
+        justify-content:space-between;
+    }
+
+    .search-box{
+        width:100%;
+    }
+}
+.top-navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0 24px;
+}
+
+.logo-img{
+    width:500px;
+    height:auto;
+    display:block;
+}
