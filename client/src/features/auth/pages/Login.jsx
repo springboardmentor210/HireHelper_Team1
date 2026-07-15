@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './Login.css';
 
 
@@ -88,7 +89,7 @@ const Login = () => {
           </form>
           
           <p className="signup-link">
-            Don't have an account? <a href="#">Sign Up</a>
+            Don't have an account? <Link to="/register">Sign Up</Link>
           </p>
         </div>
       </div>

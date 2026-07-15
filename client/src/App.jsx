@@ -2,6 +2,7 @@ import React from 'react';
 import Home from './features/auth/pages/Home';
 import Login from './features/auth/pages/Login';
 import VerifyOTP from './features/auth/pages/VerifyOTP';
+import Register from './features/auth/pages/Register';
 import { Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<VerifyOTP />} />
     </Routes>
   );
