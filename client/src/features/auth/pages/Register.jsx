@@ -1,9 +1,15 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom'; 
-import { Eye, EyeOff } from 'lucide-react';
-import './Register.css';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+
+import { registerUser } from "../services/auth.service";
+
+import "./Register.css";
 
 const Register = () => {
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -11,6 +17,9 @@ const Register = () => {
     phone: '',
     password: ''
   });
+
+  const [loading, setLoading] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
@@ -26,11 +35,35 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Registering user:', formData);
-    
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+
+    const response = await registerUser(formData);
+
+    alert(response.message);
+
+    navigate("/verify-otp", {
+      state: {
+        email: formData.email,
+      },
+    });
+
+  } catch (error) {
+
+    alert(
+      error.response?.data?.message ||
+      "Registration failed"
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   return (
     <div className="register-container">
@@ -139,11 +172,15 @@ const Register = () => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-            </div>
+             </div>
 
-            <button type="submit" className="register-btn">
-              Create Account
-            </button>
+              <button
+                type="submit"
+                  className="register-btn"
+                  disabled={loading}
+              >
+                {loading ? "Creating Account..." : "Create Account"}
+             </button>
           </form>
 
           <p className="signin-link">
