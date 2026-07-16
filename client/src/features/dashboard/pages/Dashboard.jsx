@@ -9,7 +9,7 @@ Possible values:
 "returning"
 */
 
-const userType = "returning";
+const userType = "guest";
 
 export default function Dashboard() {
   switch (userType) {
