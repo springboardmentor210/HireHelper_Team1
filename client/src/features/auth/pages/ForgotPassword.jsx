@@ -1,7 +1,8 @@
 import React from 'react';
-import { Lock, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import './ForgotPassword.css';
 import sideImage from '../../../../image/Group 2.png';
+import lockIcon from '../../../../image1/Rectangle 101.png';
 import { Link } from 'react-router-dom';
 
 export default function ForgotPassword() {
@@ -13,9 +14,7 @@ export default function ForgotPassword() {
       <div className="fp-right-panel">
         <div className="fp-card">
           <div className="fp-icon-wrapper">
-            <div className="fp-lock-icon">
-              <Lock size={26} color="white" fill="white" />
-            </div>
+            <img src={lockIcon} alt="Lock" className="fp-lock-image" />
           </div>
           <h1 className="fp-title">Forgot Password</h1>
           <p className="fp-subtitle">
