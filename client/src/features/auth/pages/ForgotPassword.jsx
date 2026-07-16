@@ -1,11 +1,46 @@
-import React from 'react';
-import { ArrowLeft } from 'lucide-react';
-import './ForgotPassword.css';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
+import { forgotPassword } from "../services/auth.service";
+
+import "./ForgotPassword.css";
+
 import sideImage from '../../../../image/Group 2.png';
 import lockIcon from '../../../../image1/Rectangle 101.png';
-import { Link } from 'react-router-dom';
 
 export default function ForgotPassword() {
+  const navigate = useNavigate();
+
+const [email, setEmail] = useState("");
+
+const [loading, setLoading] = useState(false);
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+
+    const response = await forgotPassword(email);
+
+    alert(response.message);
+
+    navigate("/login");
+
+  } catch (error) {
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to send reset link"
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
   return (
     <div className="forgot-password-container">
       <div className="fp-left-panel">
@@ -22,19 +57,25 @@ export default function ForgotPassword() {
             to receive a password reset link
           </p>
           
-          <form className="fp-form" onSubmit={(e) => e.preventDefault()}>
+     <form className="fp-form" onSubmit={handleSubmit}>
             <div className="fp-input-group">
               <label htmlFor="email">Email Address</label>
-              <input 
-                type="email" 
-                id="email" 
-                placeholder="Enter your email" 
-                required 
-              />
+             <input
+               type="email"
+               id="email"
+               placeholder="Enter your email"
+               value={email}
+               onChange={(e) => setEmail(e.target.value)}
+               required
+               />
             </div>
             
-            <button type="submit" className="fp-submit-btn">
-              Send Reset Link
+            <button
+             type="submit"
+             className="fp-submit-btn"
+              disabled={loading}
+             >
+             {loading ? "Sending..." : "Send Reset Link"}
             </button>
           </form>
           

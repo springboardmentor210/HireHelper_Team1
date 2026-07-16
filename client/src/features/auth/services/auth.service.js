@@ -11,10 +11,7 @@ export const verifyOTP = async (data) => {
 };
 
 export const resendOTP = async (email) => {
-  const response = await api.post("/auth/resend-otp", {
-    email,
-  });
-
+  const response = await api.post("/auth/resend-otp", { email });
   return response.data;
 };
 
@@ -24,10 +21,7 @@ export const loginUser = async (data) => {
 };
 
 export const forgotPassword = async (email) => {
-  const response = await api.post("/auth/forgot-password", {
-    email,
-  });
-
+  const response = await api.post("/auth/forgot-password", { email });
   return response.data;
 };
 
@@ -40,27 +34,7 @@ export const resetPassword = async (token, passwords) => {
   return response.data;
 };
 
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: "http://localhost:5000/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Attach JWT automatically
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-export default api;
+export const getProfile = async () => {
+  const response = await api.get("/auth/profile");
+  return response.data;
+};

@@ -7,7 +7,6 @@ const api = axios.create({
   },
 });
 
-// Attach JWT automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
