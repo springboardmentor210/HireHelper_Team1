@@ -1,0 +1,61 @@
+.guest-navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:18px 32px;
+
+    background:#fff;
+    border:1px solid #E5E7EB;
+    border-radius:16px;
+
+    margin-bottom:28px;
+}
+
+.guest-logo img{
+    height:42px;
+}
+
+.guest-nav-links{
+    display:flex;
+    gap:32px;
+}
+
+.guest-nav-links a{
+    text-decoration:none;
+    color:#374151;
+    font-size:16px;
+    font-weight:500;
+}
+
+.guest-nav-links a:hover{
+    color:#111827;
+}
+
+.guest-nav-buttons{
+    display:flex;
+    gap:12px;
+}
+
+.login-btn{
+    background:#fff;
+    border:1px solid #D1D5DB;
+    color:#111827;
+
+    padding:10px 22px;
+
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.signup-btn{
+    background:#111827;
+    color:#fff;
+
+    border:none;
+
+    padding:10px 22px;
+
+    border-radius:10px;
+    cursor:pointer;
+}

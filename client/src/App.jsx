@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Home from './features/auth/pages/Home';
 import Login from './features/auth/pages/Login';
 import VerifyOTP from './features/auth/pages/VerifyOTP';
@@ -7,6 +7,7 @@ import ForgotPassword from './features/auth/pages/ForgotPassword';
 import Settings from './features/settings/pages/Settings';
 import ResetPassword from './features/auth/pages/ResetPassword';
 import { Routes, Route } from 'react-router-dom';
+import Dashboard from "./features/dashboard/pages/Dashboard";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<VerifyOTP />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/reset-password/:token" element={<ResetPassword />}
 />
