@@ -1,8 +1,28 @@
-import { useState, useRef } from 'react';
-import './VerifyOTP.css';
+import { useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+import { verifyOTP, resendOTP } from "../services/auth.service";
+
+import "./VerifyOTP.css";
 const VerifyOTP = () => {
-  const [otp, setOtp] = useState(new Array(6).fill(''));
+   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email;
+
+  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [loading, setLoading] = useState(false);
   const inputRefs = useRef([]);
+
+  if (!email) {
+    return (
+      <div className="otp-wrapper">
+        <div className="otp-content">
+          <h2>Invalid Access</h2>
+          <p>Please register first.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -23,10 +43,59 @@ const VerifyOTP = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Verifying 6-digit OTP:', otp.join(''));
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const otpCode = otp.join("");
+
+  if (otpCode.length !== 6) {
+    return alert("Please enter all 6 digits.");
+  }
+
+  try {
+    setLoading(true);
+
+    const response = await verifyOTP({
+      email,
+      otp: otpCode,
+    });
+
+    alert(response.message);
+
+    navigate("/login");
+
+  } catch (error) {
+
+    alert(
+      error.response?.data?.message ||
+      "OTP Verification Failed"
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
+
+ const handleResend = async () => {
+
+  try {
+
+    const response = await resendOTP(email);
+
+    alert(response.message);
+
+  } catch (error) {
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to resend OTP"
+    );
+
+  }
+
+};
 
   return (
     <div className="otp-wrapper">
@@ -53,13 +122,13 @@ const VerifyOTP = () => {
             ))}
           </div>
           
-          <button type="submit" className="verify-btn">
-            Verify Code
-          </button>
+         <button type="submit" className="verify-btn" disabled={loading}>
+         {loading ? "Verifying..." : "Verify Code"}
+         </button>
         </form>
 
         <p className="resend-text">
-          Didn't receive the code? <button type="button" className="resend-link">Resend</button>
+          Didn't receive the code? <button type="button" className="resend-link" onClick={handleResend}>Resend</button>
         </p>
       </div>
     </div>

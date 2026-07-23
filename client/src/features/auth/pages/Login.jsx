@@ -1,17 +1,61 @@
-import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
-import './Login.css';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+
+import { loginUser } from "../services/auth.service";
+
+import "./Login.css";
 
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+   const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+
+  const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Login attempt:', { email, password });
-  };
+  const [loading, setLoading] = useState(false);
+
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+
+    const response = await loginUser({
+      email,
+      password,
+    });
+
+    // Save JWT
+    localStorage.setItem("token", response.data.token);
+
+    // Save User
+    localStorage.setItem(
+      "user",
+      JSON.stringify(response.data.user)
+    );
+
+    alert(response.message);
+
+    navigate("/");
+
+  } catch (error) {
+
+    alert(
+      error.response?.data?.message ||
+      "Login failed"
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   return (
     <div className="login-container">
@@ -79,16 +123,14 @@ const Login = () => {
                 <input type="checkbox" />
                 <span>Remember me</span>
               </label>
-              <a href="#" className="forgot-link">Forgot Password?</a>
+            <Link to="/forgot-password" className="forgot-link"> Forgot Password?</Link>
             </div>
 
-            <button type="submit" className="login-btn">
-              Sign In
-            </button>
+           <button type="submit" className="login-btn" disabled={loading}> {loading ? "Signing In..." : "Sign In"} </button>
           </form>
           
           <p className="signup-link">
-            Don't have an account? <a href="#">Sign Up</a>
+            Don't have an account? <Link to="/register">Sign Up</Link>
           </p>
         </div>
       </div>
