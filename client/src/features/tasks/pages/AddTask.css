@@ -1,0 +1,538 @@
+/* =========================================
+   ADD TASK PAGE
+   Scoped styles - only affects Add Task
+========================================= */
+
+.add-task-page {
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  color: #111827;
+}
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.add-task-page .add-task-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 48px 40px;
+  background: #ffffff;
+}
+
+/* =========================================
+   TOP HEADER
+========================================= */
+
+.add-task-page .add-task-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 65px;
+}
+
+.add-task-page .add-task-topbar h1 {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #111827;
+}
+
+.add-task-page .add-task-topbar > div:first-child > p {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: #7a7a7a;
+}
+
+/* Search + notification */
+
+.add-task-page .add-task-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding-top: 8px;
+}
+
+.add-task-page .task-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 230px;
+  color: #9ca3af;
+}
+
+.add-task-page .task-search svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+
+.add-task-page .task-search input {
+  width: 100%;
+  padding: 6px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #374151;
+}
+
+.add-task-page .task-search input::placeholder {
+  color: #9ca3af;
+}
+
+.add-task-page .notification-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #111827;
+  cursor: pointer;
+}
+
+.add-task-page .notification-button svg {
+  width: 23px;
+  height: 23px;
+}
+
+.add-task-page .notification-dot {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #ef4444;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* =========================================
+   FORM CONTAINER
+========================================= */
+
+.add-task-page .add-task-content {
+  width: 100%;
+  max-width: 1030px;
+  margin: 0 auto;
+}
+
+.add-task-page .form-heading {
+  margin-bottom: 28px;
+}
+
+.add-task-page .form-heading h2 {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #171717;
+}
+
+.add-task-page .form-heading p {
+  margin: 7px 0 0;
+  font-size: 13px;
+  color: #777777;
+}
+
+/* =========================================
+   FORM FIELDS
+========================================= */
+
+.add-task-page .form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.add-task-page .form-group label {
+  display: block;
+  margin-bottom: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.add-task-page .form-group input,
+.add-task-page .form-group textarea,
+.add-task-page .form-group select {
+  width: 100%;
+  box-sizing: border-box;
+
+  border: 1px solid #8d8d8d;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #222222;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.add-task-page .form-group input {
+  height: 43px;
+  padding: 0 14px;
+}
+
+.add-task-page .form-group textarea {
+  min-height: 125px;
+  padding: 14px;
+
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.add-task-page .form-group select {
+  height: 43px;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.add-task-page .form-group input::placeholder,
+.add-task-page .form-group textarea::placeholder {
+  color: #8c8c8c;
+}
+
+.add-task-page .form-group input:focus,
+.add-task-page .form-group textarea:focus,
+.add-task-page .form-group select:focus {
+  border-color: #111827;
+  box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.08);
+}
+
+/* =========================================
+   CHARACTER COUNTERS
+========================================= */
+
+.add-task-page .character-count {
+  display: block;
+  margin-top: 5px;
+
+  text-align: right;
+
+  color: #777777;
+  font-size: 11px;
+}
+
+/* =========================================
+   LOCATION
+========================================= */
+
+.add-task-page .input-with-icon {
+  position: relative;
+}
+
+.add-task-page .input-with-icon input {
+  padding-right: 44px;
+}
+
+.add-task-page .input-with-icon svg {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+
+  width: 18px;
+  height: 18px;
+
+  transform: translateY(-50%);
+  color: #8a8a8a;
+
+  pointer-events: none;
+}
+
+/* =========================================
+   DATE + TIME GRID
+========================================= */
+
+.add-task-page .date-time-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 55px;
+  row-gap: 0;
+}
+
+.add-task-page .date-time-grid .form-group {
+  margin-bottom: 18px;
+}
+
+/* =========================================
+   IMAGE UPLOAD
+========================================= */
+
+.add-task-page .image-upload-area {
+  width: 100%;
+  min-height: 245px;
+
+  box-sizing: border-box;
+
+  border: 1px dashed #999999;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.add-task-page .upload-placeholder {
+  width: 100%;
+  min-height: 245px;
+
+  margin: 0 !important;
+
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.add-task-page .upload-placeholder svg {
+  width: 35px;
+  height: 35px;
+  margin-bottom: 4px;
+}
+
+.add-task-page .upload-placeholder strong {
+  color: #333333;
+  font-size: 14px;
+}
+
+.add-task-page .upload-placeholder span {
+  color: #8a8a8a;
+  font-size: 12px;
+}
+
+/* Image preview */
+
+.add-task-page .image-preview-wrapper {
+  position: relative;
+
+  width: min(470px, 90%);
+  height: 220px;
+
+  margin: 18px auto;
+}
+
+.add-task-page .task-image-preview {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border-radius: 9px;
+
+  object-fit: cover;
+}
+
+.add-task-page .remove-image {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #111111;
+
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.16);
+
+  cursor: pointer;
+}
+
+.add-task-page .remove-image svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* Error */
+
+.add-task-page .form-error {
+  margin: 7px 0 0;
+  color: #dc2626;
+  font-size: 12px;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.add-task-page .form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 32px;
+
+  margin-top: 35px;
+}
+
+.add-task-page .post-task-button {
+  width: 55%;
+  min-height: 52px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #111111;
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.add-task-page .post-task-button:hover {
+  background: #292929;
+}
+
+.add-task-page .post-task-button:active {
+  transform: scale(0.99);
+}
+
+.add-task-page .cancel-task-button {
+  min-height: 52px;
+
+  padding: 0 15px;
+
+  border: none;
+  background: transparent;
+
+  color: #666666;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.add-task-page .cancel-task-button:hover {
+  color: #111111;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1100px) {
+  .add-task-page .add-task-main {
+    padding: 28px 30px 40px;
+  }
+
+  .add-task-page .add-task-content {
+    max-width: 900px;
+  }
+
+  .add-task-page .date-time-grid {
+    column-gap: 30px;
+  }
+}
+
+/* =========================================
+   SMALL TABLET
+========================================= */
+
+@media (max-width: 850px) {
+  .add-task-page .add-task-topbar {
+    flex-direction: column;
+    margin-bottom: 45px;
+  }
+
+  .add-task-page .add-task-top-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .add-task-page .task-search {
+    width: min(320px, 80%);
+  }
+
+  .add-task-page .date-time-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .add-task-page .post-task-button {
+    width: 70%;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+  .add-task-page .add-task-main {
+    padding: 22px 18px 35px;
+  }
+
+  .add-task-page .add-task-topbar h1 {
+    font-size: 27px;
+  }
+
+  .add-task-page .form-heading h2 {
+    font-size: 19px;
+  }
+
+  .add-task-page .image-upload-area,
+  .add-task-page .upload-placeholder {
+    min-height: 190px;
+  }
+
+  .add-task-page .image-preview-wrapper {
+    width: 92%;
+    height: 180px;
+  }
+
+  .add-task-page .form-actions {
+    gap: 12px;
+  }
+
+  .add-task-page .post-task-button {
+    width: 75%;
+    font-size: 16px;
+  }
+}

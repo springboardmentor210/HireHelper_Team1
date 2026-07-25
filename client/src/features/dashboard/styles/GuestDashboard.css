@@ -1,325 +1,471 @@
-/* ===========================
+/* =========================
    Guest Dashboard
-=========================== */
+========================= */
 
 .guest-dashboard {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 30px 40px 60px;
-  background: #fff;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0 28px 50px;
+  background: #ffffff;
+  box-sizing: border-box;
 }
 
-/* ================= Hero ================= */
+/* =========================
+   Hero
+========================= */
 
 .guest-hero {
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 50px;
 
-  border: 1px solid #d9d9d9;
-  border-radius: 16px;
+  padding: 24px 36px;
+  margin-top: 8px;
+  margin-bottom: 12px;
 
-  padding: 36px;
-  margin-bottom: 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+
+  box-sizing: border-box;
 }
 
 .hero-left {
-  flex: 1;
+  padding: 10px 0;
 }
 
 .hero-left h1 {
-  font-size: 56px;
+  max-width: 520px;
+
+  margin: 0 0 12px;
+
+  color: #111111;
+
+  font-size: clamp(36px, 3.4vw, 54px);
   font-weight: 700;
-  line-height: 1.15;
-  color: #111827;
-  margin-bottom: 18px;
+  line-height: 1.08;
+  letter-spacing: -1px;
 }
 
 .hero-left p {
-  font-size: 20px;
+  max-width: 520px;
+
+  margin: 0 0 24px;
+
   color: #6b7280;
-  line-height: 1.7;
-  margin-bottom: 30px;
+
+  font-size: 16px;
+  line-height: 1.5;
 }
+
+/* =========================
+   Hero Buttons
+========================= */
 
 .guest-buttons {
   display: flex;
+  align-items: center;
   gap: 18px;
-  margin-bottom: 28px;
+
+  margin-bottom: 20px;
+}
+
+.primary-btn,
+.secondary-btn {
+  min-height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 0 26px;
+
+  border-radius: 9px;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
 }
 
 .primary-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  background: #111;
-  color: white;
-
-  border: none;
-  border-radius: 10px;
-
-  padding: 16px 32px;
-
-  font-size: 18px;
-  font-weight: 600;
-
-  cursor: pointer;
+  border: 1px solid #111111;
+  background: #111111;
+  color: #ffffff;
 }
 
 .secondary-btn {
+  border: 1px solid #b9ddff;
   background: #b9ddff;
-  color: #111;
-
-  border: none;
-  border-radius: 10px;
-
-  padding: 16px 30px;
-
-  font-size: 18px;
-  font-weight: 600;
-
-  cursor: pointer;
+  color: #111827;
 }
+
+/* =========================
+   Hero Features
+========================= */
 
 .hero-features {
   display: flex;
-  gap: 32px;
-  margin-top: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 26px;
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 
-  font-size: 15px;
-  color: #444;
+  color: #374151;
+
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .feature-item svg {
-  color: #2bb34a;
+  flex-shrink: 0;
+
+  color: #22c55e;
+
+  font-size: 17px;
 }
 
-/* ================= Images ================= */
+/* =========================
+   Hero Images
+========================= */
 
 .hero-right {
-  flex: 1;
+  width: 100%;
 
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .hero-right img {
-  width: 100%;
-  height: 170px;
+  display: block;
 
-  border-radius: 12px;
+  width: 100%;
+  height: 160px;
+
+  border-radius: 9px;
 
   object-fit: cover;
 }
 
-/* ================= How it Works ================= */
+/* =========================
+   How It Works
+========================= */
 
 .how-it-works {
-  margin-top: 35px;
+  width: 100%;
+
+  padding-top: 4px;
+
+  scroll-margin-top: 90px;
 }
 
 .how-it-works h2 {
+  margin: 0 0 10px;
+
   text-align: center;
 
-  font-size: 54px;
+  color: #111111;
+
+  font-size: 38px;
   font-weight: 700;
-
-  margin-bottom: 28px;
+  line-height: 1.2;
 }
 
-.steps-grid{
-    display:grid;
-    grid-template-columns:repeat(4, 1fr);
-    gap:20px;
-    width:100%;
+.steps-grid {
+  width: 86%;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
 }
 
-
-.step-card{
-    background:#fff;
-    border:1px solid #D9D9D9;
-    border-radius:14px;
-
-    padding:18px;
-
-    display:flex;
-    align-items:flex-start;
-    gap:14px;
-
-    width:100%;
-    min-width:0;
-    box-sizing:border-box;
-}
-
-.step-card:hover{
-    transform:translateY(-4px);
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-}
-
-.step-icon{
-    width:46px;
-    height:46px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    flex-shrink:0;
-
-    color:#2563eb;
-    font-size:30px;
-}
-
-.step-card h3{
-    margin:0 0 6px;
-    font-size:24px;
-    font-weight:700;
-}
-
-.step-card p{
-    margin:0;
-    font-size:14px;
-    line-height:1.4;
-    color:#666;
-}
-
-/* ================= Safety ================= */
-
-.safety-banner {
-  margin-top: 35px;
-
-  border: 1px solid #b7defb;
-  background: #fbfeff;
-
-  border-radius: 14px;
-
-  padding: 22px 28px;
+.step-card {
+  min-height: 125px;
 
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
+
+  padding: 18px 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #9ca3af;
+  border-radius: 10px;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+}
+
+.step-icon {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #2563eb;
+
+  font-size: 31px;
+}
+
+.step-card h3 {
+  margin: 0 0 7px;
+
+  color: #111827;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.step-card p {
+  margin: 0;
+
+  color: #4b5563;
+
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+/* =========================
+   Safety Banner
+========================= */
+
+.safety-banner {
+  width: 86%;
+  min-height: 66px;
+
+  margin: 26px auto 0;
+  padding: 12px 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #fbfeff;
+
+  border: 1px solid #b7defb;
+  border-radius: 10px;
+
+  box-sizing: border-box;
 }
 
 .banner-left {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 }
 
 .banner-icon {
+  flex-shrink: 0;
+
   color: #22c55e;
-  font-size: 36px;
+
+  font-size: 34px;
 }
 
 .banner-left h3 {
-  margin-bottom: 5px;
-  font-size: 24px;
+  margin: 0 0 3px;
+
+  color: #111827;
+
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .banner-left p {
-  color: #666;
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 11px;
 }
 
 .learn-more {
   color: #3498db;
+
+  font-size: 11px;
+  font-weight: 500;
+
   cursor: pointer;
-  font-weight: 600;
 }
 
-/* ================= Statistics ================= */
+/* =========================
+   Statistics
+========================= */
 
 .guest-stats {
-  margin-top: 35px;
+  width: 86%;
+
+  margin: 26px auto 0;
+  padding: 20px 28px;
 
   display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 22px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+
+  background: #ffffff;
+
+  border: 1px solid #9ca3af;
+  border-radius: 10px;
+
+  box-sizing: border-box;
 }
 
 .guest-stat-card {
-  background: white;
+  min-width: 0;
 
-  border: 1px solid #d9d9d9;
-  border-radius: 14px;
-
-  padding: 28px;
+  padding: 5px 12px;
 
   text-align: center;
+
+  background: transparent;
+
+  border: none;
 }
 
 .guest-stat-card h2 {
-  font-size: 38px;
-  color: #2563eb;
-  margin-bottom: 8px;
+  margin: 0 0 5px;
+
+  color: #111827;
+
+  font-size: 23px;
+  font-weight: 700;
 }
 
 .guest-stat-card p {
-  color: #666;
-  font-size: 15px;
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 11px;
 }
 
-/* ================= Responsive ================= */
+/* =========================
+   Responsive
+========================= */
 
-@media (max-width:1200px){
+@media (max-width: 1100px) {
+  .guest-hero {
+    gap: 30px;
 
-.guest-hero{
-    flex-direction:column;
+    padding: 26px;
+  }
+
+  .steps-grid,
+  .safety-banner,
+  .guest-stats {
+    width: 94%;
+  }
+
+  .steps-grid {
+    gap: 16px;
+  }
+
+  .step-card {
+    padding: 16px;
+  }
 }
 
-.hero-right{
-    width:100%;
+@media (max-width: 900px) {
+  .guest-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-right {
+    max-width: 700px;
+  }
+
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .guest-stats {
+    grid-template-columns: repeat(2, 1fr);
+
+    row-gap: 24px;
+  }
 }
 
-.steps-grid{
-    grid-template-columns:repeat(2,1fr);
-}
+@media (max-width: 600px) {
+  .guest-dashboard {
+    padding: 0 14px 30px;
+  }
 
-.guest-stats{
-    grid-template-columns:repeat(2,1fr);
-}
+  .guest-hero {
+    padding: 22px 18px;
 
-}
+    gap: 28px;
+  }
 
-@media (max-width:768px){
+  .hero-left h1 {
+    font-size: 36px;
+  }
 
-.guest-dashboard{
-    padding:20px;
-}
+  .guest-buttons {
+    align-items: stretch;
+    flex-direction: column;
+  }
 
-.hero-left h1{
-    font-size:40px;
-}
+  .hero-features {
+    align-items: flex-start;
+    flex-direction: column;
 
-.hero-features{
-    flex-direction:column;
-    gap:12px;
-}
+    gap: 10px;
+  }
 
-.hero-right{
-    grid-template-columns:1fr;
-}
+  .hero-right {
+    grid-template-columns: 1fr;
+  }
 
-.steps-grid{
-    grid-template-columns:1fr;
-}
+  .hero-right img {
+    height: 190px;
+  }
 
-.guest-stats{
-    grid-template-columns:1fr;
-}
+  .how-it-works h2 {
+    font-size: 32px;
+  }
 
-.safety-banner{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:15px;
-}
+  .steps-grid {
+    width: 100%;
 
+    grid-template-columns: 1fr;
+  }
+
+  .safety-banner {
+    width: 100%;
+
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .guest-stats {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+  }
 }

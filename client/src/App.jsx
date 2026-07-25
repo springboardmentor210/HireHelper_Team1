@@ -8,6 +8,8 @@ import Settings from './features/settings/pages/Settings';
 import ResetPassword from './features/auth/pages/ResetPassword';
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from "./features/dashboard/pages/Dashboard";
+import AddTask from "./features/tasks/pages/AddTask";
+
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
       <Route path="/verify-otp" element={<VerifyOTP />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/addtasks" element={<AddTask />} />
       <Route path="/reset-password/:token" element={<ResetPassword />}
 />
     </Routes>

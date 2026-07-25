@@ -1,5 +1,8 @@
+import path from "path";
 import express from "express";
 import cors from "cors";
+
+import taskRoutes from "./routes/task.routes.js";
 
 import authRoutes from "./routes/auth.routes.js";
 
@@ -15,7 +18,7 @@ app.use(
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
-
+app.use("/uploads", express.static(path.resolve("uploads")));
 // Health Check
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -26,7 +29,7 @@ app.get("/api/health", (req, res) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
-
+app.use("/api/tasks", taskRoutes);
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error(err);
