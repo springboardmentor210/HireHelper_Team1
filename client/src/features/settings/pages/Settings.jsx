@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { HandHeart } from 'lucide-react';
+import Sidebar from "../../../components/layout/Sidebar"; 
 import './Settings.css';
 
 export default function Settings() {
@@ -110,23 +110,7 @@ export default function Settings() {
 
   return (
     <div className="hire-wrapper">
-      <aside className="sidebar">
-        <div className="logo">
-          <HandHeart color="#4f46e5" size={28} strokeWidth={1.5} />
-          <div>
-            <h2>Hire-a-Helper</h2>
-          </div>
-        </div>
-
-        <nav>
-          <a href="#">🏠 Feed</a>
-          <a href="#">📋 My Tasks</a>
-          <a href="#">📦 Requests</a>
-          <a href="#">📂 My Requests</a>
-          <a href="#">➕ Add Task</a>
-          <a href="#" className="active">⚙ Settings</a>
-        </nav>
-      </aside>
+      <Sidebar />
 
       <main className="main">
         <header className="navbar">
@@ -262,7 +246,7 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Submit Button Moved Here */}
+            {/* Submit Button */}
             <div className="form-submit" style={{ marginTop: '40px', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
               <button form="settings-form" type="submit" className="btn btn-dark" disabled={saving}>
                 {saving ? 'Saving changes...' : 'Save Changes'}
