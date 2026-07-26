@@ -1,166 +1,99 @@
-import React from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useTasks } from "../../../context/TaskContext";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Bell } from "lucide-react";
+import SearchBar from "../components/SearchBar";
+import StatsCards from "../components/StatsCards";
+import FilterBar from "../components/FilterBar";
+import TaskGrid from "../components/TaskGrid";
+import LoadingSkeleton from "../components/LoadingSkeleton";
+import EmptyState from "../components/EmptyState";
+import * as taskService from "../../../services/taskService";
+import "../styles/MyTasks.css";
 
-import {
-  Home,
-  ClipboardList,
-  Inbox,
-  Plus,
-  Settings,
-  LogOut,
-  MapPin,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
-
-import "../../feed/styles/Feed.css";
-
-function MyTasks() {
+export default function MyTasks() {
   const navigate = useNavigate();
-  const { myTasks } = useTasks();
+  const [tasks, setTasks] = useState([]);
+  const [stats, setStats] = useState({ active: 0, inProgress: 0, completed: 0, totalApplicants: 0, totalEarnings: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [filters, setFilters] = useState({ status: "all", category: "all", sort: "newest" });
+
+  // Debounced search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim().toLowerCase()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const load = async () => {
+    try {
+      setLoading(true); setError(null);
+      const [t, s] = await Promise.all([taskService.getTasks(), taskService.getStatistics()]);
+      setTasks(t); setStats(s);
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to load tasks");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const filtered = useMemo(() => {
+    let list = [...tasks];
+    if (filters.status !== "all") list = list.filter((t) => t.status === filters.status);
+    if (filters.category !== "all") list = list.filter((t) => t.category === filters.category);
+    if (debouncedSearch) {
+      list = list.filter((t) =>
+        t.title.toLowerCase().includes(debouncedSearch) ||
+        t.description.toLowerCase().includes(debouncedSearch) ||
+        t.category.toLowerCase().includes(debouncedSearch)
+        );
+    }
+    switch (filters.sort) {
+      case "budget-high": list.sort((a, b) => b.budget - a.budget); break;
+      case "budget-low": list.sort((a, b) => a.budget - b.budget); break;
+      case "oldest": list.reverse(); break;
+      default: break;
+    }
+    return list;
+  }, [tasks, filters, debouncedSearch]);
 
   return (
-    <div className="feed-layout">
-      <aside className="feed-sidebar">
+    <div className="my-tasks-page">
+      <header className="page-header">
         <div>
-          <div className="brand">
-            <div className="brand-logo" style={{ width: 32, height: 32, backgroundColor: '#0056b3', borderRadius: '50%' }}></div>
-            <h2>Hire-a-Helper</h2>
-          </div>
-
-          <nav className="sidebar-nav">
-            <Link to="/feed" className="nav-item">
-              <Home size={20} />
-              Feed
-            </Link>
-
-            <Link to="/my-tasks" className="nav-item active">
-              <ClipboardList size={20} />
-              My Tasks
-            </Link>
-
-            <Link to="/requests" className="nav-item">
-              <Inbox size={20} />
-              Requests
-            </Link>
-
-            <Link to="/my-requests" className="nav-item">
-              <Inbox size={20} />
-              My Requests
-            </Link>
-
-            <Link to="/add-task" className="nav-item">
-              <Plus size={22} />
-              Add Task
-            </Link>
-
-            <a className="nav-item">
-              <Settings size={20} />
-              Settings
-            </a>
-          </nav>
+          <h1 className="page-title">My Tasks</h1>
+          <p className="page-subtitle">Manage every task you've created.</p>
         </div>
 
-        <div className="sidebar-profile">
-          <div className="profile-avatar"></div>
-
-          <div className="profile-info">
-            <span>Jon Doe</span>
-            <small>test@gmail.com</small>
-          </div>
-
+        <div className="header-right">
+          <SearchBar value={search} onChange={setSearch} />
           <button
-            type="button"
-            className="logout-btn"
-            onClick={() => navigate("/")}
+            className="notif-btn"
+            onClick={() => navigate("/notifications")}
+            aria-label="Notifications"
           >
-            <LogOut size={18} />
+            <Bell size={18} />
+            <span className="notif-dot" />
           </button>
-        </div>
-      </aside>
+           </div>
+      </header>
 
-      <main className="feed-main">
-        <header className="feed-header">
-          <div>
-            <h1>My Tasks</h1>
-            <p>Tasks that have been accepted by providers</p>
-          </div>
-        </header>
+      <StatsCards stats={stats} />
 
-        <section className="feed-content">
-          <div className="task-grid">
-            {myTasks.map((task) => (
-              <article className="task-card" key={task.id}>
-                <div className="task-image-container">
-                  <img
-                    className="task-image"
-                    src={task.image}
-                    alt={task.title}
-                  />
-                  <div style={{ position: 'absolute', top: 10, right: 10, background: '#28a745', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <CheckCircle size={14} />
-                    Accepted
-                  </div>
-                </div>
+      <FilterBar filters={filters} onChange={setFilters} />
 
-                <div className="task-body">
-                  <span
-                    className={`category-badge ${task.category.toLowerCase()}`}
-                  >
-                    {task.category}
-                  </span>
-
-                  <h3>{task.title}</h3>
-
-                  <p className="task-description">
-                    {task.description}
-                  </p>
-
-                  <div className="task-detail">
-                    <MapPin size={14} />
-                    <span>{task.location}</span>
-                  </div>
-
-                  <div className="task-detail">
-                    <Clock size={14} />
-
-                    <span>
-                      {task.date} • {task.time}
-                    </span>
-                  </div>
-
-                  <div className="task-footer">
-                    <div className="task-user">
-                      <div className="user-avatar"></div>
-                      <span>{task.user}</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="request-button"
-                      style={{ backgroundColor: '#6c757d', cursor: 'default' }}
-                      disabled
-                    >
-                      In Progress
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {myTasks.length === 0 && (
-            <div className="empty-feed">
-              <h3>No tasks found</h3>
-              <p>Requested tasks will appear here once accepted.</p>
-              <Link to="/my-requests" style={{ marginTop: '1rem', display: 'inline-block', color: 'blue' }}>View My Requests</Link>
-            </div>
-          )}
-        </section>
-      </main>
+      {loading ? (
+        <LoadingSkeleton />
+      ) : error ? (
+        <div className="error-state">{error}</div>
+      ) : filtered.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <TaskGrid tasks={filtered} onChange={load} />
+      )}
     </div>
   );
 }
-
-export default MyTasks;

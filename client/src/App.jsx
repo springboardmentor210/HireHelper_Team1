@@ -1,28 +1,55 @@
-import React from 'react';
-import Home from './features/auth/pages/Home';
-import Login from './features/auth/pages/Login';
-import VerifyOTP from './features/auth/pages/VerifyOTP';
-import AddTasks from './features/tasks/pages/AddTask';
-import Feed from './features/feed/pages/Feed';
-import MyRequests from './features/requests/pages/MyRequests';
-import MyTasks from './features/tasks/pages/MyTasks';
-import { Routes, Route } from 'react-router-dom';
-import { TaskProvider } from './context/TaskContext';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+// Tasks pages
+import MyTasks from "./features/tasks/pages/MyTasks";
+import AddTask from "./features/tasks/pages/AddTask";
 
 function App() {
   return (
-    <TaskProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/verify-otp" element={<VerifyOTP />} />
-        <Route path="/add-task" element={<AddTasks />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/my-requests" element={<MyRequests />} />
-        <Route path="/my-tasks" element={<MyTasks />} />
-      </Routes>
-    </TaskProvider>
+    <Routes>
+      {/* Default route -> redirect to /tasks */}
+      <Route path="/" element={<Navigate to="/tasks" replace />} />
+
+      {/* Tasks routes */}
+      <Route path="/tasks" element={<MyTasks />} />
+      <Route path="/tasks/add" element={<AddTask />} />
+      <Route path="/tasks/:taskId" element={<MyTasks />} />
+      <Route path="/tasks/:taskId/applicants" element={<MyTasks />} />
+      <Route path="/tasks/:taskId/edit" element={<AddTask />} />
+
+      {/* Placeholder routes for other pages */}
+      <Route
+        path="/notifications"
+        element={<div style={{ padding: 40, fontSize: 24 }}>Notifications Page</div>}
+      />
+      <Route
+      path="/requests"
+        element={<div style={{ padding: 40, fontSize: 24 }}>Requests Page</div>}
+      />
+      <Route
+        path="/feed"
+        element={<div style={{ padding: 40, fontSize: 24 }}>Feed Page</div>}
+      />
+      <Route
+        path="/dashboard"
+        element={<div style={{ padding: 40, fontSize: 24 }}>Dashboard Page</div>}
+      />
+      <Route
+        path="/settings"
+        element={<div style={{ padding: 40, fontSize: 24 }}>Settings Page</div>}
+      />
+      <Route
+        path="/saved"
+        element={<div style={{ padding: 40, fontSize: 24 }}>Saved Page</div>}
+      />
+
+      {/* 404 catch-all */}
+      <Route
+        path="*"
+        element={<div style={{ padding: 40, fontSize: 24 }}>404 - Page Not Found</div>}
+      />
+    </Routes>
   );
 }
-
 export default App;

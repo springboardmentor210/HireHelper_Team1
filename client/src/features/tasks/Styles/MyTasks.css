@@ -1,0 +1,81 @@
+.my-tasks-page { padding: 28px 32px; background: #f6f7fb; min-height: 100vh; }
+
+/* Header */
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+.page-title { font-size: 24px; font-weight: 700; color: #111; margin: 0; }
+.page-subtitle { font-size: 13px; color: #6b7280; margin-top: 4px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.search-bar { position: relative; background: #fff; border: 1px solid #e5e7eb; border-radius: 999px; padding: 8px 14px 8px 36px; width: 240px; }
+.search-bar input { border: none; outline: none; width: 100%; background: transparent; font-size: 13px; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+
+.notif-btn { position: relative; background: #fff; border: 1px solid #e5e7eb; border-radius: 999px; width: 38px; height: 38px; display: grid; place-items: center; cursor: pointer; }
+.notif-dot { position: absolute; top: 8px; right: 10px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
+.stat-card { background: #fff; border: 1px solid #eef0f4; border-radius: 14px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; }
+.stat-icon { width: 40px; height: 40px; border-radius: 50%; background: #f3f4f6; display: grid; place-items: center; }
+.stat-label { font-size: 12px; color: #6b7280; }
+.stat-value { font-size: 20px; font-weight: 700; color: #111; }
+.stat-sub { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+/* Filter Bar */
+.filter-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eef0f4; border-radius: 12px; padding: 10px 14px; margin-bottom: 20px; }
+.filter-group { display: flex; gap: 10px; flex-wrap: wrap; }
+.filter-select { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; }
+.filter-select select { border: none; outline: none; background: transparent; font-size: 13px; color: #374151; cursor: pointer; }
+.filter-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; cursor: pointer; font-size: 13px; }
+
+/* Task Grid */
+.task-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.task-card { background: #fff; border: 1px solid #eef0f4; border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+.task-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.06); }
+
+.task-image-wrap { position: relative; height: 180px; }
+.task-image { width: 100%; height: 100%; object-fit: cover; }
+.task-badge-wrap { position: absolute; top: 10px; left: 10px; }
+.task-badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.bookmark-btn { position: absolute; top: 10px; right: 10px; background: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+.task-price { position: absolute; bottom: 10px; right: 10px; background: #fff; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 13px; color: #111; }
+
+.task-body { padding: 14px 16px 16px; }
+.task-title { font-size: 16px; font-weight: 700; color: #111; margin: 0 0 6px; }
+.task-category { display: inline-block; background: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 6px; font-size: 11px; margin-bottom: 8px; }
+.task-desc { font-size: 12.5px; color: #6b7280; line-height: 1.5; margin: 0 0 10px; }
+.task-meta { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+.meta-row { display: flex; align-items: center; gap: 6px; }
+.task-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f2f5; padding-top: 12px; }
+.applicant-avatars { display: flex; align-items: center; gap: 8px; }
+.avatar-stack { display: flex; }
+.avatar { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; margin-left: -6px; }
+.avatar:first-child { margin-left: 0; }
+.applicant-count { font-size: 11px; color: #6b7280; }
+
+.task-actions { display: flex; align-items: center; gap: 6px; }
+.primary-btn { background: #fff; border: 1px solid #d1d5db; padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; color: #111; }
+.primary-btn:hover { background: #f9fafb; }
+
+/* Menu */
+.task-menu { position: relative; }
+.task-menu-trigger { background: transparent; border: none; padding: 6px; border-radius: 6px; cursor: pointer; }
+.task-menu-trigger:hover { background: #f3f4f6; }
+.task-menu-dropdown { position: absolute; right: 0; bottom: calc(100% + 6px); background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 12px 24px rgba(0,0,0,0.08); min-width: 170px; padding: 6px; z-index: 20; }
+.menu-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: none; background: transparent; text-align: left; font-size: 13px; color: #111; border-radius: 6px; cursor: pointer; }
+.menu-item:hover { background: #f3f4f6; }
+.menu-item.danger { color: #dc2626; }
+
+/* Skeleton */
+.skeleton { padding: 14px; }
+.skeleton-img { width: 100%; height: 160px; background: #eef0f4; border-radius: 12px; margin-bottom: 12px; }
+.skeleton-line { height: 12px; background: #eef0f4; border-radius: 6px; margin-bottom: 8px; }
+.w-60 { width: 60%; } .w-40 { width: 40%; } .w-80 { width: 80%; }
+/* Empty & Error */
+.empty-state { text-align: center; padding: 60px 20px; color: #6b7280; background: #fff; border-radius: 14px; border: 1px dashed #e5e7eb; }
+.empty-state h3 { margin: 12px 0 4px; color: #111; }
+.error-state { padding: 24px; background: #fef2f2; color: #b91c1c; border-radius: 12px; text-align: center; }
+
+/* Responsive */
+@media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px)  { .task-grid { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .my-tasks-page { padding: 18px; } .stats-grid { grid-template-columns: 1fr 1fr; } .header-right { width: 100%; } .search-bar { width: 100%; } }
