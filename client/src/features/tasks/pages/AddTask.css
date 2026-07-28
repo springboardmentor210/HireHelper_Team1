@@ -5,9 +5,10 @@
 
 .add-task-page {
   min-height: 100vh;
-  background: #ffffff;
+  background: #fdfdfd;
   display: flex;
   color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* =========================================
@@ -17,8 +18,8 @@
 .add-task-page .add-task-main {
   flex: 1;
   min-width: 0;
-  padding: 28px 48px 40px;
-  background: #ffffff;
+  padding: 32px 48px;
+  background: #fdfdfd;
 }
 
 /* =========================================
@@ -30,21 +31,21 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 30px;
-  margin-bottom: 65px;
+  margin-bottom: 30px;
 }
 
-.add-task-page .add-task-topbar h1 {
+.add-task-page .topbar-headings h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 26px;
   line-height: 1.2;
   font-weight: 700;
   color: #111827;
 }
 
-.add-task-page .add-task-topbar > div:first-child > p {
+.add-task-page .topbar-headings p {
   margin: 8px 0 0;
-  font-size: 15px;
-  color: #7a7a7a;
+  font-size: 14px;
+  color: #6b7280;
 }
 
 /* Search + notification */
@@ -52,22 +53,22 @@
 .add-task-page .add-task-top-actions {
   display: flex;
   align-items: center;
-  gap: 28px;
-  padding-top: 8px;
+  gap: 20px;
 }
 
 .add-task-page .task-search {
   display: flex;
   align-items: center;
-  gap: 9px;
-  width: 230px;
+  gap: 8px;
+  width: 200px;
   color: #9ca3af;
 }
 
 .add-task-page .task-search svg {
-  width: 19px;
-  height: 19px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
+  color: #9ca3af;
 }
 
 .add-task-page .task-search input {
@@ -76,7 +77,7 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 16px;
+  font-size: 14px;
   color: #374151;
 }
 
@@ -89,69 +90,71 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 38px;
   height: 38px;
-
   padding: 0;
   border: none;
   background: transparent;
-  color: #111827;
+  color: #fbd38d; /* Matches the yellow bell in the image */
   cursor: pointer;
 }
 
 .add-task-page .notification-button svg {
-  width: 23px;
-  height: 23px;
+  width: 22px;
+  height: 22px;
+  fill: #fbd38d;
 }
 
 .add-task-page .notification-dot {
   position: absolute;
-  top: 2px;
-  right: 1px;
-
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-
+  top: 4px;
+  right: 6px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
   background: #ef4444;
   color: #ffffff;
-
   font-size: 9px;
   font-weight: 700;
 }
 
 /* =========================================
-   FORM CONTAINER
+   FORM CONTAINER (CARD)
 ========================================= */
 
 .add-task-page .add-task-content {
   width: 100%;
-  max-width: 1030px;
-  margin: 0 auto;
+  max-width: 1000px;
+}
+
+.add-task-page .add-task-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 .add-task-page .form-heading {
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .add-task-page .form-heading h2 {
   margin: 0;
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1.3;
   font-weight: 700;
-  color: #171717;
+  color: #111827;
 }
 
 .add-task-page .form-heading p {
-  margin: 7px 0 0;
+  margin: 6px 0 0;
   font-size: 13px;
-  color: #777777;
+  color: #6b7280;
 }
 
 /* =========================================
@@ -160,16 +163,15 @@
 
 .add-task-page .form-group {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .add-task-page .form-group label {
   display: block;
   margin-bottom: 8px;
-
   font-size: 13px;
-  font-weight: 600;
-  color: #222222;
+  font-weight: 700;
+  color: #111827;
 }
 
 .add-task-page .form-group input,
@@ -177,52 +179,39 @@
 .add-task-page .form-group select {
   width: 100%;
   box-sizing: border-box;
-
-  border: 1px solid #8d8d8d;
-  border-radius: 10px;
-
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   background: #ffffff;
-  color: #222222;
-
+  color: #374151;
   font-family: inherit;
   font-size: 14px;
-
   outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.add-task-page .form-group input {
-  height: 43px;
+.add-task-page .form-group input,
+.add-task-page .form-group select {
+  height: 42px;
   padding: 0 14px;
 }
 
 .add-task-page .form-group textarea {
-  min-height: 125px;
+  min-height: 120px;
   padding: 14px;
-
   resize: vertical;
   line-height: 1.5;
 }
 
-.add-task-page .form-group select {
-  height: 43px;
-  padding: 0 14px;
-  cursor: pointer;
-}
-
 .add-task-page .form-group input::placeholder,
 .add-task-page .form-group textarea::placeholder {
-  color: #8c8c8c;
+  color: #9ca3af;
 }
 
 .add-task-page .form-group input:focus,
 .add-task-page .form-group textarea:focus,
 .add-task-page .form-group select:focus {
-  border-color: #111827;
-  box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.08);
+  border-color: #6b7280;
+  box-shadow: 0 0 0 1px #6b7280;
 }
 
 /* =========================================
@@ -231,16 +220,14 @@
 
 .add-task-page .character-count {
   display: block;
-  margin-top: 5px;
-
+  margin-top: 6px;
   text-align: right;
-
-  color: #777777;
-  font-size: 11px;
+  color: #9ca3af;
+  font-size: 12px;
 }
 
 /* =========================================
-   LOCATION
+   LOCATION (Input with Icon)
 ========================================= */
 
 .add-task-page .input-with-icon {
@@ -248,20 +235,17 @@
 }
 
 .add-task-page .input-with-icon input {
-  padding-right: 44px;
+  padding-right: 40px;
 }
 
-.add-task-page .input-with-icon svg {
+.add-task-page .input-with-icon .input-icon {
   position: absolute;
   right: 14px;
   top: 50%;
-
-  width: 18px;
-  height: 18px;
-
+  width: 16px;
+  height: 16px;
   transform: translateY(-50%);
-  color: #8a8a8a;
-
+  color: #9ca3af;
   pointer-events: none;
 }
 
@@ -272,12 +256,16 @@
 .add-task-page .date-time-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 55px;
+  column-gap: 24px;
   row-gap: 0;
 }
 
-.add-task-page .date-time-grid .form-group {
-  margin-bottom: 18px;
+/* Hide default browser icons optionally and style them to look cohesive,
+   but keeping the default is fine if the icons align as in the image */
+.add-task-page input[type="date"]::-webkit-calendar-picker-indicator,
+.add-task-page input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.5;
 }
 
 /* =========================================
@@ -286,110 +274,93 @@
 
 .add-task-page .image-upload-area {
   width: 100%;
-  min-height: 245px;
-
+  min-height: 200px;
   box-sizing: border-box;
-
-  border: 1px dashed #999999;
-  border-radius: 10px;
-
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   overflow: hidden;
   background: #ffffff;
 }
 
 .add-task-page .upload-placeholder {
   width: 100%;
-  min-height: 245px;
-
+  min-height: 200px;
   margin: 0 !important;
-
   display: flex !important;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  gap: 7px;
-
+  gap: 8px;
   cursor: pointer;
-  color: #6b7280;
 }
 
-.add-task-page .upload-placeholder svg {
-  width: 35px;
-  height: 35px;
+.add-task-page .upload-icon {
+  width: 32px;
+  height: 32px;
+  color: #93c5fd; /* Soft blue color from the image */
   margin-bottom: 4px;
 }
 
-.add-task-page .upload-placeholder strong {
-  color: #333333;
+.add-task-page .upload-text {
+  color: #6b7280;
   font-size: 14px;
 }
 
-.add-task-page .upload-placeholder span {
-  color: #8a8a8a;
+.add-task-page .upload-link {
+  color: #3b82f6; /* Blue link text */
+  font-weight: 500;
+}
+
+.add-task-page .upload-hint {
+  color: #9ca3af;
   font-size: 12px;
+  font-weight: 500;
 }
 
 /* Image preview */
 
 .add-task-page .image-preview-wrapper {
   position: relative;
-
-  width: min(470px, 90%);
-  height: 220px;
-
-  margin: 18px auto;
+  width: 100%;
+  height: 200px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .add-task-page .task-image-preview {
   display: block;
-
   width: 100%;
   height: 100%;
-
-  border-radius: 9px;
-
-  object-fit: cover;
+  border-radius: 6px;
+  object-fit: contain;
 }
 
 .add-task-page .remove-image {
   position: absolute;
-  top: -7px;
-  right: -7px;
-
-  width: 28px;
-  height: 28px;
-
+  top: 15px;
+  right: 15px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: none;
   border-radius: 50%;
-
   background: #ffffff;
-  color: #111111;
-
-  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.16);
-
+  color: #111827;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-}
-
-.add-task-page .remove-image svg {
-  width: 17px;
-  height: 17px;
 }
 
 /* Error */
 
 .add-task-page .form-error {
-  margin: 7px 0 0;
-  color: #dc2626;
-  font-size: 12px;
+  margin: 6px 0 0;
+  color: #ef4444;
+  font-size: 13px;
 }
 
 /* =========================================
@@ -400,86 +371,57 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  gap: 32px;
-
-  margin-top: 35px;
+  gap: 24px;
+  margin-top: 40px;
 }
 
 .add-task-page .post-task-button {
-  width: 55%;
-  min-height: 52px;
-
+  width: 400px;
+  max-width: 100%;
+  height: 48px;
   border: none;
-  border-radius: 7px;
-
-  background: #111111;
+  border-radius: 6px;
+  background: #111827;
   color: #ffffff;
-
-  font-size: 18px;
-  font-weight: 700;
-
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .add-task-page .post-task-button:hover {
-  background: #292929;
-}
-
-.add-task-page .post-task-button:active {
-  transform: scale(0.99);
+  background: #374151;
 }
 
 .add-task-page .cancel-task-button {
-  min-height: 52px;
-
-  padding: 0 15px;
-
+  height: 48px;
+  padding: 0 16px;
   border: none;
   background: transparent;
-
-  color: #666666;
-
-  font-size: 16px;
+  color: #6b7280;
+  font-size: 15px;
   font-weight: 600;
-
   cursor: pointer;
 }
 
 .add-task-page .cancel-task-button:hover {
-  color: #111111;
+  color: #111827;
 }
 
 /* =========================================
-   TABLET
+   RESPONSIVE DESIGN
 ========================================= */
 
 @media (max-width: 1100px) {
   .add-task-page .add-task-main {
-    padding: 28px 30px 40px;
-  }
-
-  .add-task-page .add-task-content {
-    max-width: 900px;
-  }
-
-  .add-task-page .date-time-grid {
-    column-gap: 30px;
+    padding: 30px;
   }
 }
-
-/* =========================================
-   SMALL TABLET
-========================================= */
 
 @media (max-width: 850px) {
   .add-task-page .add-task-topbar {
     flex-direction: column;
-    margin-bottom: 45px;
+    margin-bottom: 30px;
   }
 
   .add-task-page .add-task-top-actions {
@@ -487,52 +429,30 @@
     justify-content: space-between;
   }
 
-  .add-task-page .task-search {
-    width: min(320px, 80%);
-  }
-
   .add-task-page .date-time-grid {
     grid-template-columns: 1fr;
   }
 
-  .add-task-page .post-task-button {
-    width: 70%;
+  .add-task-page .add-task-card {
+    padding: 24px;
   }
 }
 
-/* =========================================
-   MOBILE
-========================================= */
-
 @media (max-width: 600px) {
   .add-task-page .add-task-main {
-    padding: 22px 18px 35px;
+    padding: 20px 16px;
   }
 
-  .add-task-page .add-task-topbar h1 {
-    font-size: 27px;
-  }
-
-  .add-task-page .form-heading h2 {
-    font-size: 19px;
-  }
-
-  .add-task-page .image-upload-area,
-  .add-task-page .upload-placeholder {
-    min-height: 190px;
-  }
-
-  .add-task-page .image-preview-wrapper {
-    width: 92%;
-    height: 180px;
+  .add-task-page .topbar-headings h1 {
+    font-size: 22px;
   }
 
   .add-task-page .form-actions {
+    flex-direction: column;
     gap: 12px;
   }
 
   .add-task-page .post-task-button {
-    width: 75%;
-    font-size: 16px;
+    width: 100%;
   }
 }
