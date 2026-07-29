@@ -67,7 +67,8 @@ const taskSchema = new mongoose.Schema(
 
     price: {
       type: Number,
-      required: [true, "Price is required"],
+      required: false,
+      default: 0,
       min: [0, "Price cannot be negative"],
     },
 
@@ -88,16 +89,14 @@ const taskSchema = new mongoose.Schema(
       default: "active",
     },
 
-    // Set once a request is accepted (owned/updated by the Requests module).
-    // Included here so the Tasks API can already read/report it.
+    // Assigned user for the task.
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null,
     },
 
-    // Incremented/decremented by the Requests module whenever someone
-    // requests to help / withdraws. Tasks module only reads this.
+    // Number of task applicants.
     applicantsCount: {
       type: Number,
       default: 0,
@@ -109,7 +108,7 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
-// Feed search (title/description) + common filters
+// Indexes for search and filtering.
 taskSchema.index({ title: "text", description: "text" });
 taskSchema.index({ status: 1, category: 1 });
 taskSchema.index({ postedBy: 1 });
