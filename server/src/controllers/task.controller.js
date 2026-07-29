@@ -4,14 +4,11 @@ import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-// Helper: turn uploaded files into stored paths (served from /uploads)
+
 const filesToImagePaths = (files = []) =>
   files.map((file) => `/uploads/tasks/${file.filename}`);
 
-// -------------------------------------------------------------------------
-// POST /api/tasks  (protected)
-// Create a new task. Matches "Add Task" form fields in the mockups.
-// -------------------------------------------------------------------------
+// Create task
 export const createTask = asyncHandler(async (req, res) => {
   const {
     title,
@@ -26,13 +23,13 @@ export const createTask = asyncHandler(async (req, res) => {
   } = req.body;
 
   // Required fields
-  if (!title || !description || !location || !startDate || !startTime || !category || !price) {
+  if (!title || !description || !location || !startDate || !startTime || !category) {
     return res
       .status(400)
       .json(
         new ApiError(
           400,
-          "Title, description, location, start date, start time, category and price are required"
+          "Title, description, location, start date, start time and category are required"
         )
       );
   }
@@ -43,10 +40,16 @@ export const createTask = asyncHandler(async (req, res) => {
       .json(new ApiError(400, `Category must be one of: ${TASK_CATEGORIES.join(", ")}`));
   }
 
-  const numericPrice = Number(price);
+  let numericPrice = 0;
 
-  if (Number.isNaN(numericPrice) || numericPrice < 0) {
-    return res.status(400).json(new ApiError(400, "Price must be a valid positive number"));
+  if (price !== undefined && price !== null && price !== "") {
+    numericPrice = Number(price);
+
+    if (Number.isNaN(numericPrice) || numericPrice < 0) {
+      return res
+        .status(400)
+        .json(new ApiError(400, "Price must be a valid positive number"));
+    }
   }
 
   const images = filesToImagePaths(req.files);
@@ -68,11 +71,7 @@ export const createTask = asyncHandler(async (req, res) => {
   return res.status(201).json(new ApiResponse(201, "Task created successfully", task));
 });
 
-// -------------------------------------------------------------------------
-// GET /api/tasks/feed  (protected)
-// "Find tasks that need help" — all other users' open tasks.
-// Query params: category, search, sort (newest|price_low|price_high), page, limit
-// -------------------------------------------------------------------------
+// Fetch task feed
 export const getFeed = asyncHandler(async (req, res) => {
   const { category, search, sort = "newest", page = 1, limit = 12 } = req.query;
 
@@ -128,10 +127,7 @@ export const getFeed = asyncHandler(async (req, res) => {
   );
 });
 
-// -------------------------------------------------------------------------
-// GET /api/tasks/my-tasks  (protected)
-// "Manage every task you've created" — includes the stat cards.
-// -------------------------------------------------------------------------
+// Fetch user's tasks
 export const getMyTasks = asyncHandler(async (req, res) => {
   const { status, category, sort = "newest", page = 1, limit = 12 } = req.query;
 
@@ -154,6 +150,7 @@ export const getMyTasks = asyncHandler(async (req, res) => {
     newest: { createdAt: -1 },
     oldest: { createdAt: 1 },
   };
+
   const sortOption = sortMap[sort] || sortMap.newest;
 
   const pageNum = Math.max(Number(page) || 1, 1);
@@ -176,13 +173,13 @@ export const getMyTasks = asyncHandler(async (req, res) => {
     ]),
   ]);
 
-  // Build the stat-card numbers shown at the top of "My Tasks"
+  // Calculate task statistics
   const stats = {
     active: 0,
     inProgress: 0,
     completed: 0,
     totalApplicants: 0,
-    totalEarnings: 0, // sum of price for completed tasks
+    totalEarnings: 0,
   };
 
   for (const row of statusCounts) {
@@ -210,9 +207,7 @@ export const getMyTasks = asyncHandler(async (req, res) => {
   );
 });
 
-// -------------------------------------------------------------------------
-// GET /api/tasks/:id  (protected)
-// -------------------------------------------------------------------------
+// Fetch task by ID
 export const getTaskById = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id).populate(
     "postedBy",
@@ -226,10 +221,7 @@ export const getTaskById = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "Task fetched successfully", task));
 });
 
-// -------------------------------------------------------------------------
-// PATCH /api/tasks/:id  (protected — owner only)
-// Edit a task. Only allowed while it's still "active".
-// -------------------------------------------------------------------------
+// Update task
 export const updateTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id);
 
@@ -247,6 +239,7 @@ export const updateTask = asyncHandler(async (req, res) => {
       .json(new ApiError(400, "Only active tasks can be edited"));
   }
 
+  // Editable task fields
   const editableFields = [
     "title",
     "description",
@@ -280,12 +273,7 @@ export const updateTask = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "Task updated successfully", task));
 });
 
-// -------------------------------------------------------------------------
-// PATCH /api/tasks/:id/status  (protected — owner only)
-// Manually move a task to completed / cancelled.
-// (Moving a task to "in_progress" happens via the Requests module when a
-// request is accepted, not here.)
-// -------------------------------------------------------------------------
+// Update task status
 export const updateTaskStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
 
@@ -320,9 +308,7 @@ export const updateTaskStatus = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, `Task marked as ${status}`, task));
 });
 
-// -------------------------------------------------------------------------
-// DELETE /api/tasks/:id  (protected — owner only)
-// -------------------------------------------------------------------------
+// Delete task
 export const deleteTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id);
 
