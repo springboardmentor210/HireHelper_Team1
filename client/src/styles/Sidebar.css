@@ -2,74 +2,192 @@
   width: 260px;
   min-width: 260px;
   height: 100vh;
+  
   background: #ffffff;
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb; 
+  
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 28px 20px;
+  
+  padding: 24px 0; 
+  
   position: sticky;
   top: 0;
+  
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.logo h2 {
-  color: #2563eb;
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0;
+/* =========================
+   Logo
+========================= */
+
+.sidebar-logo {
+  width: 100%;
+  height: 60px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  flex-shrink: 0;
+  padding: 0 20px; /* Re-added padding here */
+  
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
+
+.sidebar-logo img {
+  display: block;
+  width: 100%;
+  max-width: 180px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* =========================
+   Menu
+========================= */
 
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 35px;
+  gap: 4px; /* Reduced gap since the background stretches */
+  margin-top: 30px;
+  flex: 1;
 }
 
 .menu-item {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  border-radius: 12px;
+  gap: 16px;
+  
+  /* Left padding matches the image indentation */
+  padding: 14px 45px; 
+  
+  border: none;
+  background: transparent;
   cursor: pointer;
-  color: #374151;
+  
+  color: #000000;
   font-size: 15px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 800; /* Made text bolder to match image */
+  
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .menu-item:hover {
-  background: #2563eb;
-  color: #ffffff;
+  background: #f3f4f6;
+}
+
+/* Active Highlight Style */
+.menu-item.active {
+  background: #e5e5e5; /* The light gray background from your image */
+}
+
+.menu-item-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .icon {
-  font-size: 18px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
+.icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* =========================
+   Profile
+========================= */
+
 .profile {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  padding: 20px 24px; /* Proper padding for bottom section */
+  box-sizing: border-box;
+}
+
+.profile-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 20px;
+  min-width: 0; /* allows truncation */
 }
 
-.profile img {
-  width: 48px;
-  height: 48px;
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.profile h4 {
-  margin: 0;
-  font-size: 15px;
+.sidebar-profile-initial {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #111827;
+  color: #fff;
+  font-weight: bold;
 }
 
-.profile p {
+.profile-info {
+  min-width: 0;
+}
+
+.profile-info h4 {
+  margin: 0;
+  overflow: hidden;
+  color: #333333;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.profile-info p {
   margin: 2px 0 0;
-  font-size: 12px;
-  color: #6b7280;
+  overflow: hidden;
+  color: #888888;
+  font-size: 11px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-btn img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.7;
+}
+
+.logout-btn:hover img {
+  opacity: 1;
 }

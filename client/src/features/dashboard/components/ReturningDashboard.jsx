@@ -5,17 +5,22 @@ import UpcomingTasks from "./UpcomingTasks";
 import RecentActivity from "./RecentActivity";
 import RecommendedTasks from "./RecommendedTasks";
 
-import { returningUserData } from "../data/dashboardData";
 import "../styles/Dashboard.css";
 
-export default function ReturningDashboard() {
+export default function ReturningDashboard({
+  user,
+  stats,
+  upcomingTasks,
+  recentActivity,
+  recommendedTasks,
+}) {
   return (
     <div className="dashboard-container">
-      <TopNavbar />
+      <TopNavbar user={user} />
 
       <div className="dashboard-top">
         <div className="welcome-section">
-          <h1>Welcome, {returningUserData.userName}! 👋</h1>
+          <h1>Welcome, {user?.firstName || "User"}! 👋</h1>
           <p>Glad to have you here.</p>
         </div>
 
@@ -32,24 +37,36 @@ export default function ReturningDashboard() {
       </div>
 
       <div className="stats-grid">
-        {returningUserData.stats.map((item) => (
-          <StatCard
-            key={item.id}
-            title={item.title}
-            value={item.value}
-            icon={item.icon}
-          />
-        ))}
+        <StatCard
+          title="Tasks Posted"
+          value={stats?.totalTasks ?? 0}
+        />
+
+        <StatCard
+          title="Active Tasks"
+          value={stats?.activeTasks ?? 0}
+        />
+
+        <StatCard
+          title="In Progress"
+          value={stats?.inProgressTasks ?? 0}
+        />
+
+        <StatCard
+          title="Completed Tasks"
+          value={stats?.completedTasks ?? 0}
+        />
       </div>
 
       <QuickActions />
 
       <div className="dashboard-two-column">
-        <UpcomingTasks />
-        <RecentActivity />
+        <UpcomingTasks tasks={upcomingTasks || []} />
+
+        <RecentActivity activities={recentActivity || []} />
       </div>
 
-      <RecommendedTasks />
+      <RecommendedTasks tasks={recommendedTasks || []} />
     </div>
   );
 }

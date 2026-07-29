@@ -2,21 +2,20 @@ import TopNavbar from "./TopNavbar";
 import StatCard from "./StatCard";
 import QuickActions from "./QuickActions";
 
-import { newUserData } from "../data/dashboardData";
 
 import "../styles/Dashboard.css";
 
-export default function NewUserDashboard() {
+export default function NewUserDashboard({ user, stats }) {
   return (
     <div className="dashboard-container">
 
-      <TopNavbar />
+      <TopNavbar user={user} />
 
       {/* Welcome + Feed Card */}
       <div className="dashboard-top">
 
         <div className="welcome-section">
-          <h1>Welcome, {newUserData.userName}! 👋</h1>
+          <h1>Welcome, {user?.firstName || "User"}! 👋</h1>
           <p>Glad to have you here.</p>
         </div>
 
@@ -35,14 +34,26 @@ export default function NewUserDashboard() {
 
       {/* Statistics */}
       <div className="stats-grid">
-        {newUserData.stats.map((item) => (
-          <StatCard
-            key={item.id}
-            title={item.title}
-            value={item.value}
-          />
-        ))}
-      </div>
+  <StatCard
+    title="Tasks Posted"
+    value={stats?.totalTasks ?? 0}
+  />
+
+  <StatCard
+    title="Active Tasks"
+    value={stats?.activeTasks ?? 0}
+  />
+
+  <StatCard
+    title="In Progress"
+    value={stats?.inProgressTasks ?? 0}
+  />
+
+  <StatCard
+    title="Completed Tasks"
+    value={stats?.completedTasks ?? 0}
+  />
+</div>
 
       {/* Quick Actions */}
       <QuickActions />

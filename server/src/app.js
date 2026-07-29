@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
-
 import authRoutes from "./routes/auth.routes.js";
+import taskRoutes from "./routes/task.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
@@ -13,7 +14,6 @@ app.use(
 );
 
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
 
 // Health Check
@@ -26,6 +26,9 @@ app.get("/api/health", (req, res) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/uploads", express.static("src/uploads"));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
