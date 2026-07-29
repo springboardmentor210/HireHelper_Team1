@@ -23,7 +23,7 @@ import deliveryImage from "../../../assets/images/delivery.png";
 import gardeningImage from "../../../assets/images/gardening.png";
 import garageCleaningImage from "../../../assets/images/garagecleaning.png";
 import gardenCleaningImage from "../../../assets/images/gardencleaning.png";
-import hireHelperLogo from "../../../assets/images/hirehelper-logo.png";
+
 
 const tasks = [
   {
@@ -138,64 +138,76 @@ const tasks = [
 
 function Feed() {
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+const categories = [
+  "All",
+  "Moving",
+  "Gardening",
+  "Cleaning",
+  "Painting",
+  "Assembly",
+  "Pet Care",
+];
   const navigate = useNavigate();
 
-  const filteredTasks = tasks.filter((task) => {
-    const searchValue = search.toLowerCase();
+const filteredTasks = tasks.filter((task) => {
+  const searchValue = search.toLowerCase();
 
-    return (
-      task.title.toLowerCase().includes(searchValue) ||
-      task.category.toLowerCase().includes(searchValue) ||
-      task.location.toLowerCase().includes(searchValue)
-    );
-  });
+  const matchesSearch =
+    task.title.toLowerCase().includes(searchValue) ||
+    task.category.toLowerCase().includes(searchValue) ||
+    task.location.toLowerCase().includes(searchValue);
+
+  const matchesCategory =
+    selectedCategory === "All" ||
+    task.category === selectedCategory;
+
+  return matchesSearch && matchesCategory;
+});
 
   return (
     <div className="feed-layout">
       <aside className="feed-sidebar">
-        <div>
           <div className="brand">
-  <img
-    src={hireHelperLogo}
-    alt="Hire-a-Helper"
-    className="brand-logo"
-  />
-
   <h2>Hire-a-Helper</h2>
 </div>
 
-          <nav className="sidebar-nav">
-            <a className="nav-item active">
-              <Home size={20} />
-              Feed
-            </a>
+          <<nav className="sidebar-nav">
+  <button className="nav-item active" type="button">
+    <Home size={20} />
+    Feed
+  </button>
 
-            <a className="nav-item">
-              <ClipboardList size={20} />
-              My Tasks
-            </a>
+  <button className="nav-item" type="button">
+    <ClipboardList size={20} />
+    My Tasks
+  </button>
 
-            <a className="nav-item">
-              <Inbox size={20} />
-              Requests
-            </a>
+  <button className="nav-item" type="button">
+    <Inbox size={20} />
+    Requests
+  </button>
 
-            <a className="nav-item">
-              <Inbox size={20} />
-              My Requests
-            </a>
+  <button className="nav-item" type="button">
+    <Inbox size={20} />
+    My Requests
+  </button>
 
-            <a className="nav-item">
-              <Plus size={22} />
-              Add Task
-            </a>
+  <button className="nav-item" type="button">
+    <Plus size={20} />
+    Add Task
+  </button>
 
-            <a className="nav-item">
-              <Settings size={20} />
-              Settings
-            </a>
-          </nav>
-        </div>
+  <button
+    className="nav-item"
+    type="button"
+    onClick={() => navigate("/settings")}
+  >
+    <Settings size={20} />
+    Settings
+  </button>
+</nav>
 
         <div className="sidebar-profile">
   <div className="profile-avatar"></div>
@@ -240,6 +252,42 @@ function Feed() {
             </div>
           </div>
         </header>
+
+        <div className="category-bar">
+  {categories.map((category) => (
+    <button
+      key={category}
+      className={
+        selectedCategory === category
+          ? "category-btn active-category"
+          : "category-btn"
+      }
+      onClick={() => setSelectedCategory(category)}
+    >
+      {category}
+    </button>
+  ))}
+
+  <button className="category-btn">More ▼</button>
+</div>
+
+<div className="filter-bar">
+  <select>
+    <option>Sort</option>
+  </select>
+
+  <select>
+    <option>Distance</option>
+  </select>
+
+  <select>
+    <option>Price</option>
+  </select>
+
+  <button className="filter-btn">
+    Filter
+  </button>
+</div>
 
         <section className="feed-content">
           <div className="task-grid">
