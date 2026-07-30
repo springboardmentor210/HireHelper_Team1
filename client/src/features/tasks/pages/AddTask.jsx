@@ -11,14 +11,15 @@ import {
 } from "react-icons/fi";
 
 const categories = [
-  "Cleaning",
-  "Moving",
-  "Gardening",
-  "Painting",
-  "Pet Care",
-  "Home Repair",
-  "Delivery",
-  "Other",
+  { label: "Moving", value: "moving" },
+  { label: "Gardening", value: "gardening" },
+  { label: "Cleaning", value: "cleaning" },
+  { label: "Painting", value: "painting" },
+  { label: "Assembly", value: "assembly" },
+  { label: "Pet Care", value: "pet_care" },
+  { label: "Tech Help", value: "tech_help" },
+  { label: "Car Care", value: "car_care" },
+  { label: "Other", value: "other" },
 ];
 
 export default function AddTask() {
@@ -302,8 +303,8 @@ export default function AddTask() {
                 >
                   <option value="">Select a category</option>
                   {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
+                    <option key={category.value} value={category.value}>
+                      {category.label}
                     </option>
                   ))}
                 </select>
