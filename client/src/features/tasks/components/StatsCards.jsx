@@ -1,27 +1,73 @@
 import React from "react";
-import { CheckCircle2, Clock, TrendingUp, Users, IndianRupee } from "lucide-react";
+import { Power, RefreshCw, ShieldCheck, Users, Banknote } from "lucide-react";
 
 export default function StatsCards({ stats }) {
-  const cards = [
-    { key: "active", label: "Active", value: stats.active, sub: "+2 this week", icon: <CheckCircle2 size={22} color="#16a34a" />, tone: "green" },
-    { key: "inProgress", label: "In Progress", value: stats.inProgress, sub: "Tasks active", icon: <Clock size={22} color="#f59e0b" />, tone: "amber" },
-    { key: "completed", label: "Completed", value: stats.completed, sub: "+8 this month", icon: <TrendingUp size={22} color="#3b82f6" />, tone: "blue" },
-    { key: "applicants", label: "Total Applicants", value: stats.totalApplicants, sub: "+5 this week", icon: <Users size={22} color="#a855f7" />, tone: "purple" },
-    { key: "earnings", label: "Total Earnings", value: `₹${stats.totalEarnings.toLocaleString()}`, sub: "+₹450 this month", icon: <IndianRupee size={22} color="#059669" />, tone: "emerald" },
-  ];
+  const activeCount = stats?.active ?? 12;
+  const inProgressCount = stats?.inProgress ?? 5;
+  const completedCount = stats?.completed ?? 84;
+  const totalApplicantsCount = stats?.totalApplicants ?? 23;
+  const totalEarningsCount = stats?.totalEarnings ?? 2340;
 
   return (
-    <div className="stats-grid">
-      {cards.map((c) => (
-        <div key={c.key} className={`stat-card tone-${c.tone}`}>
-          <div className="stat-icon">{c.icon}</div>
-          <div className="stat-body">
-            <div className="stat-label">{c.label}</div>
-            <div className="stat-value">{c.value}</div>
-            <div className="stat-sub">{c.sub}</div>
-          </div>
+    <div className="stats-cards-grid">
+      {/* Active Card */}
+      <div className="stat-card">
+        <div className="stat-icon-wrapper active">
+          <Power size={20} className="stat-icon" />
         </div>
-      ))}
+        <div className="stat-content">
+          <span className="stat-label">Active</span>
+          <h3 className="stat-value">{activeCount}</h3>
+          <span className="stat-trend active">+2 this week</span>
+        </div>
+      </div>
+
+      {/* In Progress Card */}
+      <div className="stat-card">
+        <div className="stat-icon-wrapper in-progress">
+          <RefreshCw size={20} className="stat-icon" />
+        </div>
+        <div className="stat-content">
+          <span className="stat-label">In Progress</span>
+          <h3 className="stat-value">{inProgressCount}</h3>
+          <span className="stat-trend in-progress">+1 this week</span>
+        </div>
+      </div>
+
+      {/* Completed Card */}
+      <div className="stat-card">
+        <div className="stat-icon-wrapper completed">
+          <ShieldCheck size={20} className="stat-icon" />
+        </div>
+        <div className="stat-content">
+          <span className="stat-label">Completed</span>
+          <h3 className="stat-value">{completedCount}</h3>
+          <span className="stat-trend completed">+8 this week</span>
+        </div>
+      </div>
+
+      {/* Total Applicants Card */}
+      <div className="stat-card">
+        <div className="stat-icon-wrapper applicants">
+          <Users size={20} className="stat-icon" />
+        </div>
+        <div className="stat-content">
+          <span className="stat-label">Total Applicants</span>
+          <h3 className="stat-value">{totalApplicantsCount}</h3>
+          <span className="stat-trend applicants">+15 this week</span>
+        </div>
+      </div>
+
+      {/* Total Earnings Card */}
+      <div className="stat-card">
+        <div className="stat-icon-wrapper earnings">
+          <Banknote size={20} className="stat-icon" />
+        </div>
+        <div className="stat-content">
+          <span className="stat-label">Total Earnings</span>
+          <h3 className="stat-value">₹{totalEarningsCount.toLocaleString()}</h3>
+        </div>
+      </div>
     </div>
   );
 }

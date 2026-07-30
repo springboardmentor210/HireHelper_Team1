@@ -1,36 +1,79 @@
-import React, { useEffect, useRef, useState } from "react";
-import { MoreVertical, Edit, Copy, Trash2, Share2, Archive } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { MoreVertical, Copy, Bookmark, Trash2, Eye, Users } from "lucide-react";
 
-export default function TaskMenu({ onEdit, onDuplicate, onDelete, onShare, onArchive }) {
+export default function TaskMenu({ task, onViewApplicants, onViewDetails, onDuplicate, onBookmark, onDelete }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const menuRef = useRef(null);
 
   useEffect(() => {
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const items = [
-    { icon: <Edit size={14} />, label: "Edit Task", onClick: onEdit },
-    { icon: <Copy size={14} />, label: "Duplicate Task", onClick: onDuplicate },
-    { icon: <Trash2 size={14} />, label: "Delete Task", onClick: onDelete, danger: true },
-    { icon: <Share2 size={14} />, label: "Share Task", onClick: onShare },
-    { icon: <Archive size={14} />, label: "Archive Task", onClick: onArchive },
-  ];
-
   return (
-    <div className="task-menu" ref={ref}>
-      <button className="task-menu-trigger" onClick={() => setOpen((v) => !v)} aria-label="Task options">
-        <MoreVertical size={16} />
+    <div className="task-menu-container" ref={menuRef}>
+      <button
+        type="button"
+        className="menu-trigger-btn"
+        onClick={() => setOpen(!open)}
+        aria-label="Task Options"
+      >
+        <MoreVertical size={18} />
       </button>
+
       {open && (
-        <div className="task-menu-dropdown">
-          {items.map((it, i) => (
-            <button key={i} className={`menu-item ${it.danger ? "danger" : ""}`} onClick={() => { setOpen(false); it.onClick?.(); }}>
-              {it.icon} <span>{it.label}</span>
-            </button>
-          ))}
+        <div className="task-dropdown-menu">
+          <button
+            type="button"
+            className="menu-item-btn"
+            onClick={() => { setOpen(false); onViewApplicants(task); }}
+          >
+            <Users size={16} />
+            <span>View Applicants ({task.applicants || 0})</span>
+          </button>
+
+          <button
+            type="button"
+            className="menu-item-btn"
+            onClick={() => { setOpen(false); onViewDetails(task); }}
+          >
+            <Eye size={16} />
+            <span>View Details</span>
+          </button>
+
+          <button
+            type="button"
+            className="menu-item-btn"
+            onClick={() => { setOpen(false); onBookmark(task.id); }}
+          >
+            <Bookmark size={16} />
+            <span>{task.isBookmarked ? "Remove Bookmark" : "Bookmark Task"}</span>
+          </button>
+
+          <button
+            type="button"
+            className="menu-item-btn"
+            onClick={() => { setOpen(false); onDuplicate(task.id); }}
+          >
+            <Copy size={16} />
+            <span>Duplicate Task</span>
+          </button>
+
+          <div className="menu-divider" />
+
+          <button
+            type="button"
+            className="menu-item-btn danger"
+            onClick={() => { setOpen(false); onDelete(task.id); }}
+          >
+            <Trash2 size={16} />
+            <span>Delete Task</span>
+          </button>
         </div>
       )}
     </div>

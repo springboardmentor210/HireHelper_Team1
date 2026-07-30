@@ -1,15 +1,30 @@
 import React from "react";
-import { SlidersHorizontal, LayoutGrid, Folder, ArrowUpDown } from "lucide-react";
+import { SlidersHorizontal, Grid, Folder, ArrowUpDown } from "lucide-react";
 
-export default function FilterBar({ filters, onChange }) {
-  const update = (key, val) => onChange({ ...filters, [key]: val });
+export default function FilterBar({ filters, onChange, categories = [] }) {
+  const handleStatusChange = (e) => {
+    onChange({ ...filters, status: e.target.value });
+  };
+
+  const handleCategoryChange = (e) => {
+    onChange({ ...filters, category: e.target.value });
+  };
+
+  const handleSortChange = (e) => {
+    onChange({ ...filters, sort: e.target.value });
+  };
 
   return (
-    <div className="filter-bar">
-      <div className="filter-group">
-        <div className="filter-select">
-          <LayoutGrid size={14} />
-          <select value={filters.status} onChange={(e) => update("status", e.target.value)}>
+    <div className="filter-bar-container">
+      <div className="filter-controls-left">
+        {/* Status Dropdown */}
+        <div className="select-wrapper">
+          <Grid size={16} className="select-icon" />
+          <select
+            value={filters.status}
+            onChange={handleStatusChange}
+            className="filter-select"
+          >
             <option value="all">All Status</option>
             <option value="Active">Active</option>
             <option value="In Progress">In Progress</option>
@@ -18,30 +33,48 @@ export default function FilterBar({ filters, onChange }) {
           </select>
         </div>
 
-        <div className="filter-select">
-          <Folder size={14} />
-          <select value={filters.category} onChange={(e) => update("category", e.target.value)}>
+        {/* Category Dropdown */}
+        <div className="select-wrapper">
+          <Folder size={16} className="select-icon" />
+          <select
+            value={filters.category}
+            onChange={handleCategoryChange}
+            className="filter-select"
+          >
             <option value="all">All Categories</option>
             <option value="Tech">Tech</option>
             <option value="Car Care">Car Care</option>
-             <option value="Gardening">Gardening</option>
+            <option value="Gardening">Gardening</option>
             <option value="Assembly">Assembly</option>
+            <option value="Cleaning">Cleaning</option>
+            <option value="Moving">Moving</option>
+            <option value="Painting">Painting</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
           </select>
         </div>
 
-        <div className="filter-select">
-          <ArrowUpDown size={14} />
-          <select value={filters.sort} onChange={(e) => update("sort", e.target.value)}>
+        {/* Sort Dropdown */}
+        <div className="select-wrapper">
+          <ArrowUpDown size={16} className="select-icon" />
+          <select
+            value={filters.sort}
+            onChange={handleSortChange}
+            className="filter-select"
+          >
             <option value="newest">Sort: Newest</option>
             <option value="oldest">Sort: Oldest</option>
-            <option value="budget-high">Budget: High → Low</option>
-            <option value="budget-low">Budget: Low → High</option>
+            <option value="budget-high">Budget: High to Low</option>
+            <option value="budget-low">Budget: Low to High</option>
           </select>
         </div>
       </div>
 
-      <button className="filter-btn" type="button">
-        <SlidersHorizontal size={14} /> Filter
+      {/* Filter Button */}
+      <button className="filter-btn">
+        <SlidersHorizontal size={16} />
+        <span>Filter</span>
       </button>
     </div>
   );

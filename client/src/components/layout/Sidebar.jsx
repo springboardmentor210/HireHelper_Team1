@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   ClipboardList,
@@ -8,53 +8,51 @@ import {
   Plus,
   Settings,
   LogOut,
-} from 'lucide-react';
+  FolderKanban,
+} from "lucide-react";
+import "../../styles/Sidebar.css";
 
-const Sidebar = () => {
+export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-
   const currentPath = location.pathname;
 
+  const getStoredUser = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const user = getStoredUser();
+
   const isActive = (path) => {
-    if (path === '/my-tasks' && (currentPath === '/my-tasks' || currentPath.startsWith('/tasks'))) {
+    if (path === "/mytasks" && (currentPath === "/mytasks" || currentPath === "/tasks" || currentPath.startsWith("/tasks/"))) {
+      return true;
+    }
+    if (path === "/addtasks" && (currentPath === "/addtasks" || currentPath === "/add-task")) {
       return true;
     }
     return currentPath === path;
   };
 
   const navItems = [
-    { label: 'Feed', path: '/feed', icon: Home },
-    { label: 'My Tasks', path: '/my-tasks', icon: ClipboardList },
-    { label: 'Requests', path: '/requests', icon: Inbox },
-    { label: 'My Requests', path: '/my-requests', icon: Inbox },
-    { label: 'Saved', path: '/saved', icon: Bookmark },
-    { label: 'Add Task', path: '/add-task', icon: Plus },
-    { label: 'Settings', path: '/settings', icon: Settings },
+    { label: "Feed", path: "/feed", icon: Home },
+    { label: "My Tasks", path: "/mytasks", icon: ClipboardList },
+    { label: "Requests", path: "/requests", icon: Inbox },
+    { label: "My Requests", path: "/myrequests", icon: FolderKanban },
+    { label: "Saved", path: "/saved", icon: Bookmark },
+    { label: "Add Task", path: "/addtasks", icon: Plus },
+    { label: "Settings", path: "/settings", icon: Settings },
   ];
 
   return (
     <aside className="feed-sidebar">
-      <div>
-        <div className="brand">
-          <div
-            className="brand-logo"
-            style={{
-              width: 32,
-              height: 32,
-              backgroundColor: '#0056b3',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff',
-              fontWeight: 'bold',
-              fontSize: '14px',
-            }}
-          >
-            H
-          </div>
-          <h2>Hire-a-Helper</h2>
+      <div className="sidebar-top">
+        <div className="brand" onClick={() => navigate("/dashboard")} style={{ cursor: "pointer" }}>
+          <h2 className="brand-title">Hire-a-Helper</h2>
         </div>
 
         <nav className="sidebar-nav">
@@ -65,10 +63,10 @@ const Sidebar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`nav-item ${active ? 'active' : ''}`}
+                className={`nav-item ${active ? "active" : ""}`}
               >
-                <Icon size={20} />
-                <span>{item.label}</span>
+                <Icon className="nav-icon" size={20} />
+                <span className="nav-label">{item.label}</span>
               </Link>
             );
           })}
@@ -76,30 +74,38 @@ const Sidebar = () => {
       </div>
 
       <div className="sidebar-profile">
-        <div className="profile-avatar">
-          <img
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100"
-            alt="Jon Doe"
-            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
-          />
-        </div>
+        <div className="profile-left">
+          <div className="profile-avatar">
+            {user?.profilePicture ? (
+              <img
+                src={user.profilePicture}
+                alt={user.firstName || "User"}
+              />
+            ) : (
+              <img
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100"
+                alt="Jon Doe"
+              />
+            )}
+          </div>
 
-        <div className="profile-info">
-          <span>Jon Doe</span>
-          <small>test@gmail.com</small>
+          <div className="profile-info">
+            <h4 className="profile-name">
+              {user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "Jon Doe"}
+            </h4>
+            <p className="profile-email">{user?.email || "test@gmail.com"}</p>
+          </div>
         </div>
 
         <button
           type="button"
           className="logout-btn"
           title="Logout"
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/login")}
         >
           <LogOut size={18} />
         </button>
       </div>
     </aside>
   );
-};
-
-export default Sidebar;
+}

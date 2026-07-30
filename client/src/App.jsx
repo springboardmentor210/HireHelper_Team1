@@ -1,55 +1,61 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-// Tasks pages
+// Feature Pages
 import MyTasks from "./features/tasks/pages/MyTasks";
 import AddTask from "./features/tasks/pages/AddTask";
+import Home from "./features/auth/pages/Home";
+import Login from "./features/auth/pages/Login";
+import VerifyOTP from "./features/auth/pages/VerifyOTP";
+import Register from "./features/auth/pages/Register";
+import ForgotPassword from "./features/auth/pages/ForgotPassword";
+import ResetPassword from "./features/auth/pages/ResetPassword";
+import Settings from "./features/settings/pages/Settings";
+import Dashboard from "./features/dashboard/pages/Dashboard";
 
 function App() {
   return (
     <Routes>
-      {/* Default route -> redirect to /tasks */}
-      <Route path="/" element={<Navigate to="/tasks" replace />} />
+      {/* Root redirect to /mytasks */}
+      <Route path="/" element={<Navigate to="/mytasks" replace />} />
 
-      {/* Tasks routes */}
+      {/* Task Routes */}
+      <Route path="/mytasks" element={<MyTasks />} />
       <Route path="/tasks" element={<MyTasks />} />
-      <Route path="/tasks/add" element={<AddTask />} />
       <Route path="/tasks/:taskId" element={<MyTasks />} />
       <Route path="/tasks/:taskId/applicants" element={<MyTasks />} />
-      <Route path="/tasks/:taskId/edit" element={<AddTask />} />
+      
+      {/* Add Task Routes */}
+      <Route path="/addtasks" element={<AddTask />} />
+      <Route path="/add-task" element={<AddTask />} />
+      <Route path="/tasks/add" element={<AddTask />} />
 
-      {/* Placeholder routes for other pages */}
-      <Route
-        path="/notifications"
-        element={<div style={{ padding: 40, fontSize: 24 }}>Notifications Page</div>}
-      />
-      <Route
-      path="/requests"
-        element={<div style={{ padding: 40, fontSize: 24 }}>Requests Page</div>}
-      />
-      <Route
-        path="/feed"
-        element={<div style={{ padding: 40, fontSize: 24 }}>Feed Page</div>}
-      />
-      <Route
-        path="/dashboard"
-        element={<div style={{ padding: 40, fontSize: 24 }}>Dashboard Page</div>}
-      />
-      <Route
-        path="/settings"
-        element={<div style={{ padding: 40, fontSize: 24 }}>Settings Page</div>}
-      />
-      <Route
-        path="/saved"
-        element={<div style={{ padding: 40, fontSize: 24 }}>Saved Page</div>}
-      />
+      {/* Auth Routes */}
+      <Route path="/home" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="/verify-otp" element={<VerifyOTP />} />
 
-      {/* 404 catch-all */}
+      {/* Other Feature Routes */}
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/settings" element={<Settings />} />
+
+      {/* Placeholder Routes */}
+      <Route path="/feed" element={<MyTasks />} />
+      <Route path="/requests" element={<MyTasks />} />
+      <Route path="/myrequests" element={<MyTasks />} />
+      <Route path="/saved" element={<MyTasks />} />
+      <Route path="/notifications" element={<MyTasks />} />
+
+      {/* 404 Catch-all */}
       <Route
         path="*"
-        element={<div style={{ padding: 40, fontSize: 24 }}>404 - Page Not Found</div>}
+        element={<Navigate to="/mytasks" replace />}
       />
     </Routes>
   );
 }
+
 export default App;
