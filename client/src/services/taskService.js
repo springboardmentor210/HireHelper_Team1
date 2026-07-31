@@ -1,4 +1,7 @@
-import api from "../config/api";
+import img1 from "../assets/images/img-1.jpg";
+import img2 from "../assets/images/img-2.jpg";
+import img3 from "../assets/images/img-3.jpg";
+import img6 from "../assets/images/img-6.jpg";
 
 const USE_MOCK = true; // Set to false when backend API is available
 
@@ -10,10 +13,10 @@ const INITIAL_MOCK_TASKS = [
     category: "Tech",
     status: "Active",
     budget: 1200,
-    date: "Jul 6, 2026",
+    date: "Jul 6, 2028",
     time: "3:00 PM - 6:00 PM",
     location: "Downtown Seattle, WA",
-    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&q=80",
+    image: img1,
     applicants: 5,
     isBookmarked: false,
     earnings: 0,
@@ -30,12 +33,12 @@ const INITIAL_MOCK_TASKS = [
     category: "Car Care",
     status: "In Progress",
     budget: 800,
-    date: "Jul 9, 2026",
+    date: "Jul 9, 2028",
     time: "10:00 AM - 12:00 PM",
     location: "Bellevue, WA",
-    image: "https://images.unsplash.com/photo-1605164599901-db7f68c4b0f8?w=800&q=80",
-    applicants: 3,
-    isBookmarked: false,
+    image: img2,
+    applicants: 5,
+    isBookmarked: true,
     earnings: 0,
     applicantList: [
       { id: "a4", name: "Michael Scott", rating: 4.9, avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80", offer: "₹800" },
@@ -49,11 +52,11 @@ const INITIAL_MOCK_TASKS = [
     category: "Gardening",
     status: "Scheduled",
     budget: 500,
-    date: "Jul 12, 2026",
+    date: "Jul 12, 2028",
     time: "9:00 AM - 1:00 PM",
     location: "Redmond, WA",
-    image: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=800&q=80",
-    applicants: 6,
+    image: img6,
+    applicants: 8,
     isBookmarked: false,
     earnings: 0,
     applicantList: [
@@ -70,8 +73,8 @@ const INITIAL_MOCK_TASKS = [
     date: "June 28, 2026",
     time: "2:00 PM - 4:00 PM",
     location: "Seattle, WA",
-    image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=80",
-    applicants: 4,
+    image: img3,
+    applicants: 8,
     isBookmarked: false,
     earnings: 800,
     applicantList: [

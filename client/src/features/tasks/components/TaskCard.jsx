@@ -3,10 +3,9 @@ import { Heart } from "lucide-react";
 import TaskMenu from "./TaskMenu";
 
 const defaultAvatars = [
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80",
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80",
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
 ];
 
 export default function TaskCard({
@@ -36,6 +35,14 @@ export default function TaskCard({
     ? `₹${task.budget.toLocaleString()}`
     : task.budget?.startsWith("₹") ? task.budget : `₹${task.budget || 500}`;
 
+  const stackBadge = task.title === "Furniture Assembly"
+    ? "+3"
+    : task.title === "Garden Cleanup"
+    ? "+7"
+    : "+4";
+
+  const applicantCountLabel = `+${task.applicants || 5} Applicants`;
+
   return (
     <div className="task-card-item">
       {/* Image Header with Status Overlay & Heart Icon */}
@@ -52,7 +59,7 @@ export default function TaskCard({
           onClick={() => onBookmark(task.id)}
           aria-label="Bookmark"
         >
-          <Heart size={16} fill={task.isBookmarked ? "#ef4444" : "none"} color={task.isBookmarked ? "#ef4444" : "#6b7280"} />
+          <Heart size={16} fill={task.isBookmarked ? "#ef4444" : "none"} color={task.isBookmarked ? "#ef4444" : "#64748b"} />
         </button>
       </div>
 
@@ -81,12 +88,12 @@ export default function TaskCard({
         <div className="card-footer-row">
           <div className="applicants-group">
             <div className="avatar-stack">
-              {defaultAvatars.slice(0, 3).map((img, i) => (
+              {defaultAvatars.map((img, i) => (
                 <img key={i} src={img} alt="Applicant" className="stack-avatar" />
               ))}
-              <span className="stack-more">+{task.applicants || 4}</span>
+              <span className="stack-more">{stackBadge}</span>
             </div>
-            <span className="applicants-count-label">+{task.applicants || 5} Applicants</span>
+            <span className="applicants-count-label">{applicantCountLabel}</span>
           </div>
 
           <div className="card-actions-right">
