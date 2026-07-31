@@ -4,6 +4,15 @@ import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
+const filesToImagePaths = (files = [], singleFile = null) => {
+  if (files && files.length > 0) {
+    return files.map((file) => `/uploads/tasks/${file.filename}`);
+  }
+  if (singleFile) {
+    return [`/uploads/tasks/${singleFile.filename}`];
+  }
+  return [];
+};
 // Create task
 export const createTask = asyncHandler(async (req, res) => {
   const {
@@ -48,7 +57,7 @@ export const createTask = asyncHandler(async (req, res) => {
     }
   }
 
-  const images = req.file ? [`/uploads/tasks/${req.file.filename}`] : [];
+  const images = filesToImagePaths(req.files, req.file);
 
   const task = await Task.create({
     title,
@@ -260,8 +269,8 @@ export const updateTask = asyncHandler(async (req, res) => {
       .json(new ApiError(400, `Category must be one of: ${TASK_CATEGORIES.join(", ")}`));
   }
 
-  if (req.file) {
-    task.images = [`/uploads/tasks/${req.file.filename}`];
+  if ((req.files && req.files.length > 0) || req.file) {
+    task.images = [...task.images, ...filesToImagePaths(req.files, req.file)];
   }
 
   await task.save();

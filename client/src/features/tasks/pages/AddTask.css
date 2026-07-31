@@ -95,7 +95,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: #fbd38d; /* Matches the yellow bell in the image */
+  color: #fbd38d;
   cursor: pointer;
 }
 
@@ -260,8 +260,6 @@
   row-gap: 0;
 }
 
-/* Hide default browser icons optionally and style them to look cohesive,
-   but keeping the default is fine if the icons align as in the image */
 .add-task-page input[type="date"]::-webkit-calendar-picker-indicator,
 .add-task-page input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
@@ -300,7 +298,7 @@
 .add-task-page .upload-icon {
   width: 32px;
   height: 32px;
-  color: #93c5fd; /* Soft blue color from the image */
+  color: #93c5fd;
   margin-bottom: 4px;
 }
 
@@ -310,7 +308,7 @@
 }
 
 .add-task-page .upload-link {
-  color: #3b82f6; /* Blue link text */
+  color: #3b82f6;
   font-weight: 500;
 }
 
@@ -455,4 +453,4 @@
   .add-task-page .post-task-button {
     width: 100%;
   }
-}
+}

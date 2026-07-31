@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/Sidebar.css";
 import feedIcon from "../../styles/sidebar-icons/feed.png";
@@ -12,6 +13,7 @@ import logoutIcon from "../../styles/sidebar-icons/logout.png";
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const currentPath = location.pathname;
 
   const getStoredUser = () => {
     try {
@@ -23,6 +25,16 @@ export default function Sidebar() {
   };
 
   const user = getStoredUser();
+
+  const isItemActive = (path) => {
+    if (path === "/mytasks" && (currentPath === "/mytasks" || currentPath === "/tasks" || currentPath.startsWith("/tasks/"))) {
+      return true;
+    }
+    if (path === "/addtasks" && (currentPath === "/addtasks" || currentPath === "/add-task")) {
+      return true;
+    }
+    return currentPath === path;
+  };
 
   const menuItems = [
     {
@@ -69,26 +81,28 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className="sidebar feed-sidebar">
       {/* Logo */}
       <button
         type="button"
         className="sidebar-logo"
         onClick={() => navigate("/dashboard")}
         aria-label="Go to dashboard"
+        style={{ background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
       >
-        <img src="/logo.png" alt="Hire-a-Helper" />
+        <img src="/logo.png" alt="Hire-a-Helper" onError={(e) => { e.target.style.display = 'none'; }} />
+        <h2 className="brand-title" style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: "#111827" }}>Hire-a-Helper</h2>
       </button>
 
       {/* Menu */}
-      <nav className="menu">
+      <nav className="menu sidebar-nav">
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const active = isItemActive(item.path);
 
           return (
             <button
               type="button"
-              className={`menu-item ${isActive ? "active" : ""} ${
+              className={`menu-item nav-item ${active ? "active" : ""} ${
                 !item.path ? "menu-item-disabled" : ""
               }`}
               key={item.label}
@@ -110,7 +124,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Logged-in User */}
-      <div className="profile">
+      <div className="profile sidebar-profile">
         <div className="profile-left">
           {user?.profilePicture ? (
             <img
@@ -119,26 +133,33 @@ export default function Sidebar() {
               className="profile-avatar"
             />
           ) : (
-            <div className="sidebar-profile-initial">
+            <div className="sidebar-profile-initial profile-avatar">
               {user?.firstName?.charAt(0)?.toUpperCase() || "U"}
             </div>
           )}
 
           <div className="profile-info">
-            <h4>
+            <h4 className="profile-name">
               {user
                 ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
                 : "Jon Doe"}
             </h4>
-            <p>{user?.email || "test@gmail.com"}</p>
+            <p className="profile-email">{user?.email || "test@gmail.com"}</p>
           </div>
         </div>
 
         {/* Logout Button */}
-        <button className="logout-btn" aria-label="Logout">
+        <button
+          type="button"
+          className="logout-btn"
+          aria-label="Logout"
+          title="Logout"
+          onClick={() => navigate("/login")}
+        >
           <img src={logoutIcon} alt="Logout" />
         </button>
       </div>
     </aside>
   );
 }
+

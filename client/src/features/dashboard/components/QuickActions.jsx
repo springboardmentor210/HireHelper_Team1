@@ -1,37 +1,36 @@
 import { useNavigate } from "react-router-dom";
-
 import {
-  FiPlusCircle,
-  FiSearch,
-  FiUserCheck,
-  FiClipboard,
-} from "react-icons/fi";
+  PlusCircle,
+  Search,
+  UserCheck,
+  Clipboard,
+} from "lucide-react";
 
 export default function QuickActions() {
   const navigate = useNavigate();
 
   const actions = [
-  {
-    title: "Post a Task",
-    icon: <FiPlusCircle />,
-    path: "/addtasks",
-  },
-  {
-    title: "Browse Feed",
-    icon: <FiSearch />,
-    path: null,
-  },
-  {
-    title: "Become a Helper",
-    icon: <FiUserCheck />,
-    path: null,
-  },
-  {
-    title: "My Tasks",
-    icon: <FiClipboard />,
-    path: null,
-  },
-];
+    {
+      title: "Post a Task",
+      icon: <PlusCircle size={20} />,
+      path: "/addtasks",
+    },
+    {
+      title: "Browse Feed",
+      icon: <Search size={20} />,
+      path: "/feed",
+    },
+    {
+      title: "Become a Helper",
+      icon: <UserCheck size={20} />,
+      path: null,
+    },
+    {
+      title: "My Tasks",
+      icon: <Clipboard size={20} />,
+      path: "/mytasks",
+    },
+  ];
 
   const handleAction = (path) => {
     if (path) {
@@ -64,3 +63,4 @@ export default function QuickActions() {
     </section>
   );
 }
+

@@ -1,20 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Sidebar from "../../../components/layout/Sidebar";
+import { useTasks } from "../../../context/TaskContext";
 
 import {
   Bell,
   Search,
-  Home,
-  ClipboardList,
-  Inbox,
-  Plus,
-  Settings,
-  LogOut,
   MapPin,
   Clock,
 } from "lucide-react";
 
 import "../styles/Feed.css";
+
 import movingImage from "../../../assets/images/moving.png";
 import paintingImage from "../../../assets/images/painting.png";
 import packingImage from "../../../assets/images/packing.png";
@@ -24,8 +21,7 @@ import gardeningImage from "../../../assets/images/gardening.png";
 import garageCleaningImage from "../../../assets/images/garagecleaning.png";
 import gardenCleaningImage from "../../../assets/images/gardencleaning.png";
 
-
-const tasks = [
+const defaultTasks = [
   {
     id: 1,
     category: "Moving",
@@ -139,93 +135,59 @@ const tasks = [
 function Feed() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-const categories = [
-  "All",
-  "Moving",
-  "Gardening",
-  "Cleaning",
-  "Painting",
-  "Assembly",
-  "Pet Care",
-];
   const navigate = useNavigate();
 
-const filteredTasks = tasks.filter((task) => {
-  const searchValue = search.toLowerCase();
+  let contextTasks = null;
+  let requestTaskHandler = null;
 
-  const matchesSearch =
-    task.title.toLowerCase().includes(searchValue) ||
-    task.category.toLowerCase().includes(searchValue) ||
-    task.location.toLowerCase().includes(searchValue);
+  try {
+    const taskContext = useTasks();
+    if (taskContext) {
+      contextTasks = taskContext.feedTasks;
+      requestTaskHandler = taskContext.requestTask;
+    }
+  } catch {
+    // TaskContext unavailable in some route contexts
+  }
 
-  const matchesCategory =
-    selectedCategory === "All" ||
-    task.category === selectedCategory;
+  const taskList = contextTasks && contextTasks.length > 0 ? contextTasks : defaultTasks;
 
-  return matchesSearch && matchesCategory;
-});
+  const categories = [
+    "All",
+    "Moving",
+    "Gardening",
+    "Cleaning",
+    "Painting",
+    "Assembly",
+    "Pet Care",
+  ];
+
+  const filteredTasks = taskList.filter((task) => {
+    const searchValue = search.toLowerCase();
+
+    const matchesSearch =
+      (task.title && task.title.toLowerCase().includes(searchValue)) ||
+      (task.category && task.category.toLowerCase().includes(searchValue)) ||
+      (task.location && task.location.toLowerCase().includes(searchValue));
+
+    const matchesCategory =
+      selectedCategory === "All" ||
+      (task.category && task.category.toLowerCase() === selectedCategory.toLowerCase());
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleRequest = (task) => {
+    if (requestTaskHandler) {
+      requestTaskHandler(task);
+    } else {
+      alert(`Request sent for: ${task.title}`);
+    }
+  };
 
   return (
     <div className="feed-layout">
-      <aside className="feed-sidebar">
-          <div className="brand">
-  <h2>Hire-a-Helper</h2>
-</div>
-
-          <<nav className="sidebar-nav">
-  <button className="nav-item active" type="button">
-    <Home size={20} />
-    Feed
-  </button>
-
-  <button className="nav-item" type="button">
-    <ClipboardList size={20} />
-    My Tasks
-  </button>
-
-  <button className="nav-item" type="button">
-    <Inbox size={20} />
-    Requests
-  </button>
-
-  <button className="nav-item" type="button">
-    <Inbox size={20} />
-    My Requests
-  </button>
-
-  <button className="nav-item" type="button">
-    <Plus size={20} />
-    Add Task
-  </button>
-
-  <button
-    className="nav-item"
-    type="button"
-    onClick={() => navigate("/settings")}
-  >
-    <Settings size={20} />
-    Settings
-  </button>
-</nav>
-
-        <div className="sidebar-profile">
-  <div className="profile-avatar"></div>
-
-  <div className="profile-info">
-    <span>Jon Doe</span>
-    <small>test@gmail.com</small>
-  </div>
-
-  <button
-    type="button"
-    className="logout-btn"
-    onClick={() => navigate("/")}
-  >
-    <LogOut size={18} />
-  </button>
-</div>
-      </aside>
+      <Sidebar />
 
       <main className="feed-main">
         <header className="feed-header">
@@ -237,7 +199,6 @@ const filteredTasks = tasks.filter((task) => {
           <div className="header-actions">
             <div className="search-box">
               <Search size={18} />
-
               <input
                 type="text"
                 placeholder="Search tasks..."
@@ -254,56 +215,56 @@ const filteredTasks = tasks.filter((task) => {
         </header>
 
         <div className="category-bar">
-  {categories.map((category) => (
-    <button
-      key={category}
-      className={
-        selectedCategory === category
-          ? "category-btn active-category"
-          : "category-btn"
-      }
-      onClick={() => setSelectedCategory(category)}
-    >
-      {category}
-    </button>
-  ))}
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={
+                selectedCategory === category
+                  ? "category-btn active-category"
+                  : "category-btn"
+              }
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
 
-  <button className="category-btn">More ▼</button>
-</div>
+          <button className="category-btn">More ▼</button>
+        </div>
 
-<div className="filter-bar">
-  <select>
-    <option>Sort</option>
-  </select>
+        <div className="filter-bar">
+          <select>
+            <option>Sort</option>
+          </select>
 
-  <select>
-    <option>Distance</option>
-  </select>
+          <select>
+            <option>Distance</option>
+          </select>
 
-  <select>
-    <option>Price</option>
-  </select>
+          <select>
+            <option>Price</option>
+          </select>
 
-  <button className="filter-btn">
-    Filter
-  </button>
-</div>
+          <button className="filter-btn">
+            Filter
+          </button>
+        </div>
 
         <section className="feed-content">
           <div className="task-grid">
             {filteredTasks.map((task) => (
-              <article className="task-card" key={task.id}>
+              <article className="task-card" key={task.id || task._id}>
                 <div className="task-image-container">
                   <img
                     className="task-image"
-                    src={task.image}
+                    src={task.image || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80"}
                     alt={task.title}
                   />
                 </div>
 
                 <div className="task-body">
                   <span
-                    className={`category-badge ${task.category.toLowerCase()}`}
+                    className={`category-badge ${task.category ? task.category.toLowerCase() : ""}`}
                   >
                     {task.category}
                   </span>
@@ -323,20 +284,20 @@ const filteredTasks = tasks.filter((task) => {
                     <Clock size={14} />
 
                     <span>
-                      {task.date} • {task.time}
+                      {task.date || task.startDate} • {task.time || task.startTime}
                     </span>
                   </div>
 
                   <div className="task-footer">
                     <div className="task-user">
                       <div className="user-avatar"></div>
-
-                      <span>{task.user}</span>
+                      <span>{task.user || (task.postedBy ? `${task.postedBy.firstName || ''} ${task.postedBy.lastName || ''}` : "User")}</span>
                     </div>
 
                     <button
                       type="button"
                       className="request-button"
+                      onClick={() => handleRequest(task)}
                     >
                       Request
                     </button>
@@ -359,3 +320,4 @@ const filteredTasks = tasks.filter((task) => {
 }
 
 export default Feed;
+

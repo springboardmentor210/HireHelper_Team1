@@ -1,6 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
 import api from "../../../config/api";
+import { createTask } from "../../../services/taskService";
 import "./AddTask.css";
 import {
   FiSearch,
@@ -23,11 +25,13 @@ const categories = [
 ];
 
 export default function AddTask() {
+  const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
+    budget: "",
     startDate: "",
     startTime: "",
     endDate: "",
@@ -38,6 +42,7 @@ export default function AddTask() {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -80,15 +85,13 @@ export default function AddTask() {
       !formData.title.trim() ||
       !formData.description.trim() ||
       !formData.location.trim() ||
-      !formData.startDate ||
-      !formData.startTime ||
       !formData.category
     ) {
       setError("Please fill in all required fields.");
       return;
     }
 
-    // End date validation
+    // End date validation if provided
     if (
       formData.endDate &&
       formData.endDate < formData.startDate
@@ -108,42 +111,41 @@ export default function AddTask() {
     }
 
     setError("");
+    setLoading(true);
 
     try {
-      // FormData is required because we're sending an image
-      const taskData = new FormData();
+      if (typeof createTask === "function") {
+        await createTask({
+          ...formData,
+          image: imagePreview || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80"
+        });
+      } else {
+        const taskData = new FormData();
+        taskData.append("title", formData.title.trim());
+        taskData.append("description", formData.description.trim());
+        taskData.append("location", formData.location.trim());
+        if (formData.budget) taskData.append("budget", formData.budget);
+        if (formData.startDate) taskData.append("startDate", formData.startDate);
+        if (formData.startTime) taskData.append("startTime", formData.startTime);
+        taskData.append("category", formData.category);
 
-      taskData.append("title", formData.title.trim());
-      taskData.append("description", formData.description.trim());
-      taskData.append("location", formData.location.trim());
-      taskData.append("startDate", formData.startDate);
-      taskData.append("startTime", formData.startTime);
-      taskData.append("category", formData.category);
+        if (formData.endDate) taskData.append("endDate", formData.endDate);
+        if (formData.endTime) taskData.append("endTime", formData.endTime);
+        if (image) taskData.append("image", image);
 
-      if (formData.endDate) {
-        taskData.append("endDate", formData.endDate);
+        await api.post("/tasks", taskData);
       }
-
-      if (formData.endTime) {
-        taskData.append("endTime", formData.endTime);
-      }
-
-      if (image) {
-        taskData.append("image", image);
-      }
-
-      const response = await api.post("/tasks", taskData);
-
-      console.log("Task created successfully:", response.data);
 
       alert("Task created successfully!");
-    } catch (error) {
-      console.error("Task creation failed:", error);
-
+      navigate("/mytasks");
+    } catch (err) {
+      console.error("Task creation failed:", err);
       setError(
-        error.response?.data?.message ||
+        err.response?.data?.message ||
           "Failed to create task. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -216,13 +218,25 @@ export default function AddTask() {
                   value={formData.description}
                   onChange={handleChange}
                   maxLength={1000}
-                  placeholder="Describe what help you need any requirements, and what you'll provide."
+                  placeholder="Describe what help you need, any requirements, and what you'll provide."
                   autoComplete="off"
                   required
                 />
                 <span className="character-count">
                   {formData.description.length}/1000
                 </span>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="budget">Budget (₹ / $)</label>
+                <input
+                  id="budget"
+                  name="budget"
+                  type="number"
+                  value={formData.budget}
+                  onChange={handleChange}
+                  placeholder="e.g., 1200"
+                />
               </div>
 
               <div className="form-group">
@@ -234,7 +248,7 @@ export default function AddTask() {
                     type="text"
                     value={formData.location}
                     onChange={handleChange}
-                    placeholder="e.g., Downtown Seattle, WA or specific address"
+                    placeholder="e.g., Downtown Seattle, WA or Bellevue, WA"
                     autoComplete="street-address"
                     required
                   />
@@ -252,7 +266,6 @@ export default function AddTask() {
                     min={today}
                     value={formData.startDate}
                     onChange={handleChange}
-                    required
                   />
                 </div>
 
@@ -264,7 +277,6 @@ export default function AddTask() {
                     type="time"
                     value={formData.startTime}
                     onChange={handleChange}
-                    required
                   />
                 </div>
 
@@ -303,8 +315,8 @@ export default function AddTask() {
                 >
                   <option value="">Select a category</option>
                   {categories.map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
+                    <option key={typeof category === "object" ? category.value : category} value={typeof category === "object" ? category.value : category}>
+                      {typeof category === "object" ? category.label : category}
                     </option>
                   ))}
                 </select>
@@ -353,10 +365,14 @@ export default function AddTask() {
               </div>
 
               <div className="form-actions">
-                <button type="submit" className="post-task-button">
-                  Post Task
+                <button type="submit" className="post-task-button" disabled={loading}>
+                  {loading ? "Posting..." : "Post Task"}
                 </button>
-                <button type="button" className="cancel-task-button">
+                <button
+                  type="button"
+                  className="cancel-task-button"
+                  onClick={() => navigate("/mytasks")}
+                >
                   Cancel
                 </button>
               </div>
@@ -366,4 +382,4 @@ export default function AddTask() {
       </main>
     </div>
   );
-}
+}
