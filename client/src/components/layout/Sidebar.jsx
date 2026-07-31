@@ -1,20 +1,18 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  Home,
-  ClipboardList,
-  Inbox,
-  Bookmark,
-  Plus,
-  Settings,
-  LogOut,
-  FolderKanban,
-} from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/Sidebar.css";
+import feedIcon from "../../styles/sidebar-icons/feed.png";
+import myTaskIcon from "../../styles/sidebar-icons/mytask.png";
+import requestIcon from "../../styles/sidebar-icons/request.png";
+import myRequestIcon from "../../styles/sidebar-icons/myrequest.png";
+import savedIcon from "../../styles/sidebar-icons/saved.png";
+import addTaskIcon from "../../styles/sidebar-icons/addtask.png"; 
+import settingsIcon from "../../styles/sidebar-icons/settings.png";
+import logoutIcon from "../../styles/sidebar-icons/logout.png"; 
 
 export default function Sidebar() {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const currentPath = location.pathname;
 
   const getStoredUser = () => {
@@ -28,7 +26,7 @@ export default function Sidebar() {
 
   const user = getStoredUser();
 
-  const isActive = (path) => {
+  const isItemActive = (path) => {
     if (path === "/mytasks" && (currentPath === "/mytasks" || currentPath === "/tasks" || currentPath.startsWith("/tasks/"))) {
       return true;
     }
@@ -38,74 +36,130 @@ export default function Sidebar() {
     return currentPath === path;
   };
 
-  const navItems = [
-    { label: "Feed", path: "/feed", icon: Home },
-    { label: "My Tasks", path: "/mytasks", icon: ClipboardList },
-    { label: "Requests", path: "/requests", icon: Inbox },
-    { label: "My Requests", path: "/myrequests", icon: FolderKanban },
-    { label: "Saved", path: "/saved", icon: Bookmark },
-    { label: "Add Task", path: "/addtasks", icon: Plus },
-    { label: "Settings", path: "/settings", icon: Settings },
+  const menuItems = [
+    {
+      label: "Feed",
+      path: "/feed", 
+      iconSrc: feedIcon, 
+    },
+    {
+      label: "My Tasks",
+      path: "/mytasks",
+      iconSrc: myTaskIcon, 
+    },
+    {
+      label: "Requests",
+      path: "/requests",
+      iconSrc: requestIcon, 
+    },
+    {
+      label: "My Requests",
+      path: "/myrequests",
+      iconSrc: myRequestIcon, 
+    },
+    {
+      label: "Saved",
+      path: "/saved",
+      iconSrc: savedIcon, 
+    },
+    {
+      label: "Add Task",
+      path: "/addtasks",
+      iconSrc: addTaskIcon, 
+    },
+    {
+      label: "Settings",
+      path: "/settings",
+      iconSrc: settingsIcon, 
+    },
   ];
 
+  const handleNavigation = (path) => {
+    if (path) {
+      navigate(path);
+    }
+  };
+
   return (
-    <aside className="feed-sidebar">
-      <div className="sidebar-top">
-        <div className="brand" onClick={() => navigate("/dashboard")} style={{ cursor: "pointer" }}>
-          <h2 className="brand-title">Hire-a-Helper</h2>
-        </div>
+    <aside className="sidebar feed-sidebar">
+      {/* Logo */}
+      <button
+        type="button"
+        className="sidebar-logo"
+        onClick={() => navigate("/dashboard")}
+        aria-label="Go to dashboard"
+        style={{ background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+      >
+        <img src="/logo.png" alt="Hire-a-Helper" onError={(e) => { e.target.style.display = 'none'; }} />
+        <h2 className="brand-title" style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: "#111827" }}>Hire-a-Helper</h2>
+      </button>
 
-        <nav className="sidebar-nav">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`nav-item ${active ? "active" : ""}`}
-              >
-                <Icon className="nav-icon" size={20} />
-                <span className="nav-label">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+      {/* Menu */}
+      <nav className="menu sidebar-nav">
+        {menuItems.map((item) => {
+          const active = isItemActive(item.path);
 
-      <div className="sidebar-profile">
+          return (
+            <button
+              type="button"
+              className={`menu-item nav-item ${active ? "active" : ""} ${
+                !item.path ? "menu-item-disabled" : ""
+              }`}
+              key={item.label}
+              onClick={() => handleNavigation(item.path)}
+              disabled={!item.path}
+              title={
+                !item.path
+                  ? `${item.label} is not available yet`
+                  : item.label
+              }
+            >
+              <span className="icon">
+                <img src={item.iconSrc} alt={`${item.label} icon`} />
+              </span>
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Logged-in User */}
+      <div className="profile sidebar-profile">
         <div className="profile-left">
-          <div className="profile-avatar">
-            {user?.profilePicture ? (
-              <img
-                src={user.profilePicture}
-                alt={user.firstName || "User"}
-              />
-            ) : (
-              <img
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100"
-                alt="Jon Doe"
-              />
-            )}
-          </div>
+          {user?.profilePicture ? (
+            <img
+              src={user.profilePicture}
+              alt={`${user.firstName || "User"} profile`}
+              className="profile-avatar"
+            />
+          ) : (
+            <div className="sidebar-profile-initial profile-avatar">
+              {user?.firstName?.charAt(0)?.toUpperCase() || "U"}
+            </div>
+          )}
 
           <div className="profile-info">
             <h4 className="profile-name">
-              {user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "Jon Doe"}
+              {user
+                ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+                : "Jon Doe"}
             </h4>
             <p className="profile-email">{user?.email || "test@gmail.com"}</p>
           </div>
         </div>
 
+        {/* Logout Button */}
         <button
           type="button"
           className="logout-btn"
+          aria-label="Logout"
           title="Logout"
           onClick={() => navigate("/login")}
         >
-          <LogOut size={18} />
+          <img src={logoutIcon} alt="Logout" />
         </button>
       </div>
     </aside>
   );
 }
+

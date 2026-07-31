@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 // Feature Pages
 import MyTasks from "./features/tasks/pages/MyTasks";
 import AddTask from "./features/tasks/pages/AddTask";
+import Feed from "./features/feed/pages/Feed";
 import Home from "./features/auth/pages/Home";
 import Login from "./features/auth/pages/Login";
 import VerifyOTP from "./features/auth/pages/VerifyOTP";
@@ -42,8 +43,8 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/settings" element={<Settings />} />
 
-      {/* Placeholder Routes */}
-      <Route path="/feed" element={<MyTasks />} />
+      {/* Feed & Navigation Routes */}
+      <Route path="/feed" element={<Feed />} />
       <Route path="/requests" element={<MyTasks />} />
       <Route path="/myrequests" element={<MyTasks />} />
       <Route path="/saved" element={<MyTasks />} />

@@ -1,28 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
+import api from "../../../config/api";
 import { createTask } from "../../../services/taskService";
 import "./AddTask.css";
 import {
-  Search,
-  Bell,
-  MapPin,
-  X,
-  UploadCloud,
-} from "lucide-react";
+  FiSearch,
+  FiBell,
+  FiMapPin,
+  FiX,
+  FiUploadCloud,
+} from "react-icons/fi";
 
 const categories = [
-  "Tech",
-  "Car Care",
-  "Gardening",
-  "Assembly",
-  "Cleaning",
-  "Moving",
-  "Painting",
-  "Pet Care",
-  "Home Repair",
-  "Delivery",
-  "Other",
+  { label: "Moving", value: "moving" },
+  { label: "Gardening", value: "gardening" },
+  { label: "Cleaning", value: "cleaning" },
+  { label: "Painting", value: "painting" },
+  { label: "Assembly", value: "assembly" },
+  { label: "Pet Care", value: "pet_care" },
+  { label: "Tech Help", value: "tech_help" },
+  { label: "Car Care", value: "car_care" },
+  { label: "Other", value: "other" },
 ];
 
 export default function AddTask() {
@@ -81,6 +80,7 @@ export default function AddTask() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Required fields
     if (
       !formData.title.trim() ||
       !formData.description.trim() ||
@@ -91,30 +91,69 @@ export default function AddTask() {
       return;
     }
 
+    // End date validation if provided
+    if (
+      formData.endDate &&
+      formData.endDate < formData.startDate
+    ) {
+      setError("End date cannot be before the start date.");
+      return;
+    }
+
+    // Same date → end time must be later
+    if (
+      formData.endDate === formData.startDate &&
+      formData.endTime &&
+      formData.endTime <= formData.startTime
+    ) {
+      setError("End time must be later than the start time.");
+      return;
+    }
+
     setError("");
     setLoading(true);
 
     try {
-      await createTask({
-        ...formData,
-        image: imagePreview || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80"
-      });
+      if (typeof createTask === "function") {
+        await createTask({
+          ...formData,
+          image: imagePreview || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80"
+        });
+      } else {
+        const taskData = new FormData();
+        taskData.append("title", formData.title.trim());
+        taskData.append("description", formData.description.trim());
+        taskData.append("location", formData.location.trim());
+        if (formData.budget) taskData.append("budget", formData.budget);
+        if (formData.startDate) taskData.append("startDate", formData.startDate);
+        if (formData.startTime) taskData.append("startTime", formData.startTime);
+        taskData.append("category", formData.category);
+
+        if (formData.endDate) taskData.append("endDate", formData.endDate);
+        if (formData.endTime) taskData.append("endTime", formData.endTime);
+        if (image) taskData.append("image", image);
+
+        await api.post("/tasks", taskData);
+      }
 
       alert("Task created successfully!");
       navigate("/mytasks");
     } catch (err) {
       console.error("Task creation failed:", err);
-      setError("Failed to create task. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          "Failed to create task. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="add-task-page" style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9fafb" }}>
+    <div className="add-task-page">
       <Sidebar />
 
-      <main className="add-task-main" style={{ flex: 1, padding: "24px 32px" }}>
+      <main className="add-task-main">
         <header className="add-task-topbar">
           <div className="topbar-headings">
             <h1>Add Task</h1>
@@ -123,7 +162,7 @@ export default function AddTask() {
 
           <div className="add-task-top-actions">
             <div className="task-search">
-              <Search size={18} />
+              <FiSearch />
               <input
                 id="task-search"
                 name="taskSearch"
@@ -139,7 +178,7 @@ export default function AddTask() {
               className="notification-button"
               aria-label="Notifications"
             >
-              <Bell size={20} />
+              <FiBell />
               <span className="notification-dot">1</span>
             </button>
           </div>
@@ -162,7 +201,7 @@ export default function AddTask() {
                   value={formData.title}
                   onChange={handleChange}
                   maxLength={100}
-                  placeholder="e.g., Computer Setup, Garden Cleanup"
+                  placeholder="e.g., Help moving furniture"
                   autoComplete="off"
                   required
                 />
@@ -189,15 +228,14 @@ export default function AddTask() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="budget">Budget (₹)</label>
+                <label htmlFor="budget">Budget (₹ / $)</label>
                 <input
                   id="budget"
                   name="budget"
                   type="number"
                   value={formData.budget}
                   onChange={handleChange}
-                  placeholder="e.g. 1200"
-                  required
+                  placeholder="e.g., 1200"
                 />
               </div>
 
@@ -214,7 +252,7 @@ export default function AddTask() {
                     autoComplete="street-address"
                     required
                   />
-                  <MapPin className="input-icon" size={18} />
+                  <FiMapPin className="input-icon" />
                 </div>
               </div>
 
@@ -241,6 +279,29 @@ export default function AddTask() {
                     onChange={handleChange}
                   />
                 </div>
+
+                <div className="form-group">
+                  <label htmlFor="endDate">End Date (Optional)</label>
+                  <input
+                    id="endDate"
+                    name="endDate"
+                    type="date"
+                    min={formData.startDate || today}
+                    value={formData.endDate}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="endTime">End Time (Optional)</label>
+                  <input
+                    id="endTime"
+                    name="endTime"
+                    type="time"
+                    value={formData.endTime}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
 
               <div className="form-group">
@@ -254,8 +315,8 @@ export default function AddTask() {
                 >
                   <option value="">Select a category</option>
                   {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
+                    <option key={typeof category === "object" ? category.value : category} value={typeof category === "object" ? category.value : category}>
+                      {typeof category === "object" ? category.label : category}
                     </option>
                   ))}
                 </select>
@@ -277,12 +338,12 @@ export default function AddTask() {
                         onClick={removeImage}
                         aria-label="Remove image"
                       >
-                        <X size={18} />
+                        <FiX />
                       </button>
                     </div>
                   ) : (
                     <label className="upload-placeholder" htmlFor="taskImage">
-                      <UploadCloud className="upload-icon" size={32} />
+                      <FiUploadCloud className="upload-icon" />
                       <div className="upload-text">
                         <span className="upload-link">Upload a file</span> or drag and drop
                       </div>
@@ -321,4 +382,4 @@ export default function AddTask() {
       </main>
     </div>
   );
-}
+}
