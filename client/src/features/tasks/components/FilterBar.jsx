@@ -1,5 +1,5 @@
 import React from "react";
-import { SlidersHorizontal, Grid, Folder, ArrowUpDown } from "lucide-react";
+import { Filter, Grid, Folder, ArrowUpDown } from "lucide-react";
 
 export default function FilterBar({ filters, onChange, categories = [] }) {
   const handleStatusChange = (e) => {
@@ -73,7 +73,7 @@ export default function FilterBar({ filters, onChange, categories = [] }) {
 
       {/* Filter Button */}
       <button className="filter-btn">
-        <SlidersHorizontal size={16} />
+        <Filter size={16} />
         <span>Filter</span>
       </button>
     </div>

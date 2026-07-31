@@ -1,14 +1,16 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Home,
+  ClipboardList,
+  UserCheck,
+  RotateCcw,
+  Bookmark,
+  Plus,
+  Settings,
+  LogOut
+} from "lucide-react";
 import "../../styles/Sidebar.css";
-import feedIcon from "../../styles/sidebar-icons/feed.png";
-import myTaskIcon from "../../styles/sidebar-icons/mytask.png";
-import requestIcon from "../../styles/sidebar-icons/request.png";
-import myRequestIcon from "../../styles/sidebar-icons/myrequest.png";
-import savedIcon from "../../styles/sidebar-icons/saved.png";
-import addTaskIcon from "../../styles/sidebar-icons/addtask.png"; 
-import settingsIcon from "../../styles/sidebar-icons/settings.png";
-import logoutIcon from "../../styles/sidebar-icons/logout.png"; 
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -37,41 +39,13 @@ export default function Sidebar() {
   };
 
   const menuItems = [
-    {
-      label: "Feed",
-      path: "/feed", 
-      iconSrc: feedIcon, 
-    },
-    {
-      label: "My Tasks",
-      path: "/mytasks",
-      iconSrc: myTaskIcon, 
-    },
-    {
-      label: "Requests",
-      path: "/requests",
-      iconSrc: requestIcon, 
-    },
-    {
-      label: "My Requests",
-      path: "/myrequests",
-      iconSrc: myRequestIcon, 
-    },
-    {
-      label: "Saved",
-      path: "/saved",
-      iconSrc: savedIcon, 
-    },
-    {
-      label: "Add Task",
-      path: "/addtasks",
-      iconSrc: addTaskIcon, 
-    },
-    {
-      label: "Settings",
-      path: "/settings",
-      iconSrc: settingsIcon, 
-    },
+    { label: "Feed", path: "/feed", Icon: Home },
+    { label: "My Tasks", path: "/mytasks", Icon: ClipboardList },
+    { label: "Requests", path: "/requests", Icon: UserCheck },
+    { label: "My Requests", path: "/myrequests", Icon: RotateCcw },
+    { label: "Saved", path: "/saved", Icon: Bookmark },
+    { label: "Add Task", path: "/addtasks", Icon: Plus },
+    { label: "Settings", path: "/settings", Icon: Settings },
   ];
 
   const handleNavigation = (path) => {
@@ -82,48 +56,38 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar feed-sidebar">
-      {/* Logo */}
+      {/* Brand Header */}
       <button
         type="button"
-        className="sidebar-logo"
+        className="sidebar-logo-header"
         onClick={() => navigate("/dashboard")}
         aria-label="Go to dashboard"
-        style={{ background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
       >
-        <img src="/logo.png" alt="Hire-a-Helper" onError={(e) => { e.target.style.display = 'none'; }} />
-        <h2 className="brand-title" style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: "#111827" }}>Hire-a-Helper</h2>
+        <h2 className="brand-title">Hire-a-Helper</h2>
       </button>
 
-      {/* Menu */}
+      {/* Navigation Menu */}
       <nav className="menu sidebar-nav">
-        {menuItems.map((item) => {
-          const active = isItemActive(item.path);
+        {menuItems.map(({ label, path, Icon }) => {
+          const active = isItemActive(path);
 
           return (
             <button
               type="button"
-              className={`menu-item nav-item ${active ? "active" : ""} ${
-                !item.path ? "menu-item-disabled" : ""
-              }`}
-              key={item.label}
-              onClick={() => handleNavigation(item.path)}
-              disabled={!item.path}
-              title={
-                !item.path
-                  ? `${item.label} is not available yet`
-                  : item.label
-              }
+              className={`menu-item nav-item ${active ? "active" : ""}`}
+              key={label}
+              onClick={() => handleNavigation(path)}
             >
               <span className="icon">
-                <img src={item.iconSrc} alt={`${item.label} icon`} />
+                <Icon size={18} strokeWidth={2} />
               </span>
-              <span>{item.label}</span>
+              <span className="nav-label">{label}</span>
             </button>
           );
         })}
       </nav>
 
-      {/* Logged-in User */}
+      {/* Logged-in User Profile */}
       <div className="profile sidebar-profile">
         <div className="profile-left">
           {user?.profilePicture ? (
@@ -133,15 +97,15 @@ export default function Sidebar() {
               className="profile-avatar"
             />
           ) : (
-            <div className="sidebar-profile-initial profile-avatar">
-              {user?.firstName?.charAt(0)?.toUpperCase() || "U"}
+            <div className="sidebar-profile-avatar-fallback">
+              <span role="img" aria-label="user avatar">👶</span>
             </div>
           )}
 
           <div className="profile-info">
             <h4 className="profile-name">
               {user
-                ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+                ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Jon Doe"
                 : "Jon Doe"}
             </h4>
             <p className="profile-email">{user?.email || "test@gmail.com"}</p>
@@ -156,7 +120,7 @@ export default function Sidebar() {
           title="Logout"
           onClick={() => navigate("/login")}
         >
-          <img src={logoutIcon} alt="Logout" />
+          <LogOut size={16} />
         </button>
       </div>
     </aside>
