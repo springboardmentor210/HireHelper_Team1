@@ -5,7 +5,7 @@ export default function SearchBar({ value, onChange, onNotificationClick }) {
   return (
     <div className="search-notification-bar">
       <div className="search-input-wrapper">
-        <Search size={18} className="search-icon" />
+        <Search size={15} className="search-icon" />
         <input
           type="text"
           placeholder="Search tasks..."
@@ -21,7 +21,7 @@ export default function SearchBar({ value, onChange, onNotificationClick }) {
         onClick={onNotificationClick}
         aria-label="Notifications"
       >
-        <Bell size={20} className="bell-icon" />
+        <Bell size={28} className="bell-icon" />
         <span className="notification-badge-dot">1</span>
       </button>
     </div>

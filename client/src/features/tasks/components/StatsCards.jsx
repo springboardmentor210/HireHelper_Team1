@@ -13,7 +13,7 @@ export default function StatsCards({ stats }) {
       {/* Active Card */}
       <div className="task-stat-card">
         <div className="task-stat-icon-wrapper active">
-          <Power size={20} strokeWidth={2} className="task-stat-icon" />
+          <Power size={28} strokeWidth={2} className="task-stat-icon" />
         </div>
         <div className="task-stat-content">
           <span className="task-stat-label">Active</span>
@@ -25,7 +25,7 @@ export default function StatsCards({ stats }) {
       {/* In Progress Card */}
       <div className="task-stat-card">
         <div className="task-stat-icon-wrapper in-progress">
-          <RefreshCw size={20} strokeWidth={2} className="task-stat-icon" />
+          <RefreshCw size={28} strokeWidth={2} className="task-stat-icon" />
         </div>
         <div className="task-stat-content">
           <span className="task-stat-label">In Progress</span>
@@ -37,7 +37,7 @@ export default function StatsCards({ stats }) {
       {/* Completed Card */}
       <div className="task-stat-card">
         <div className="task-stat-icon-wrapper completed">
-          <CheckCircle2 size={20} strokeWidth={2} className="task-stat-icon" />
+          <CheckCircle2 size={28} strokeWidth={2} className="task-stat-icon" />
         </div>
         <div className="task-stat-content">
           <span className="task-stat-label">Completed</span>
@@ -49,7 +49,7 @@ export default function StatsCards({ stats }) {
       {/* Total Applicants Card */}
       <div className="task-stat-card">
         <div className="task-stat-icon-wrapper applicants">
-          <Users size={20} strokeWidth={2} className="task-stat-icon" />
+          <Users size={28} strokeWidth={2} className="task-stat-icon" />
         </div>
         <div className="task-stat-content">
           <span className="task-stat-label">Total Applicants</span>
@@ -61,7 +61,7 @@ export default function StatsCards({ stats }) {
       {/* Total Earnings Card */}
       <div className="task-stat-card">
         <div className="task-stat-icon-wrapper earnings">
-          <Banknote size={20} strokeWidth={2} className="task-stat-icon" />
+          <Banknote size={28} strokeWidth={2} className="task-stat-icon" />
         </div>
         <div className="task-stat-content">
           <span className="task-stat-label">Total Earnings</span>

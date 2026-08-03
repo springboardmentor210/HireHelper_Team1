@@ -198,7 +198,7 @@ function Feed() {
 
           <div className="header-actions">
             <div className="search-box">
-              <Search size={18} />
+              <Search size={29} style={{ width: '29px', height: '29px', minWidth: '29px', minHeight: '29px' }} />
               <input
                 type="text"
                 placeholder="Search tasks..."
