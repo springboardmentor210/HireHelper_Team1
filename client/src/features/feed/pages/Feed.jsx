@@ -2,13 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "../../../components/layout/Sidebar";
 import { useTasks } from "../../../context/TaskContext";
-
-import {
-  Bell,
-  Search,
-  MapPin,
-  Clock,
-} from "lucide-react";
+import SearchBar from "../../tasks/components/SearchBar";
+import { MapPin, Clock } from "lucide-react";
 
 import "../styles/Feed.css";
 
@@ -196,22 +191,11 @@ function Feed() {
             <p>Find tasks that need help</p>
           </div>
 
-          <div className="header-actions">
-            <div className="search-box">
-              <Search size={18} />
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-            </div>
-
-            <div className="notification">
-              <Bell size={21} />
-              <span></span>
-            </div>
-          </div>
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            onNotificationClick={() => navigate("/notifications")}
+          />
         </header>
 
         <div className="category-bar">

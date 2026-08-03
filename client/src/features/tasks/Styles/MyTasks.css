@@ -17,6 +17,8 @@
   gap: 24px;
   max-width: 1400px;
   box-sizing: border-box;
+  margin-left: 240px; 
+  width: calc(100% - 240px);
 }
 
 /* ================= Top Header Bar ================= */
