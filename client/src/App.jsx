@@ -14,6 +14,8 @@ import ResetPassword from "./features/auth/pages/ResetPassword";
 import Settings from "./features/settings/pages/Settings";
 import Dashboard from "./features/dashboard/pages/Dashboard";
 
+import MyRequests from "./features/requests/pages/MyRequests";
+
 function App() {
   return (
     <Routes>
@@ -45,10 +47,11 @@ function App() {
 
       {/* Feed & Navigation Routes */}
       <Route path="/feed" element={<Feed />} />
-      <Route path="/requests" element={<MyTasks />} />
-      <Route path="/myrequests" element={<MyTasks />} />
+      <Route path="/requests" element={<MyRequests />} />
+      <Route path="/myrequests" element={<MyRequests />} />
+      <Route path="/my-requests" element={<MyRequests />} />
       <Route path="/saved" element={<MyTasks />} />
-      <Route path="/notifications" element={<MyTasks />} />
+      <Route path="/notifications" element={<MyRequests />} />
 
       {/* 404 Catch-all */}
       <Route

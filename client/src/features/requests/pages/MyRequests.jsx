@@ -1,161 +1,158 @@
-import React from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useTasks } from "../../../context/TaskContext";
+import React, { useEffect, useState, useMemo } from "react";
+import Sidebar from "../../../components/layout/Sidebar";
+import MyRequestsHeader from "../components/MyRequestsHeader";
+import RequestTabs from "../components/RequestTabs";
+import RequestCard from "../components/RequestCard";
+import CancelRequestModal from "../components/CancelRequestModal";
+import EmptyState from "../components/EmptyState";
+import * as requestService from "../../../services/requestService";
+import "../styles/MyRequests.css";
 
-import {
-  Home,
-  ClipboardList,
-  Inbox,
-  Plus,
-  Settings,
-  LogOut,
-  MapPin,
-  Clock,
-} from "lucide-react";
+export default function MyRequests() {
+  const [requests, setRequests] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [activeTab, setActiveTab] = useState("all");
+  const [search, setSearch] = useState("");
+  const [cancelModalRequest, setCancelModalRequest] = useState(null);
 
-import "../../feed/styles/Feed.css";
+  // Load initial data
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [reqs, notifs] = await Promise.all([
+          requestService.getMyRequests(),
+          requestService.getNotifications(),
+        ]);
+        setRequests(reqs || []);
+        setNotifications(notifs || []);
+      } catch (err) {
+        console.error("Failed to load requests data:", err);
+      }
+    }
+    fetchData();
+  }, []);
 
-function MyRequests() {
-  const navigate = useNavigate();
-  const { myRequests, acceptTask } = useTasks();
+  // Compute status counts for tabs
+  const counts = useMemo(() => {
+    return {
+      all: requests.length,
+      pending: requests.filter((r) => r.status === "Pending").length,
+      accepted: requests.filter((r) => r.status === "Accepted").length,
+      completed: requests.filter((r) => r.status === "Completed").length,
+      cancelled: requests.filter((r) => r.status === "Cancelled").length,
+    };
+  }, [requests]);
+
+  // Filter requests based on active tab and search query
+  const filteredRequests = useMemo(() => {
+    let result = [...requests];
+
+    // Filter by tab status
+    if (activeTab !== "all") {
+      result = result.filter((r) => r.status === activeTab);
+    }
+
+    // Filter by search query
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      result = result.filter(
+        (r) =>
+          r.taskTitle.toLowerCase().includes(q) ||
+          r.ownerName.toLowerCase().includes(q) ||
+          r.category.toLowerCase().includes(q) ||
+          r.location.toLowerCase().includes(q) ||
+          (r.message && r.message.toLowerCase().includes(q))
+      );
+    }
+
+    return result;
+  }, [requests, activeTab, search]);
+
+  // Handlers
+  const handleToggleExpand = (id) => {
+    setRequests((prev) =>
+      prev.map((req) =>
+        req.id === id ? { ...req, isExpanded: !req.isExpanded } : req
+      )
+    );
+  };
+
+  const handleOpenCancelModal = (request) => {
+    setCancelModalRequest(request);
+  };
+
+  const handleConfirmCancel = async (id) => {
+    try {
+      await requestService.cancelRequest(id);
+      setRequests((prev) =>
+        prev.map((req) =>
+          req.id === id
+            ? { ...req, status: "Cancelled", isExpanded: false }
+            : req
+        )
+      );
+      setCancelModalRequest(null);
+    } catch (err) {
+      console.error("Failed to cancel request:", err);
+    }
+  };
+
+  const handleResetFilters = () => {
+    setActiveTab("all");
+    setSearch("");
+  };
 
   return (
-    <div className="feed-layout">
-      <aside className="feed-sidebar">
-        <div>
-          <div className="brand">
-            <div className="brand-logo" style={{ width: 32, height: 32, backgroundColor: '#0056b3', borderRadius: '50%' }}></div>
-            <h2>Hire-a-Helper</h2>
-          </div>
+    <div className="my-requests-layout">
+      {/* Sidebar Navigation */}
+      <Sidebar />
 
-          <nav className="sidebar-nav">
-            <Link to="/feed" className="nav-item">
-              <Home size={20} />
-              Feed
-            </Link>
+      {/* Main Content Area */}
+      <main className="my-requests-main-content">
+        {/* Header Bar with Search & Notifications */}
+        <MyRequestsHeader
+          search={search}
+          onSearchChange={setSearch}
+          notifications={notifications}
+        />
 
-            <Link to="/my-tasks" className="nav-item">
-              <ClipboardList size={20} />
-              My Tasks
-            </Link>
+        {/* Status Tabs Bar */}
+        <RequestTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          counts={counts}
+          onFilterClick={() => {}}
+        />
 
-            <Link to="/requests" className="nav-item">
-              <Inbox size={20} />
-              Requests
-            </Link>
-
-            <Link to="/my-requests" className="nav-item active">
-              <Inbox size={20} />
-              My Requests
-            </Link>
-
-            <Link to="/add-task" className="nav-item">
-              <Plus size={22} />
-              Add Task
-            </Link>
-
-            <a className="nav-item">
-              <Settings size={20} />
-              Settings
-            </a>
-          </nav>
-        </div>
-
-        <div className="sidebar-profile">
-          <div className="profile-avatar"></div>
-
-          <div className="profile-info">
-            <span>Jon Doe</span>
-            <small>test@gmail.com</small>
-          </div>
-
-          <button
-            type="button"
-            className="logout-btn"
-            onClick={() => navigate("/")}
-          >
-            <LogOut size={18} />
-          </button>
-        </div>
-      </aside>
-
-      <main className="feed-main">
-        <header className="feed-header">
-          <div>
-            <h1>My Requests</h1>
-            <p>Tasks you have requested to do</p>
-          </div>
-        </header>
-
-        <section className="feed-content">
-          <div className="task-grid">
-            {myRequests.map((task) => (
-              <article className="task-card" key={task.id}>
-                <div className="task-image-container">
-                  <img
-                    className="task-image"
-                    src={task.image}
-                    alt={task.title}
-                  />
-                </div>
-
-                <div className="task-body">
-                  <span
-                    className={`category-badge ${task.category.toLowerCase()}`}
-                  >
-                    {task.category}
-                  </span>
-
-                  <h3>{task.title}</h3>
-
-                  <p className="task-description">
-                    {task.description}
-                  </p>
-
-                  <div className="task-detail">
-                    <MapPin size={14} />
-                    <span>{task.location}</span>
-                  </div>
-
-                  <div className="task-detail">
-                    <Clock size={14} />
-
-                    <span>
-                      {task.date} • {task.time}
-                    </span>
-                  </div>
-
-                  <div className="task-footer">
-                    <div className="task-user">
-                      <div className="user-avatar"></div>
-                      <span>{task.user}</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="request-button"
-                      style={{ backgroundColor: '#28a745' }}
-                      onClick={() => acceptTask(task.id)}
-                    >
-                      Mock Provider Accept
-                    </button>
-                  </div>
-                </div>
-              </article>
+        {/* Request Cards List or Empty State */}
+        {filteredRequests.length === 0 ? (
+          <EmptyState
+            activeTab={activeTab}
+            searchQuery={search}
+            onReset={handleResetFilters}
+          />
+        ) : (
+          <section className="requests-list-container">
+            {filteredRequests.map((request) => (
+              <RequestCard
+                key={request.id}
+                request={request}
+                onToggleExpand={handleToggleExpand}
+                onCancelRequest={handleOpenCancelModal}
+              />
             ))}
-          </div>
-
-          {myRequests.length === 0 && (
-            <div className="empty-feed">
-              <h3>No requests found</h3>
-              <p>Go to the Feed to request tasks.</p>
-              <Link to="/feed" style={{ marginTop: '1rem', display: 'inline-block', color: 'blue' }}>Go to Feed</Link>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
       </main>
+
+      {/* Confirmation Modal for Cancelling Request */}
+      {cancelModalRequest && (
+        <CancelRequestModal
+          request={cancelModalRequest}
+          onClose={() => setCancelModalRequest(null)}
+          onConfirm={handleConfirmCancel}
+        />
+      )}
     </div>
   );
 }
-
-export default MyRequests;
