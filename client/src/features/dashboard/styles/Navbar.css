@@ -45,7 +45,9 @@
 
 .search-icon{
     color:#9CA3AF;
-    font-size:18px;
+    font-size:29px !important;
+    width:29px !important;
+    height:29px !important;
 }
 
 .search-box input{
