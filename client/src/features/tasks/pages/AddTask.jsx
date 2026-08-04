@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
 import api from "../../../config/api";
 import { createTask } from "../../../services/taskService";
+import SearchBar from "../../tasks/components/SearchBar"; 
 import "./AddTask.css";
 import {
-  FiSearch,
-  FiBell,
   FiMapPin,
   FiX,
   FiUploadCloud,
-} from "react-icons/fi";
+} from "react-icons/fi"; 
 
 const categories = [
   { label: "Moving", value: "moving" },
@@ -27,6 +26,10 @@ const categories = [
 export default function AddTask() {
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
+  
+  // Added search state for the SearchBar
+  const [search, setSearch] = useState("");
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -154,34 +157,18 @@ export default function AddTask() {
       <Sidebar />
 
       <main className="add-task-main">
+        {/* Replaced old header actions with reusable SearchBar */}
         <header className="add-task-topbar">
           <div className="topbar-headings">
             <h1>Add Task</h1>
             <p>Create a task and find someone to help you</p>
           </div>
 
-          <div className="add-task-top-actions">
-            <div className="task-search">
-              <FiSearch />
-              <input
-                id="task-search"
-                name="taskSearch"
-                type="search"
-                placeholder="Search tasks..."
-                aria-label="Search tasks"
-                autoComplete="off"
-              />
-            </div>
-
-            <button
-              type="button"
-              className="notification-button"
-              aria-label="Notifications"
-            >
-              <FiBell />
-              <span className="notification-dot">1</span>
-            </button>
-          </div>
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            onNotificationClick={() => navigate("/notifications")}
+          />
         </header>
 
         <section className="add-task-content">
@@ -382,4 +369,4 @@ export default function AddTask() {
       </main>
     </div>
   );
-}
+}
