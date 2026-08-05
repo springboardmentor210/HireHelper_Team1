@@ -1,69 +1,47 @@
 .filter-button {
-  height: 38px;
-  min-width: 92px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 8px;
 
-  padding: 0 16px;
+  height: 40px;
+  min-width: 100px;
 
-  background: #ffffff;
+  padding: 0 18px;
 
-  border: 1px solid #d9d9d9;
+  background: #FFFFFF;
+  border: 1px solid #D0D5DD;
   border-radius: 10px;
 
-  color: #555;
+  color: #344054;
 
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
 
   cursor: pointer;
 
-  transition: all .2s ease;
+  transition: all 0.2s ease;
 }
 
 .filter-button:hover {
-  background: #fafafa;
+  background: #F9FAFB;
+  border-color: #98A2B3;
+}
+
+.filter-button:active {
+  transform: scale(0.98);
 }
 
 .filter-button svg {
-  width: 15px;
-  height: 15px;
-  color: #666;
-}.filter-button {
-  height: 38px;
-  min-width: 92px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  padding: 0 16px;
-
-  background: #ffffff;
-
-  border: 1px solid #d9d9d9;
-  border-radius: 10px;
-
-  color: #555;
-
-  font-size: 13px;
-  font-weight: 500;
-
-  cursor: pointer;
-
-  transition: all .2s ease;
+  width: 16px;
+  height: 16px;
+  color: #344054;
+  flex-shrink: 0;
 }
 
-.filter-button:hover {
-  background: #fafafa;
-}
-
-.filter-button svg {
-  width: 15px;
-  height: 15px;
-  color: #666;
+@media (max-width: 760px) {
+  .filter-button {
+    width: 100%;
+  }
 }

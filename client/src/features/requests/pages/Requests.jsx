@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Sidebar from "../../../components/layout/Sidebar";
 
-import SearchBar from "../components/SearchBar";
-import RequestTabs from "../components/RequestTabs";
-import RequestCard from "../components/RequestCard";
+import SearchBar from "../../tasks/components/SearchBar";
+import IncomingRequestTabs from "../components/IncomingRequestTabs";
+import IncomingRequestCard from "../components/IncomingRequestCard";
 
 import mockRequests from "../data/mockRequests";
 
@@ -45,11 +45,15 @@ const Requests = () => {
 
     const keyword = searchQuery.toLowerCase();
 
-    const fullName = `${request.applicant?.firstName || ""} ${request.applicant?.lastName || ""}`;
+    const fullName = `${request.applicant?.firstName || ""} ${
+      request.applicant?.lastName || ""
+    }`;
 
     const matchesSearch =
       fullName.toLowerCase().includes(keyword) ||
-      (request.task?.title || "").toLowerCase().includes(keyword);
+      (request.task?.title || "")
+        .toLowerCase()
+        .includes(keyword);
 
     return matchesTab && matchesSearch;
   });
@@ -103,7 +107,7 @@ const Requests = () => {
         </header>
 
         {/* Tabs */}
-        <RequestTabs
+        <IncomingRequestTabs
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           counts={counts}
@@ -119,7 +123,7 @@ const Requests = () => {
         <section className="requests-list">
           {filteredRequests.length > 0 ? (
             filteredRequests.map((request) => (
-              <RequestCard
+              <IncomingRequestCard
                 key={request.id}
                 request={request}
                 onAccept={handleAccept}
