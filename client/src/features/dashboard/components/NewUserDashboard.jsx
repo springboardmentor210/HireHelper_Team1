@@ -1,19 +1,20 @@
+import { useNavigate } from "react-router-dom";
+
 import TopNavbar from "./TopNavbar";
 import StatCard from "./StatCard";
 import QuickActions from "./QuickActions";
 
-
 import "../styles/Dashboard.css";
 
 export default function NewUserDashboard({ user, stats }) {
+  const navigate = useNavigate();
+
   return (
     <div className="dashboard-container">
-
       <TopNavbar user={user} />
 
       {/* Welcome + Feed Card */}
       <div className="dashboard-top">
-
         <div className="welcome-section">
           <h1>Welcome, {user?.firstName || "User"}! 👋</h1>
           <p>Glad to have you here.</p>
@@ -25,42 +26,43 @@ export default function NewUserDashboard({ user, stats }) {
             <p>Dashboard announcement</p>
           </div>
 
-          <button className="feed-btn">
+          <button
+            className="feed-btn"
+            onClick={() => navigate("/feed")}
+          >
             Go To Feed
           </button>
         </div>
-
       </div>
 
       {/* Statistics */}
       <div className="stats-grid">
-  <StatCard
-    title="Tasks Posted"
-    value={stats?.totalTasks ?? 0}
-  />
+        <StatCard
+          title="Tasks Posted"
+          value={stats?.totalTasks ?? 0}
+        />
 
-  <StatCard
-    title="Active Tasks"
-    value={stats?.activeTasks ?? 0}
-  />
+        <StatCard
+          title="Active Tasks"
+          value={stats?.activeTasks ?? 0}
+        />
 
-  <StatCard
-    title="In Progress"
-    value={stats?.inProgressTasks ?? 0}
-  />
+        <StatCard
+          title="In Progress"
+          value={stats?.inProgressTasks ?? 0}
+        />
 
-  <StatCard
-    title="Completed Tasks"
-    value={stats?.completedTasks ?? 0}
-  />
-</div>
+        <StatCard
+          title="Completed Tasks"
+          value={stats?.completedTasks ?? 0}
+        />
+      </div>
 
       {/* Quick Actions */}
       <QuickActions />
 
       {/* Empty State */}
       <div className="empty-state">
-
         <img
           src="/empty-task.png"
           alt="No Tasks"
@@ -73,7 +75,10 @@ export default function NewUserDashboard({ user, stats }) {
           Post a task or browse the feed to get started.
         </p>
 
-        <button className="feed-btn empty-btn">
+        <button
+          className="feed-btn empty-btn"
+          onClick={() => navigate("/feed")}
+        >
           Explore Feed
         </button>
 
@@ -83,12 +88,13 @@ export default function NewUserDashboard({ user, stats }) {
           <span></span>
         </div>
 
-        <button className="text-btn">
+        <button
+          className="text-btn"
+          onClick={() => navigate("/add-task")}
+        >
           Post a Task Instead
         </button>
-
       </div>
-
     </div>
   );
 }

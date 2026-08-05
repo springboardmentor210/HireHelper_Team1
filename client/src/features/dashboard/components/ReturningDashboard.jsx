@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import TopNavbar from "./TopNavbar";
 import StatCard from "./StatCard";
 import QuickActions from "./QuickActions";
@@ -14,6 +16,8 @@ export default function ReturningDashboard({
   recentActivity,
   recommendedTasks,
 }) {
+  const navigate = useNavigate();
+
   return (
     <div className="dashboard-container">
       <TopNavbar user={user} />
@@ -30,7 +34,10 @@ export default function ReturningDashboard({
             <p>Dashboard announcement</p>
           </div>
 
-          <button className="feed-btn">
+          <button
+            className="feed-btn"
+            onClick={() => navigate("/feed")}
+          >
             Go To Feed
           </button>
         </div>
