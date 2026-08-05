@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+}
+
+.requests-layout {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: #f8fafc;
+}
+
+.requests-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* ================= HEADER ================= */
+
+.requests-header {
+  min-height: 120px;
+  padding: 28px 42px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.requests-header-left h1 {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 700;
+  color: #172033;
+}
+
+.requests-header-left p {
+  margin: 6px 0 0;
+  color: #98a2b3;
+  font-size: 15px;
+}
+
+.requests-header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* ================= SECTION ================= */
+
+.requests-section {
+  padding: 30px 42px 22px;
+}
+
+.requests-section h2 {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.requests-section p {
+  margin-top: 6px;
+
+  color: #6b7280;
+
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* ================= REQUEST LIST ================= */
+
+.requests-list {
+  padding: 0 42px 42px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+
+  .requests-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .requests-header-right {
+    width: 100%;
+  }
+
+  .requests-section,
+  .requests-list {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+}

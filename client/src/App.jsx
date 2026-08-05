@@ -13,6 +13,7 @@ import ForgotPassword from "./features/auth/pages/ForgotPassword";
 import ResetPassword from "./features/auth/pages/ResetPassword";
 import Settings from "./features/settings/pages/Settings";
 import Dashboard from "./features/dashboard/pages/Dashboard";
+import Requests from "./features/requests/pages/Requests";
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
 
       {/* Feed & Navigation Routes */}
       <Route path="/feed" element={<Feed />} />
-      <Route path="/requests" element={<MyTasks />} />
+      <Route path="/requests" element={<Requests />} />
       <Route path="/myrequests" element={<MyTasks />} />
       <Route path="/saved" element={<MyTasks />} />
       <Route path="/notifications" element={<MyTasks />} />
