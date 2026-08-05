@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import GuestNavbar from "./GuestNavbar";
 
@@ -22,6 +23,8 @@ import {
 } from "react-icons/fi";
 
 export default function GuestDashboard() {
+  const navigate = useNavigate();
+
   const [stats, setStats] = useState({
     registeredUsers: 0,
     totalTasks: 0,
@@ -35,7 +38,6 @@ export default function GuestDashboard() {
     const fetchPublicStats = async () => {
       try {
         const response = await getPublicStats();
-
         setStats(response.data);
       } catch (error) {
         console.error(
@@ -66,6 +68,7 @@ export default function GuestDashboard() {
             <button
               type="button"
               className="primary-btn"
+              onClick={() => navigate("/feed")}
             >
               Find Tasks
               <FaArrowRight />
@@ -74,6 +77,7 @@ export default function GuestDashboard() {
             <button
               type="button"
               className="secondary-btn"
+              onClick={() => navigate("/register")}
             >
               Become a Helper
             </button>

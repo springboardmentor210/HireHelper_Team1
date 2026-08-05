@@ -23,7 +23,7 @@ export default function QuickActions() {
     {
       title: "Become a Helper",
       icon: <UserCheck size={20} />,
-      path: null,
+      path: "/register",
     },
     {
       title: "My Tasks",
@@ -31,12 +31,6 @@ export default function QuickActions() {
       path: "/mytasks",
     },
   ];
-
-  const handleAction = (path) => {
-    if (path) {
-      navigate(path);
-    }
-  };
 
   return (
     <section className="quick-actions">
@@ -48,7 +42,7 @@ export default function QuickActions() {
             key={action.title}
             type="button"
             className="quick-action-card"
-            onClick={() => handleAction(action.path)}
+            onClick={() => navigate(action.path)}
           >
             <div className="quick-action-icon">
               {action.icon}
@@ -63,4 +57,3 @@ export default function QuickActions() {
     </section>
   );
 }
-
