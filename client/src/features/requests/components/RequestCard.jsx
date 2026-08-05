@@ -1,143 +1,205 @@
+import React from "react";
 import {
-  Star,
   Calendar,
   MapPin,
-  Briefcase,
+  ChevronUp,
+  ChevronRight,
 } from "lucide-react";
 
-import "../styles/RequestCard.css";
-
-const RequestCard = ({
+export default function RequestCard({
   request,
-  onAccept,
-  onDecline,
-}) => {
+  onToggleExpand,
+  onCancelRequest,
+}) {
   const {
-    applicant,
-    task,
-    message,
     id,
+    taskTitle,
+    ownerName,
+    ownerInitials,
+    avatarBg,
+    avatarColor,
+    category,
+    status,
+    message,
+    createdAtFormatted,
+    location,
+    taskImage,
+    isExpanded,
   } = request;
 
+  const isPending = status === "Pending";
+
+  const getStatusBadgeClass = () => {
+    switch (status) {
+      case "Pending":
+        return "status-badge-pending";
+      case "Accepted":
+        return "status-badge-accepted";
+      case "Completed":
+        return "status-badge-completed";
+      case "Cancelled":
+        return "status-badge-cancelled";
+      default:
+        return "status-badge-pending";
+    }
+  };
+
+  const getCategoryClass = () => {
+    const cat = (category || "")
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
+    return `category-tag category-${cat}`;
+  };
+
   return (
-    <article className="request-card">
+    <article
+      className={`request-card-item ${
+        isExpanded ? "expanded" : "collapsed"
+      }`}
+    >
+      <div
+        className="card-main-header"
+        onClick={() => onToggleExpand(id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            onToggleExpand(id);
+          }
+        }}
+      >
+        <div
+          className="owner-avatar-circle"
+          style={{
+            backgroundColor: avatarBg || "#f1f5f9",
+            color: avatarColor || "#334155",
+          }}
+        >
+          <span>{ownerInitials || "SJ"}</span>
+        </div>
 
-      {/* Top Section */}
+        <div className="header-info">
+          <div className="title-category-row">
+            <h3 className="request-task-title">
+              {taskTitle}
+            </h3>
 
-      <div className="request-card-top">
-
-        <div className="request-user">
-
-          <img
-            src={applicant.avatar}
-            alt={applicant.name}
-            className="request-avatar"
-          />
-
-          <div className="request-user-info">
-
-            <div className="request-user-header">
-
-              <h3>{applicant.name}</h3>
-
-              <div className="request-rating">
-
-                <Star
-                  size={15}
-                  fill="#F4B400"
-                  stroke="#F4B400"
-                />
-
-                <span>{applicant.rating}</span>
-
-                <small>
-                  ({applicant.reviews} reviews)
-                </small>
-
-              </div>
-
-            </div>
-
-            <p className="request-message">
-              {message}
-            </p>
-
+            <span className={getCategoryClass()}>
+              {category}
+            </span>
           </div>
 
+          {!isExpanded && (
+            <div className="collapsed-meta-row">
+              <span className="meta-icon-item">
+                <Calendar size={13} />
+                {createdAtFormatted}
+              </span>
+
+              <span className="dot-separator">•</span>
+
+              <span className="meta-icon-item">
+                <MapPin size={13} />
+                {location}
+              </span>
+            </div>
+          )}
+
+          {isExpanded && (
+            <p className="task-owner-text">
+              Task Owner: {ownerName}
+            </p>
+          )}
         </div>
 
-        <div className="request-buttons">
-
-          <button
-            className="accept-btn"
-            onClick={() => onAccept(id)}
+        <div className="header-right-actions">
+          <span
+            className={`status-badge-pill ${getStatusBadgeClass()}`}
           >
-            Accept
-          </button>
-
-          <button
-            className="decline-btn"
-            onClick={() => onDecline(id)}
-          >
-            Decline
-          </button>
-
-        </div>
-
-      </div>
-
-      {/* Task Section */}
-
-      <div className="task-box">
-
-        <div className="task-icon">
-
-          <Briefcase size={28} />
-
-        </div>
-
-        <div className="task-details">
-
-          <span className="requesting-for">
-            Requesting for
+            {status}
           </span>
 
-          <h4>{task.title}</h4>
-
-          <span className="task-category">
-            {task.category}
-          </span>
-
+          {!isExpanded && (
+            <button
+              type="button"
+              className="expand-chevron-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleExpand(id);
+              }}
+            >
+              <ChevronRight size={18} />
+            </button>
+          )}
         </div>
-
       </div>
 
-      {/* Footer */}
+      {isExpanded && (
+        <div className="card-expanded-body">
+          {message && (
+            <div className="user-message-container">
+              <span className="message-label">
+                Your message:
+              </span>
 
-      <div className="request-footer">
+              <p className="message-content">
+                {message}
+              </p>
+            </div>
+          )}
 
-        <div className="footer-item">
+          <div className="expanded-meta-row">
+            <span className="meta-icon-item">
+              <Calendar size={14} />
+              {createdAtFormatted}
+            </span>
 
-          <Calendar size={16} />
+            <span className="dot-separator">•</span>
 
-          <span>{task.date}</span>
+            <span className="meta-icon-item">
+              <MapPin size={14} />
+              {location}
+            </span>
+          </div>
 
+          {taskImage && (
+            <div className="task-image-preview-wrapper">
+              <img
+                src={taskImage}
+                alt={taskTitle}
+                className="task-preview-img"
+              />
+            </div>
+          )}
+
+          <div className="expanded-footer-actions">
+            {isPending && (
+              <button
+                type="button"
+                className="btn-cancel-request"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCancelRequest(request);
+                }}
+              >
+                Cancel Request
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="collapse-chevron-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleExpand(id);
+              }}
+            >
+              <ChevronUp size={18} />
+            </button>
+          </div>
         </div>
-
-        <div className="footer-divider" />
-
-        <div className="footer-item">
-
-          <MapPin size={16} />
-
-          <span>{task.location}</span>
-
-        </div>
-
-      </div>
-
+      )}
     </article>
   );
-};
-
-export default RequestCard;
+}
