@@ -13,11 +13,16 @@ const IncomingRequestCard = ({
   onDecline,
 }) => {
   const {
-    applicant,
-    task,
+    applicant = {},
+    task = {},
     message,
     id,
   } = request;
+
+  const applicantName =
+    applicant.name ||
+    `${applicant.firstName || ""} ${applicant.lastName || ""}`.trim() ||
+    "Unknown User";
 
   return (
     <article className="request-card">
@@ -29,7 +34,7 @@ const IncomingRequestCard = ({
 
           <img
             src={applicant.avatar}
-            alt={applicant.name}
+            alt={applicantName}
             className="request-avatar"
           />
 
@@ -37,7 +42,7 @@ const IncomingRequestCard = ({
 
             <div className="request-user-header">
 
-              <h3>{applicant.name}</h3>
+              <h3>{applicantName}</h3>
 
               <div className="request-rating">
                 <Star
@@ -96,11 +101,17 @@ const IncomingRequestCard = ({
             Requesting for
           </span>
 
-          <h4>{task.title}</h4>
+          <div className="task-title-row">
 
-          <span className="task-category">
-            {task.category}
-          </span>
+            <h4>{task.title}</h4>
+
+            {task.category && (
+              <span className="task-category">
+                {task.category}
+              </span>
+            )}
+
+          </div>
 
         </div>
 
