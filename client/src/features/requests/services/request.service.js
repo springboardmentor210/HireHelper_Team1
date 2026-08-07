@@ -1,39 +1,41 @@
-// Temporary Service Layer
-// Replace mock data with backend API calls later.
+import api from "../../../config/api";
 
-import mockRequests from "../data/mockRequests";
-
-// Get all requests
-export const getRequests = async () => {
-  return Promise.resolve({
-    success: true,
-    data: mockRequests,
+// Fetch incoming requests.
+export const getIncomingRequests = async (status = "pending", page = 1, limit = 12) => {
+  const response = await api.get("/requests/incoming", {
+    params: { status, page, limit },
   });
+  return response.data;
 };
 
-// Accept a request
+// Fetch user's requests.
+export const getMyRequests = async (status = "all", page = 1, limit = 12) => {
+  const response = await api.get("/requests/mine", {
+    params: { status, page, limit },
+  });
+  return response.data;
+};
+
+// Create request.
+export const createRequest = async (taskId, message) => {
+  const response = await api.post("/requests", { taskId, message });
+  return response.data;
+};
+
+// Accept request.
 export const acceptRequest = async (requestId) => {
-  return Promise.resolve({
-    success: true,
-    message: "Request accepted successfully.",
-    requestId,
-  });
+  const response = await api.patch(`/requests/${requestId}/accept`);
+  return response.data;
 };
 
-// Decline a request
+// Decline request.
 export const declineRequest = async (requestId) => {
-  return Promise.resolve({
-    success: true,
-    message: "Request declined successfully.",
-    requestId,
-  });
+  const response = await api.patch(`/requests/${requestId}/decline`);
+  return response.data;
 };
 
-// Archive a request
-export const archiveRequest = async (requestId) => {
-  return Promise.resolve({
-    success: true,
-    message: "Request archived successfully.",
-    requestId,
-  });
+// Cancel request.
+export const cancelRequest = async (requestId) => {
+  const response = await api.patch(`/requests/${requestId}/cancel`);
+  return response.data;
 };

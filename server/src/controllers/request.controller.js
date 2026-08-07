@@ -74,7 +74,7 @@ export const getIncomingRequests = asyncHandler(async (req, res) => {
   const [requests, total, statusCounts] = await Promise.all([
     Request.find(query)
       .populate("requester", "firstName lastName profilePicture")
-      .populate("task", "title category")
+      .populate("task", "title category startDate startTime location")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum),
