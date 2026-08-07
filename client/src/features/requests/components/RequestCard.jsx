@@ -1,5 +1,10 @@
 import React from "react";
-import { Calendar, MapPin, ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  ChevronUp,
+  ChevronRight,
+} from "lucide-react";
 
 export default function RequestCard({
   request,
@@ -23,9 +28,6 @@ export default function RequestCard({
   } = request;
 
   const isPending = status === "Pending";
-  const isAccepted = status === "Accepted";
-  const isCompleted = status === "Completed";
-  const isCancelled = status === "Cancelled";
 
   const getStatusBadgeClass = () => {
     switch (status) {
@@ -43,15 +45,19 @@ export default function RequestCard({
   };
 
   const getCategoryClass = () => {
-    const cat = (category || "").toLowerCase().replace(/\s+/g, "-");
+    const cat = (category || "")
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
     return `category-tag category-${cat}`;
   };
 
   return (
     <article
-      className={`request-card-item ${isExpanded ? "expanded" : "collapsed"}`}
+      className={`request-card-item ${
+        isExpanded ? "expanded" : "collapsed"
+      }`}
     >
-      {/* Top Header Section */}
       <div
         className="card-main-header"
         onClick={() => onToggleExpand(id)}
@@ -63,19 +69,25 @@ export default function RequestCard({
           }
         }}
       >
-        {/* Avatar */}
         <div
           className="owner-avatar-circle"
-          style={{ backgroundColor: avatarBg || "#f1f5f9", color: avatarColor || "#334155" }}
+          style={{
+            backgroundColor: avatarBg || "#f1f5f9",
+            color: avatarColor || "#334155",
+          }}
         >
           <span>{ownerInitials || "SJ"}</span>
         </div>
 
-        {/* Title, Owner and Category */}
         <div className="header-info">
           <div className="title-category-row">
-            <h3 className="request-task-title">{taskTitle}</h3>
-            <span className={getCategoryClass()}>{category}</span>
+            <h3 className="request-task-title">
+              {taskTitle}
+            </h3>
+
+            <span className={getCategoryClass()}>
+              {category}
+            </span>
           </div>
 
           {!isExpanded && (
@@ -84,7 +96,9 @@ export default function RequestCard({
                 <Calendar size={13} />
                 {createdAtFormatted}
               </span>
+
               <span className="dot-separator">•</span>
+
               <span className="meta-icon-item">
                 <MapPin size={13} />
                 {location}
@@ -93,13 +107,16 @@ export default function RequestCard({
           )}
 
           {isExpanded && (
-            <p className="task-owner-text">Task Owner: {ownerName}</p>
+            <p className="task-owner-text">
+              Task Owner: {ownerName}
+            </p>
           )}
         </div>
 
-        {/* Status Badge & Toggle Button */}
         <div className="header-right-actions">
-          <span className={`status-badge-pill ${getStatusBadgeClass()}`}>
+          <span
+            className={`status-badge-pill ${getStatusBadgeClass()}`}
+          >
             {status}
           </span>
 
@@ -107,7 +124,6 @@ export default function RequestCard({
             <button
               type="button"
               className="expand-chevron-btn"
-              aria-label="Expand request details"
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleExpand(id);
@@ -119,31 +135,34 @@ export default function RequestCard({
         </div>
       </div>
 
-      {/* Expanded Content Section */}
       {isExpanded && (
         <div className="card-expanded-body">
-          {/* User Submitted Message Box */}
           {message && (
             <div className="user-message-container">
-              <span className="message-label">Your message:</span>
-              <p className="message-content">{message}</p>
+              <span className="message-label">
+                Your message:
+              </span>
+
+              <p className="message-content">
+                {message}
+              </p>
             </div>
           )}
 
-          {/* Date and Location Metadata */}
           <div className="expanded-meta-row">
             <span className="meta-icon-item">
               <Calendar size={14} />
               {createdAtFormatted}
             </span>
+
             <span className="dot-separator">•</span>
+
             <span className="meta-icon-item">
               <MapPin size={14} />
               {location}
             </span>
           </div>
 
-          {/* Task Image Preview */}
           {taskImage && (
             <div className="task-image-preview-wrapper">
               <img
@@ -154,7 +173,6 @@ export default function RequestCard({
             </div>
           )}
 
-          {/* Action Row */}
           <div className="expanded-footer-actions">
             {isPending && (
               <button
@@ -172,7 +190,6 @@ export default function RequestCard({
             <button
               type="button"
               className="collapse-chevron-btn"
-              aria-label="Collapse request details"
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleExpand(id);

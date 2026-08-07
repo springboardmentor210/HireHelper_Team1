@@ -14,12 +14,13 @@ import ResetPassword from "./features/auth/pages/ResetPassword";
 import Settings from "./features/settings/pages/Settings";
 import Dashboard from "./features/dashboard/pages/Dashboard";
 
+import Requests from "./features/requests/pages/Requests";
 import MyRequests from "./features/requests/pages/MyRequests";
 
 function App() {
   return (
     <Routes>
-      {/* Root redirect to /mytasks */}
+      {/* Root redirect */}
       <Route path="/" element={<Navigate to="/mytasks" replace />} />
 
       {/* Task Routes */}
@@ -27,13 +28,13 @@ function App() {
       <Route path="/tasks" element={<MyTasks />} />
       <Route path="/tasks/:taskId" element={<MyTasks />} />
       <Route path="/tasks/:taskId/applicants" element={<MyTasks />} />
-      
+
       {/* Add Task Routes */}
       <Route path="/addtasks" element={<AddTask />} />
       <Route path="/add-task" element={<AddTask />} />
       <Route path="/tasks/add" element={<AddTask />} />
 
-      {/* Auth Routes */}
+      {/* Authentication */}
       <Route path="/home" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -41,19 +42,25 @@ function App() {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/verify-otp" element={<VerifyOTP />} />
 
-      {/* Other Feature Routes */}
+      {/* Dashboard & Settings */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/settings" element={<Settings />} />
 
-      {/* Feed & Navigation Routes */}
+      {/* Feed */}
       <Route path="/feed" element={<Feed />} />
-      <Route path="/requests" element={<MyRequests />} />
+
+      {/* Requests */}
+      <Route path="/requests" element={<Requests />} />
+
+      {/* My Requests */}
       <Route path="/myrequests" element={<MyRequests />} />
       <Route path="/my-requests" element={<MyRequests />} />
+
+      {/* Other Routes */}
       <Route path="/saved" element={<MyTasks />} />
       <Route path="/notifications" element={<MyRequests />} />
 
-      {/* 404 Catch-all */}
+      {/* 404 */}
       <Route
         path="*"
         element={<Navigate to="/mytasks" replace />}

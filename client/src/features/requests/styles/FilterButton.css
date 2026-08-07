@@ -1,0 +1,47 @@
+.filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  height: 40px;
+  min-width: 100px;
+
+  padding: 0 18px;
+
+  background: #FFFFFF;
+  border: 1px solid #D0D5DD;
+  border-radius: 10px;
+
+  color: #344054;
+
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.filter-button:hover {
+  background: #F9FAFB;
+  border-color: #98A2B3;
+}
+
+.filter-button:active {
+  transform: scale(0.98);
+}
+
+.filter-button svg {
+  width: 16px;
+  height: 16px;
+  color: #344054;
+  flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .filter-button {
+    width: 100%;
+  }
+}

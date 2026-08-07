@@ -20,6 +20,7 @@ export default function RequestTabs({
       <div className="tabs-list">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
+
           return (
             <button
               key={tab.id}
@@ -28,7 +29,12 @@ export default function RequestTabs({
               onClick={() => onTabChange(tab.id)}
             >
               <span className="tab-label">{tab.label}</span>
-              <span className={`tab-count-badge ${isActive ? "active" : ""}`}>
+
+              <span
+                className={`tab-count-badge ${
+                  isActive ? "active" : ""
+                }`}
+              >
                 {tab.count}
               </span>
             </button>
