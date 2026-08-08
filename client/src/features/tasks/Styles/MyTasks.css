@@ -267,6 +267,8 @@ svg.search-icon {
   padding: 12px 16px;
   border-radius: 16px;
   border: 1px solid #e2e8f0;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .filter-controls-left {

@@ -1,19 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Bell } from "lucide-react";
-import NotificationsDropdown from "./NotificationsDropdown";
+import { useNotifications } from "../../../context/NotificationContext";
+import NotificationsDropdown from "../../notifications/components/NotificationsDropdown";
 import "../styles/Requests.css";
 
 const SearchBar = ({
   value,
   onChange,
-  notifications = [],
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
-
-  const unreadCount = notifications.filter(
-    (n) => !n.read
-  ).length;
+  const { unreadCount } = useNotifications() || { unreadCount: 0 };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -25,22 +22,15 @@ const SearchBar = ({
       }
     }
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div
       className="requests-search-wrapper"
       ref={dropdownRef}
+      style={{ position: "relative" }}
     >
       <div className="requests-search-box">
         <Search
@@ -52,18 +42,14 @@ const SearchBar = ({
           type="text"
           placeholder="Search tasks..."
           value={value}
-          onChange={(e) =>
-            onChange(e.target.value)
-          }
+          onChange={(e) => onChange(e.target.value)}
         />
       </div>
 
       <button
         type="button"
         className="notification-button"
-        onClick={() =>
-          setShowNotifications((prev) => !prev)
-        }
+        onClick={() => setShowNotifications((prev) => !prev)}
         aria-label="Notifications"
       >
         <Bell
@@ -80,10 +66,7 @@ const SearchBar = ({
 
       {showNotifications && (
         <NotificationsDropdown
-          notifications={notifications}
-          onClose={() =>
-            setShowNotifications(false)
-          }
+          onClose={() => setShowNotifications(false)}
         />
       )}
     </div>
