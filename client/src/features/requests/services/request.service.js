@@ -1,39 +1,30 @@
-// Temporary Service Layer
-// Replace mock data with backend API calls later.
+import api from "../../../services/api";
 
-import mockRequests from "../data/mockRequests";
-
-// Get all requests
-export const getRequests = async () => {
-  return Promise.resolve({
-    success: true,
-    data: mockRequests,
+// Get incoming requests for the logged-in task owner
+export const getIncomingRequests = async () => {
+  const response = await api.get("/requests/incoming", {
+    params: {
+      status: "pending",
+    },
   });
+
+  return response.data;
 };
 
-// Accept a request
+// Accept an incoming request
 export const acceptRequest = async (requestId) => {
-  return Promise.resolve({
-    success: true,
-    message: "Request accepted successfully.",
-    requestId,
-  });
+  const response = await api.patch(
+    `/requests/${requestId}/accept`
+  );
+
+  return response.data;
 };
 
-// Decline a request
+// Decline an incoming request
 export const declineRequest = async (requestId) => {
-  return Promise.resolve({
-    success: true,
-    message: "Request declined successfully.",
-    requestId,
-  });
-};
+  const response = await api.patch(
+    `/requests/${requestId}/decline`
+  );
 
-// Archive a request
-export const archiveRequest = async (requestId) => {
-  return Promise.resolve({
-    success: true,
-    message: "Request archived successfully.",
-    requestId,
-  });
+  return response.data;
 };

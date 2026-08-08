@@ -1,10 +1,10 @@
 const mockRequests = [
   {
-    id: "req-001",
-    status: "incoming",
+    _id: "req-001",
+    status: "pending",
 
-    applicant: {
-      id: "user-101",
+    requestor: {
+      _id: "user-101",
       firstName: "Sarah",
       lastName: "Johnson",
       profilePicture: null,
@@ -13,7 +13,7 @@ const mockRequests = [
     },
 
     task: {
-      id: "task-001",
+      _id: "task-001",
       title: "Help Moving Furniture",
       category: "Moving",
       description:
@@ -28,11 +28,11 @@ const mockRequests = [
   },
 
   {
-    id: "req-002",
-    status: "incoming",
+    _id: "req-002",
+    status: "pending",
 
-    applicant: {
-      id: "user-102",
+    requestor: {
+      _id: "user-102",
       firstName: "Emily",
       lastName: "Chen",
       profilePicture: null,
@@ -41,7 +41,7 @@ const mockRequests = [
     },
 
     task: {
-      id: "task-002",
+      _id: "task-002",
       title: "Room Painting Project",
       category: "Painting",
       description:
@@ -56,11 +56,11 @@ const mockRequests = [
   },
 
   {
-    id: "req-003",
+    _id: "req-003",
     status: "accepted",
 
-    applicant: {
-      id: "user-103",
+    requestor: {
+      _id: "user-103",
       firstName: "Michael",
       lastName: "Brown",
       profilePicture: null,
@@ -69,7 +69,7 @@ const mockRequests = [
     },
 
     task: {
-      id: "task-003",
+      _id: "task-003",
       title: "Garden Cleanup",
       category: "Cleaning",
       description:
@@ -84,11 +84,11 @@ const mockRequests = [
   },
 
   {
-    id: "req-004",
+    _id: "req-004",
     status: "declined",
 
-    applicant: {
-      id: "user-104",
+    requestor: {
+      _id: "user-104",
       firstName: "David",
       lastName: "Miller",
       profilePicture: null,
@@ -97,7 +97,7 @@ const mockRequests = [
     },
 
     task: {
-      id: "task-004",
+      _id: "task-004",
       title: "Kitchen Plumbing Assistance",
       category: "Plumbing",
       description:
@@ -112,11 +112,11 @@ const mockRequests = [
   },
 
   {
-    id: "req-005",
-    status: "archived",
+    _id: "req-005",
+    status: "declined",
 
-    applicant: {
-      id: "user-105",
+    requestor: {
+      _id: "user-105",
       firstName: "Sophia",
       lastName: "Brown",
       profilePicture: null,
@@ -125,7 +125,7 @@ const mockRequests = [
     },
 
     task: {
-      id: "task-005",
+      _id: "task-005",
       title: "Help With Grocery Delivery",
       category: "Delivery",
       description:
