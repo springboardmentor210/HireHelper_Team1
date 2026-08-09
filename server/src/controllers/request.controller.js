@@ -5,6 +5,23 @@ import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
+// Haversine distance between two points, in miles
+const getDistanceInMiles = (lat1, lng1, lat2, lng2) => {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 3958.8; // Earth's radius in miles
+
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
+
 // Send request
 export const createRequest = asyncHandler(async (req, res) => {
   const { taskId, message } = req.body;
@@ -54,7 +71,7 @@ export const createRequest = asyncHandler(async (req, res) => {
 
 // Incoming requests
 export const getIncomingRequests = asyncHandler(async (req, res) => {
-  const { status = "pending", page = 1, limit = 12 } = req.query;
+  const { status = "pending", page = 1, limit = 12, lat, lng } = req.query;
 
   const query = { taskOwner: req.user._id };
 
@@ -71,10 +88,10 @@ export const getIncomingRequests = asyncHandler(async (req, res) => {
   const limitNum = Math.min(Math.max(Number(limit) || 12, 1), 50);
   const skip = (pageNum - 1) * limitNum;
 
-  const [requests, total, statusCounts] = await Promise.all([
+  const [requestDocs, total, statusCounts] = await Promise.all([
     Request.find(query)
       .populate("requester", "firstName lastName profilePicture")
-      .populate("task", "title category")
+      .populate("task", "title category startDate startTime location coordinates")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum),
@@ -90,6 +107,22 @@ export const getIncomingRequests = asyncHandler(async (req, res) => {
   for (const row of statusCounts) {
     counts[row._id] = row.count;
   }
+
+  // Attach distance in miles if the caller sent their own lat/lng
+  const latNum = lat !== undefined ? Number(lat) : undefined;
+  const lngNum = lng !== undefined ? Number(lng) : undefined;
+  const hasValidLocation = latNum !== undefined && lngNum !== undefined && !Number.isNaN(latNum) && !Number.isNaN(lngNum);
+
+  const requests = requestDocs.map((request) => {
+    const requestObj = request.toObject();
+
+    if (hasValidLocation && request.task?.coordinates?.coordinates) {
+      const [taskLng, taskLat] = request.task.coordinates.coordinates;
+      requestObj.distanceInMiles = getDistanceInMiles(latNum, lngNum, taskLat, taskLng);
+    }
+
+    return requestObj;
+  });
 
   return res.status(200).json(
     new ApiResponse(200, "Incoming requests fetched successfully", {
