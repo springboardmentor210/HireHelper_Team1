@@ -113,6 +113,16 @@ export default function AddTask() {
       return;
     }
 
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("authToken");
+
+    if (!token) {
+      setError("Access Denied: You are not logged in. Please sign in to create a task.");
+      return;
+    }
+
     setError("");
     setLoading(true);
 
@@ -127,7 +137,7 @@ export default function AddTask() {
         taskData.append("title", formData.title.trim());
         taskData.append("description", formData.description.trim());
         taskData.append("location", formData.location.trim());
-        if (formData.budget) taskData.append("budget", formData.budget);
+        if (formData.budget) taskData.append("price", formData.budget);
         if (formData.startDate) taskData.append("startDate", formData.startDate);
         if (formData.startTime) taskData.append("startTime", formData.startTime);
         taskData.append("category", formData.category);
@@ -143,10 +153,14 @@ export default function AddTask() {
       navigate("/mytasks");
     } catch (err) {
       console.error("Task creation failed:", err);
-      setError(
-        err.response?.data?.message ||
-          "Failed to create task. Please try again."
-      );
+      if (err.response?.status === 401) {
+        setError("Access Denied: Please log in to create a task.");
+      } else {
+        setError(
+          err.response?.data?.message ||
+            "Failed to create task. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }

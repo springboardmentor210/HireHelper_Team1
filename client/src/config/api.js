@@ -13,7 +13,11 @@ const api = axios.create({
 // Request interceptor to append Auth token if present
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("authToken");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,11 +31,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Handle unauthorized error if needed
+      console.warn("Unauthorized request - 401");
     }
     return Promise.reject(error);
   }
 );
 
 export default api;
-

@@ -4,6 +4,14 @@ import { X, Calendar, Clock, MapPin, Tag, IndianRupee } from "lucide-react";
 export default function TaskDetailsModal({ task, onClose }) {
   if (!task) return null;
 
+  const taskImage =
+    (Array.isArray(task.images) && task.images.length > 0 ? task.images[0] : task.image) ||
+    "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&q=80";
+
+  const taskPrice = task.price ?? task.budget ?? 0;
+  const displayDate = task.startDate || task.date || "TBD";
+  const displayTime = task.startTime || task.time || "TBD";
+
   return (
     <div className="modal-backdrop-overlay">
       <div className="modal-content-card details">
@@ -19,7 +27,7 @@ export default function TaskDetailsModal({ task, onClose }) {
 
         <div className="task-details-body">
           <img
-            src={task.image || "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&q=80"}
+            src={taskImage}
             alt={task.title}
             className="details-cover-image"
           />
@@ -28,9 +36,9 @@ export default function TaskDetailsModal({ task, onClose }) {
             <div className="details-info-item">
               <IndianRupee size={18} className="info-icon" />
               <div>
-                <span className="info-label">Budget</span>
+                <span className="info-label">Price</span>
                 <span className="info-val green">
-                  ₹{typeof task.budget === "number" ? task.budget.toLocaleString() : task.budget}
+                  ₹{typeof taskPrice === "number" ? taskPrice.toLocaleString() : taskPrice}
                 </span>
               </div>
             </div>
@@ -39,7 +47,7 @@ export default function TaskDetailsModal({ task, onClose }) {
               <Calendar size={18} className="info-icon" />
               <div>
                 <span className="info-label">Date</span>
-                <span className="info-val">{task.date}</span>
+                <span className="info-val">{displayDate}</span>
               </div>
             </div>
 
@@ -47,7 +55,7 @@ export default function TaskDetailsModal({ task, onClose }) {
               <Clock size={18} className="info-icon" />
               <div>
                 <span className="info-label">Time</span>
-                <span className="info-val">{task.time}</span>
+                <span className="info-val">{displayTime}</span>
               </div>
             </div>
 

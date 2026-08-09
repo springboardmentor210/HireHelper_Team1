@@ -48,12 +48,11 @@ export default function MyTasks() {
     try {
       setLoading(true);
       setError(null);
-      const [fetchedTasks, fetchedStats] = await Promise.all([
-        taskService.getTasks(),
-        taskService.getStatistics(),
-      ]);
-      setTasks(fetchedTasks);
-      setStats(fetchedStats);
+      const data = await taskService.getMyTasks();
+      setTasks(data.tasks || []);
+      if (data.stats) {
+        setStats(data.stats);
+      }
     } catch (err) {
       console.error("Failed to load tasks data:", err);
       setError(err?.response?.data?.message || "Failed to load tasks");
@@ -94,10 +93,12 @@ export default function MyTasks() {
     // Sorting
     switch (filters.sort) {
       case "budget-high":
-        result.sort((a, b) => (b.budget || 0) - (a.budget || 0));
+      case "price-high":
+        result.sort((a, b) => ((b.price ?? b.budget) || 0) - ((a.price ?? a.budget) || 0));
         break;
       case "budget-low":
-        result.sort((a, b) => (a.budget || 0) - (b.budget || 0));
+      case "price-low":
+        result.sort((a, b) => ((a.price ?? a.budget) || 0) - ((b.price ?? b.budget) || 0));
         break;
       case "oldest":
         result.reverse();
