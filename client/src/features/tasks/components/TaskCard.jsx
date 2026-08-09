@@ -138,7 +138,6 @@ export default function TaskCard({
 
             <TaskMenu
               task={task}
-              onViewApplicants={onViewApplicants}
               onViewDetails={onViewDetails}
               onDuplicate={onDuplicate}
               onBookmark={onBookmark}
