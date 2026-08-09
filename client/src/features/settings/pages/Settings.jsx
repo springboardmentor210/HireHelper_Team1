@@ -1,350 +1,191 @@
 import React, { useState, useRef } from 'react';
+import { Bell, ChevronDown } from 'lucide-react';
 import './Settings.css';
+import avatarImg from '../../../assets/settings-image/Ellipse 77.png';
+import searchImg from '../../../assets/settings-image/search-interface-symbol (2) 1.png';
 
 export default function Settings() {
   const [profile, setProfile] = useState({
     firstName: 'Jon',
     lastName: 'Doe',
     email: 'test@gmail.com',
-    phone: '9837483829',
+    phone: '',
+    bio: '',
     profilePicture: null
   });
 
   const [saving, setSaving] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordSuccess, setPasswordSuccess] = useState('');
-
   const fileInputRef = useRef(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfile(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setProfile(prev => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setErrorMsg('Image size must be under 5MB.');
-        return;
-      }
-      setErrorMsg('');
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfile(prev => ({
-          ...prev,
-          profilePicture: reader.result
-        }));
-        setSuccessMsg('Profile photo updated in preview!');
-        setTimeout(() => setSuccessMsg(''), 3000);
+        setProfile(prev => ({ ...prev, profilePicture: reader.result }));
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleRemoveImage = () => {
-    setProfile(prev => ({
-      ...prev,
-      profilePicture: null
-    }));
-    setSuccessMsg('Profile photo removed.');
-    setTimeout(() => setSuccessMsg(''), 3000);
+    setProfile(prev => ({ ...prev, profilePicture: null }));
   };
 
   const handleSaveChanges = (e) => {
     e.preventDefault();
     setSaving(true);
-    setErrorMsg('');
-    setSuccessMsg('');
-    setTimeout(() => {
-      setSaving(false);
-      setSuccessMsg('Changes saved successfully!');
-      setTimeout(() => setSuccessMsg(''), 3000);
-    }, 1200);
-  };
-
-  const handlePasswordChangeSubmit = (e) => {
-    e.preventDefault();
-    setPasswordError('');
-    setPasswordSuccess('');
-
-    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
-      setPasswordError('All fields are required.');
-      return;
-    }
-
-    if (passwordForm.newPassword.length < 6) {
-      setPasswordError('New password must be at least 6 characters.');
-      return;
-    }
-
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError('Passwords do not match.');
-      return;
-    }
-
-    setPasswordSuccess('Password updated successfully!');
-    setTimeout(() => {
-      setShowPasswordModal(false);
-      setPasswordForm({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
-      setPasswordSuccess('');
-    }, 1500);
+    setTimeout(() => setSaving(false), 1000);
   };
 
   return (
     <div className="hire-wrapper">
       <aside className="sidebar">
         <div className="logo">
-          <div className="logo-circle">❤</div>
-          <div>
-            <h2>Hire-a-Helper</h2>
-          </div>
+          <h2>Hire-a-Helper</h2>
         </div>
-
         <nav>
-          <a href="#">🏠 Feed</a>
-          <a href="#">📋 My Tasks</a>
-          <a href="#">📦 Requests</a>
-          <a href="#">📂 My Requests</a>
-          <a href="#">➕ Add Task</a>
-          <a href="#" className="active">⚙ Settings</a>
+          <a href="#">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Feed
+          </a>
+          <a href="#">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            My Tasks
+          </a>
+          <a href="#">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Requests
+          </a>
+          <a href="#">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            My Requests
+          </a>
+          <a href="#">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+            Saved
+          </a>
+          <a href="#">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add Task
+          </a>
+          <a href="#" className="active">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Settings
+          </a>
         </nav>
+        
+        <div className="sidebar-profile">
+          <img src={profile.profilePicture || avatarImg} alt="Avatar" className="sidebar-avatar" />
+          <div className="sidebar-profile-info">
+            <span className="sidebar-name">Jon Doe</span>
+            <span className="sidebar-email">test@gmail.com</span>
+          </div>
+          <ChevronDown size={16} color="#666" className="sidebar-chevron" />
+        </div>
       </aside>
 
-      <main className="main">
-        <header className="navbar">
-          <div>
+      <main className="main-content">
+        <header className="topbar">
+          <div className="page-header">
             <h1>Settings</h1>
-            <span>Manage your account and profile preferences</span>
+            <p>Manage your account and profile preferences</p>
+          </div>
+          <div className="topbar-right">
+            <div className="search-bar">
+              <img src={searchImg} alt="Search" className="search-icon" />
+              <input type="text" placeholder="Search tasks..." />
+            </div>
+            <div className="notification-bell">
+              <Bell fill="#fbbf24" stroke="none" size={24} />
+              <span className="notification-dot">1</span>
+            </div>
           </div>
         </header>
 
-        <div className="settings-container">
-          {errorMsg && <div className="alert alert-error"><span>{errorMsg}</span></div>}
-          {successMsg && <div className="alert alert-success"><span>{successMsg}</span></div>}
-
-          <div className="settings-card">
-            {/* Section 1: Profile Picture */}
-            <div className="settings-section">
-              <h3>Profile Picture</h3>
-              <div className="profile-upload-container">
-                <div className="avatar-preview-large">
-                  {profile.profilePicture ? (
-                    <img src={profile.profilePicture} alt="Avatar Preview" />
-                  ) : (
-                    profile.firstName.charAt(0)
-                  )}
-                </div>
-                <div className="upload-controls">
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleImageChange} 
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                  />
-                  <button 
-                    type="button" 
-                    className="btn btn-primary btn-sm"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    Change Photo
-                  </button>
-                  {profile.profilePicture && (
-                    <button 
-                      type="button" 
-                      className="btn btn-secondary btn-sm"
-                      onClick={handleRemoveImage}
-                    >
-                      Remove
-                    </button>
-                  )}
-                  <p className="file-hint">JPG, PNG up to 5MB</p>
-                </div>
-              </div>
+        <div className="settings-content">
+          <div className="card profile-photo-card">
+            <div className="avatar-preview">
+              <img src={profile.profilePicture || avatarImg} alt="Profile" />
             </div>
-
-            <form id="settings-form" onSubmit={handleSaveChanges}>
-              {/* Section 2: Personal Information */}
-              <div className="settings-section">
-                <h3>Personal Information</h3>
-                <div className="form-grid">
-                  <div className="input-field">
-                    <label htmlFor="firstName">First Name</label>
-                    <div className="input-wrapper">
-                      <input 
-                        id="firstName"
-                        type="text" 
-                        name="firstName" 
-                        value={profile.firstName} 
-                        onChange={handleInputChange}
-                        required 
-                      />
-                    </div>
-                  </div>
-
-                  <div className="input-field">
-                    <label htmlFor="lastName">Last Name</label>
-                    <div className="input-wrapper">
-                      <input 
-                        id="lastName"
-                        type="text" 
-                        name="lastName" 
-                        value={profile.lastName} 
-                        onChange={handleInputChange}
-                        required 
-                      />
-                    </div>
-                  </div>
-
-                  <div className="input-field">
-                    <label htmlFor="email">Email Address</label>
-                    <div className="input-wrapper disabled">
-                      <input 
-                        id="email"
-                        type="email" 
-                        value={profile.email} 
-                        disabled 
-                      />
-                    </div>
-                  </div>
-
-                  <div className="input-field">
-                    <label htmlFor="phone">Phone Number</label>
-                    <div className="input-wrapper">
-                      <input 
-                        id="phone"
-                        type="tel" 
-                        name="phone" 
-                        value={profile.phone} 
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-
-            {/* Section 3: Account Security */}
-            <div className="settings-section border-none">
-              <h3>Account Security</h3>
-              <div className="security-row">
-                <div className="security-info">
-                  <div className="security-text">
-                    <span className="security-title">Password</span>
-                    <span className="security-desc">Last updated 3 months ago</span>
-                  </div>
-                </div>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setShowPasswordModal(true)}
-                >
-                  Change Password
+            <div className="photo-actions">
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleImageChange} 
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+              />
+              <div className="photo-buttons">
+                <button type="button" className="btn btn-dark" onClick={() => fileInputRef.current?.click()}>
+                  Change Photo
+                </button>
+                <button type="button" className="btn btn-outline" onClick={handleRemoveImage}>
+                  Remove
                 </button>
               </div>
+              <span className="photo-hint">JPG, PNG upto 5MB</span>
             </div>
+          </div>
 
-            {/* Submit Button Moved Here */}
-            <div className="form-submit" style={{ marginTop: '40px', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
-              <button form="settings-form" type="submit" className="btn btn-dark" disabled={saving}>
-                {saving ? 'Saving changes...' : 'Save Changes'}
+          <form id="settings-form" onSubmit={handleSaveChanges}>
+            <div className="card form-card">
+              <h3>Personal Information</h3>
+              
+              <div className="form-row">
+                <div className="input-group">
+                  <label>First Name</label>
+                  <input type="text" name="firstName" value={profile.firstName} onChange={handleInputChange} placeholder="John" />
+                </div>
+                <div className="input-group">
+                  <label>Last Name</label>
+                  <input type="text" name="lastName" value={profile.lastName} onChange={handleInputChange} placeholder="Smith" />
+                </div>
+              </div>
+
+              <div className="input-group full-width">
+                <label>Email Address</label>
+                <input type="email" name="email" value={profile.email} disabled />
+              </div>
+
+              <div className="input-group full-width">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" value={profile.phone} onChange={handleInputChange} placeholder="+1 (555) 123-4567" />
+              </div>
+
+              <div className="input-group full-width">
+                <label>Bio (Optional)</label>
+                <textarea 
+                  name="bio" 
+                  value={profile.bio} 
+                  onChange={handleInputChange}
+                  placeholder="Experienced handyman and problem solver. Available for various tasks including furniture assembly, basic electrical work, and home organization. Professional, reliable, and detail-oriented."
+                ></textarea>
+              </div>
+
+              <button type="submit" className="btn btn-dark save-btn" disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
+          </form>
+
+          <div className="card security-card">
+            <div className="security-info">
+              <h3>Account Security</h3>
+              <div className="password-details">
+                <span className="label">Password</span>
+                <span className="hint">Last updated 3 months ago</span>
+              </div>
+            </div>
+            <button type="button" className="btn btn-outline">Change Password</button>
           </div>
         </div>
       </main>
-
-      {/* Password Change Modal */}
-      {showPasswordModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>Change Password</h3>
-              <button 
-                type="button" 
-                className="modal-close-btn"
-                onClick={() => setShowPasswordModal(false)}
-              >
-                ✕
-              </button>
-            </div>
-            
-            {passwordError && (
-              <div className="alert alert-error">
-                <span>{passwordError}</span>
-              </div>
-            )}
-            {passwordSuccess && (
-              <div className="alert alert-success">
-                <span>{passwordSuccess}</span>
-              </div>
-            )}
-
-            <form onSubmit={handlePasswordChangeSubmit} className="modal-form">
-              <div className="input-field">
-                <label>Current Password</label>
-                <input 
-                  type="password" 
-                  value={passwordForm.currentPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                  placeholder="Enter current password"
-                  required
-                />
-              </div>
-              <div className="input-field">
-                <label>New Password</label>
-                <input 
-                  type="password" 
-                  value={passwordForm.newPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                  placeholder="Enter new password (min. 6 chars)"
-                  required
-                />
-              </div>
-              <div className="input-field">
-                <label>Confirm New Password</label>
-                <input 
-                  type="password" 
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  placeholder="Confirm new password"
-                  required
-                />
-              </div>
-              
-              <div className="modal-actions">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setShowPasswordModal(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-dark">
-                  Update Password
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
