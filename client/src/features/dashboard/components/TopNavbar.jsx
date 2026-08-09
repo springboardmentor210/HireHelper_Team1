@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useNotifications } from "../../../context/NotificationContext";
+import NotificationsDropdown from "../../notifications/components/NotificationsDropdown";
 
 import "../styles/Navbar.css";
 
@@ -15,14 +17,27 @@ import {
 export default function TopNavbar({ user }) {
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+  const { unreadCount } = useNotifications() || { unreadCount: 0 };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setNotifOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
-  navigate("/dashboard");
-  window.location.reload();
-};
+    navigate("/dashboard");
+    window.location.reload();
+  };
 
   return (
     <header className="top-navbar">
@@ -59,13 +74,23 @@ export default function TopNavbar({ user }) {
         </button>
 
         {/* Notifications */}
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label="Notifications"
-        >
-          <FiBell />
-        </button>
+        <div style={{ position: "relative" }} ref={notifRef}>
+          <button
+            type="button"
+            className="icon-btn notification-bell-btn"
+            aria-label="Notifications"
+            onClick={() => setNotifOpen((prev) => !prev)}
+          >
+            <FiBell />
+            {unreadCount > 0 && (
+              <span className="notification-badge-dot">{unreadCount}</span>
+            )}
+          </button>
+
+          {notifOpen && (
+            <NotificationsDropdown onClose={() => setNotifOpen(false)} />
+          )}
+        </div>
 
         {/* Profile */}
         <div className="profile-wrapper">

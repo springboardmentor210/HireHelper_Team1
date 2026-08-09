@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Search, Bell } from "lucide-react";
-import NotificationsDropdown from "./NotificationsDropdown";
+import { useNotifications } from "../../../context/NotificationContext";
+import NotificationsDropdown from "../../notifications/components/NotificationsDropdown";
 
 export default function MyRequestsHeader({
   search,
   onSearchChange,
-  notifications = [],
 }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const { unreadCount } = useNotifications() || { unreadCount: 0 };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -29,7 +28,7 @@ export default function MyRequestsHeader({
         <p className="main-page-subtitle">Track the help requests you have sent</p>
       </div>
 
-      <div className="search-notification-bar" ref={dropdownRef}>
+      <div className="search-notification-bar" ref={dropdownRef} style={{ position: "relative" }}>
         <div className="search-input-wrapper">
           <Search size={15} className="search-icon" />
           <input
@@ -55,7 +54,6 @@ export default function MyRequestsHeader({
 
         {showNotifications && (
           <NotificationsDropdown
-            notifications={notifications}
             onClose={() => setShowNotifications(false)}
           />
         )}

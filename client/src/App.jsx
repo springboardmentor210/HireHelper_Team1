@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { NotificationProvider } from "./context/NotificationContext";
 
 // Feature Pages
 import MyTasks from "./features/tasks/pages/MyTasks";
@@ -16,56 +17,59 @@ import Dashboard from "./features/dashboard/pages/Dashboard";
 
 import Requests from "./features/requests/pages/Requests";
 import MyRequests from "./features/requests/pages/MyRequests";
+import NotificationsPage from "./features/notifications/pages/NotificationsPage";
 
 function App() {
   return (
-    <Routes>
-      {/* Root redirect */}
-      <Route path="/" element={<Navigate to="/mytasks" replace />} />
+    <NotificationProvider>
+      <Routes>
+        {/* Root redirect */}
+        <Route path="/" element={<Navigate to="/mytasks" replace />} />
 
-      {/* Task Routes */}
-      <Route path="/mytasks" element={<MyTasks />} />
-      <Route path="/tasks" element={<MyTasks />} />
-      <Route path="/tasks/:taskId" element={<MyTasks />} />
-      <Route path="/tasks/:taskId/applicants" element={<MyTasks />} />
+        {/* Task Routes */}
+        <Route path="/mytasks" element={<MyTasks />} />
+        <Route path="/tasks" element={<MyTasks />} />
+        <Route path="/tasks/:taskId" element={<MyTasks />} />
+        <Route path="/tasks/:taskId/applicants" element={<MyTasks />} />
 
-      {/* Add Task Routes */}
-      <Route path="/addtasks" element={<AddTask />} />
-      <Route path="/add-task" element={<AddTask />} />
-      <Route path="/tasks/add" element={<AddTask />} />
+        {/* Add Task Routes */}
+        <Route path="/addtasks" element={<AddTask />} />
+        <Route path="/add-task" element={<AddTask />} />
+        <Route path="/tasks/add" element={<AddTask />} />
 
-      {/* Authentication */}
-      <Route path="/home" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="/verify-otp" element={<VerifyOTP />} />
+        {/* Authentication */}
+        <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
 
-      {/* Dashboard & Settings */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/settings" element={<Settings />} />
+        {/* Dashboard & Settings */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
 
-      {/* Feed */}
-      <Route path="/feed" element={<Feed />} />
+        {/* Feed */}
+        <Route path="/feed" element={<Feed />} />
 
-      {/* Requests */}
-      <Route path="/requests" element={<Requests />} />
+        {/* Requests */}
+        <Route path="/requests" element={<Requests />} />
 
-      {/* My Requests */}
-      <Route path="/myrequests" element={<MyRequests />} />
-      <Route path="/my-requests" element={<MyRequests />} />
+        {/* My Requests */}
+        <Route path="/myrequests" element={<MyRequests />} />
+        <Route path="/my-requests" element={<MyRequests />} />
 
-      {/* Other Routes */}
-      <Route path="/saved" element={<MyTasks />} />
-      <Route path="/notifications" element={<MyRequests />} />
+        {/* Other Routes */}
+        <Route path="/saved" element={<MyTasks />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
 
-      {/* 404 */}
-      <Route
-        path="*"
-        element={<Navigate to="/mytasks" replace />}
-      />
-    </Routes>
+        {/* 404 */}
+        <Route
+          path="*"
+          element={<Navigate to="/mytasks" replace />}
+        />
+      </Routes>
+    </NotificationProvider>
   );
 }
 
