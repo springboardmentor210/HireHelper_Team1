@@ -1,5 +1,9 @@
 import React, { useState, useRef } from 'react';
+<<<<<<< HEAD
 import { Bell, ChevronDown } from 'lucide-react';
+=======
+import Sidebar from "../../../components/layout/Sidebar"; 
+>>>>>>> origin/develop
 import './Settings.css';
 import avatarImg from '../../../assets/settings-image/Ellipse 77.png';
 import searchImg from '../../../assets/settings-image/search-interface-symbol (2) 1.png';
@@ -45,6 +49,7 @@ export default function Settings() {
 
   return (
     <div className="hire-wrapper">
+<<<<<<< HEAD
       <aside className="sidebar">
         <div className="logo">
           <h2>Hire-a-Helper</h2>
@@ -89,6 +94,9 @@ export default function Settings() {
           <ChevronDown size={16} color="#666" className="sidebar-chevron" />
         </div>
       </aside>
+=======
+      <Sidebar />
+>>>>>>> origin/develop
 
       <main className="main-content">
         <header className="topbar">
@@ -133,6 +141,7 @@ export default function Settings() {
             </div>
           </div>
 
+<<<<<<< HEAD
           <form id="settings-form" onSubmit={handleSaveChanges}>
             <div className="card form-card">
               <h3>Personal Information</h3>
@@ -170,6 +179,12 @@ export default function Settings() {
 
               <button type="submit" className="btn btn-dark save-btn" disabled={saving}>
                 {saving ? 'Saving...' : 'Save Changes'}
+=======
+            {/* Submit Button */}
+            <div className="form-submit" style={{ marginTop: '40px', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
+              <button form="settings-form" type="submit" className="btn btn-dark" disabled={saving}>
+                {saving ? 'Saving changes...' : 'Save Changes'}
+>>>>>>> origin/develop
               </button>
             </div>
           </form>
