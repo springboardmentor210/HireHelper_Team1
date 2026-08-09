@@ -24,7 +24,7 @@ function App() {
     <NotificationProvider>
       <Routes>
         {/* Root redirect */}
-        <Route path="/" element={<Navigate to="/mytasks" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
         {/* Task Routes */}
         <Route path="/mytasks" element={<MyTasks />} />
@@ -66,7 +66,7 @@ function App() {
         {/* 404 */}
         <Route
           path="*"
-          element={<Navigate to="/mytasks" replace />}
+          element={<Navigate to="/dashboard" replace />}
         />
       </Routes>
     </NotificationProvider>
