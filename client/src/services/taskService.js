@@ -190,28 +190,6 @@ export const bookmarkTask = async (id) => {
   return data;
 };
 
-// POST /api/tasks/:id/duplicate
-export const duplicateTask = async (id) => {
-  if (USE_MOCK) {
-    const tasks = getStoredTasks();
-    const target = tasks.find((t) => t.id === id);
-    if (!target) return Promise.reject("Task not found");
-    const duplicated = {
-      ...target,
-      id: `t_${Date.now()}`,
-      title: `${target.title} (Copy)`,
-      status: "Active",
-      applicants: 0,
-      applicantList: []
-    };
-    const updated = [duplicated, ...tasks];
-    saveStoredTasks(updated);
-    return Promise.resolve(duplicated);
-  }
-  const { data } = await api.post(`/tasks/${id}/duplicate`);
-  return data;
-};
-
 // GET /api/tasks/:id/applicants
 export const getApplicants = async (id) => {
   if (USE_MOCK) {

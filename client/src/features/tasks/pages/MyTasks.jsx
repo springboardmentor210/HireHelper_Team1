@@ -119,15 +119,6 @@ export default function MyTasks() {
     }
   };
 
-  const handleDuplicate = async (taskId) => {
-    try {
-      await taskService.duplicateTask(taskId);
-      loadData();
-    } catch (err) {
-      console.error("Duplicate action failed:", err);
-    }
-  };
-
   const handleDelete = async (taskId) => {
     if (window.confirm("Are you sure you want to delete this task?")) {
       try {
@@ -182,7 +173,6 @@ export default function MyTasks() {
             tasks={filteredTasks}
             onViewApplicants={(task) => setApplicantModalTask(task)}
             onViewDetails={(task) => setDetailModalTask(task)}
-            onDuplicate={handleDuplicate}
             onBookmark={handleBookmark}
             onDelete={handleDelete}
           />

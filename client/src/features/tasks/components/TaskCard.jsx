@@ -12,7 +12,6 @@ export default function TaskCard({
   task,
   onViewApplicants,
   onViewDetails,
-  onDuplicate,
   onBookmark,
   onDelete,
 }) {
@@ -119,7 +118,6 @@ export default function TaskCard({
               task={task}
               onViewApplicants={onViewApplicants}
               onViewDetails={onViewDetails}
-              onDuplicate={onDuplicate}
               onBookmark={onBookmark}
               onDelete={onDelete}
             />
