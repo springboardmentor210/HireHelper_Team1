@@ -1,142 +1,317 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../../../components/layout/Sidebar";
 
 import SearchBar from "../../tasks/components/SearchBar";
 import IncomingRequestTabs from "../components/IncomingRequestTabs";
 import IncomingRequestCard from "../components/IncomingRequestCard";
 
-import mockRequests from "../data/mockRequests";
+import {
+  getIncomingRequests,
+  acceptRequest,
+  declineRequest,
+} from "../../../services/requestService";
 
 import "../styles/Requests.css";
 
 const Requests = () => {
-  // Temporary data (Replace with API later)
-  const [requests, setRequests] = useState(mockRequests);
+  const [requests, setRequests] = useState([]);
 
-  // Active Tab
-  const [activeTab, setActiveTab] = useState("incoming");
-
-  // Search Query
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Counts
-  const counts = {
-    incoming: requests.filter(
-      (request) => request.status === "incoming"
-    ).length,
-
-    accepted: requests.filter(
-      (request) => request.status === "accepted"
-    ).length,
-
-    declined: requests.filter(
-      (request) => request.status === "declined"
-    ).length,
-
-    archived: requests.filter(
-      (request) => request.status === "archived"
-    ).length,
-  };
-
-  // Search + Status Filter
-  const filteredRequests = requests.filter((request) => {
-    const matchesTab =
-      activeTab === "all" || request.status === activeTab;
-
-    const keyword = searchQuery.toLowerCase();
-
-    const fullName = `${request.applicant?.firstName || ""} ${
-      request.applicant?.lastName || ""
-    }`;
-
-    const matchesSearch =
-      fullName.toLowerCase().includes(keyword) ||
-      (request.task?.title || "")
-        .toLowerCase()
-        .includes(keyword);
-
-    return matchesTab && matchesSearch;
+  const [counts, setCounts] = useState({
+    pending: 0,
+    accepted: 0,
+    declined: 0,
+    cancelled: 0,
   });
 
-  // Accept Request
-  const handleAccept = (id) => {
-    setRequests((prev) =>
-      prev.map((request) =>
-        request.id === id
-          ? {
-              ...request,
-              status: "accepted",
-            }
-          : request
-      )
-    );
+  const [activeTab, setActiveTab] = useState("incoming");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // =========================
+  // Load Incoming Requests
+  // =========================
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadRequests = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await getIncomingRequests();
+
+        if (!isMounted) return;
+
+        const data = response?.data || {};
+
+        setRequests(data.requests || []);
+
+        setCounts({
+          pending: data.counts?.pending || 0,
+          accepted: data.counts?.accepted || 0,
+          declined: data.counts?.declined || 0,
+          cancelled: data.counts?.cancelled || 0,
+        });
+      } catch (err) {
+        if (!isMounted) return;
+
+        console.error(
+          "Failed to fetch incoming requests:",
+          err
+        );
+
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to load requests."
+        );
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadRequests();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // =========================
+  // Tab Counts
+  // =========================
+
+  const tabCounts = {
+    incoming: counts.pending,
+    accepted: counts.accepted,
+    declined: counts.declined,
+
+    // Backend does not have an "archived" status.
+    archived: counts.declined,
   };
 
-  // Decline Request
-  const handleDecline = (id) => {
-    setRequests((prev) =>
-      prev.map((request) =>
-        request.id === id
-          ? {
-              ...request,
-              status: "declined",
-            }
-          : request
-      )
+  // =========================
+  // Search
+  // =========================
+
+  const filteredRequests = requests.filter((request) => {
+    const requester = request.requester || {};
+    const task = request.task || {};
+
+    const requesterName =
+      `${requester.firstName || ""} ${
+        requester.lastName || ""
+      }`.trim();
+
+    const keyword = searchQuery
+      .trim()
+      .toLowerCase();
+
+    if (!keyword) {
+      return true;
+    }
+
+    return (
+      requesterName
+        .toLowerCase()
+        .includes(keyword) ||
+      (task.title || "")
+        .toLowerCase()
+        .includes(keyword)
     );
+  });
+
+  // =========================
+  // Accept
+  // =========================
+
+  const handleAccept = async (requestId) => {
+    try {
+      setError("");
+
+      await acceptRequest(requestId);
+
+      setRequests((previous) =>
+        previous.filter(
+          (request) => request._id !== requestId
+        )
+      );
+
+      setCounts((previous) => ({
+        ...previous,
+        pending: Math.max(
+          previous.pending - 1,
+          0
+        ),
+        accepted: previous.accepted + 1,
+      }));
+    } catch (err) {
+      console.error(
+        "Failed to accept request:",
+        err
+      );
+
+      setError(
+        err.response?.data?.message ||
+          "Failed to accept request."
+      );
+    }
   };
+
+  // =========================
+  // Decline
+  // =========================
+
+  const handleDecline = async (requestId) => {
+    try {
+      setError("");
+
+      await declineRequest(requestId);
+
+      setRequests((previous) =>
+        previous.filter(
+          (request) => request._id !== requestId
+        )
+      );
+
+      setCounts((previous) => ({
+        ...previous,
+        pending: Math.max(
+          previous.pending - 1,
+          0
+        ),
+        declined: previous.declined + 1,
+      }));
+    } catch (err) {
+      console.error(
+        "Failed to decline request:",
+        err
+      );
+
+      setError(
+        err.response?.data?.message ||
+          "Failed to decline request."
+      );
+    }
+  };
+
+  // =========================
+  // Render
+  // =========================
 
   return (
-    <div className="requests-layout">
+    <div className="requests-page">
       <Sidebar />
 
       <main className="requests-main">
+
         {/* Header */}
+
         <header className="requests-header">
+
           <div className="requests-header-left">
+
             <h1>Requests</h1>
-            <p>People who want to help with your tasks</p>
+
+            <p>
+              People who want to help with your tasks
+            </p>
+
           </div>
 
           <div className="requests-header-right">
+
             <SearchBar
               value={searchQuery}
               onChange={setSearchQuery}
             />
+
           </div>
+
         </header>
 
         {/* Tabs */}
+
         <IncomingRequestTabs
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          counts={counts}
+          counts={tabCounts}
         />
 
         {/* Section */}
+
         <section className="requests-section">
-          <h2>Incoming Requests</h2>
-          <p>People who want to help with your tasks</p>
+
+          <h2>
+            {activeTab === "incoming"
+              ? "Incoming Requests"
+              : activeTab === "accepted"
+              ? "Accepted Requests"
+              : activeTab === "declined"
+              ? "Declined Requests"
+              : "Archived Requests"}
+          </h2>
+
+          <p>
+            {activeTab === "incoming"
+              ? "People who want to help with your tasks"
+              : "Manage your task requests"}
+          </p>
+
         </section>
 
+        {/* Error */}
+
+        {error && (
+          <div className="empty-state">
+            <h3>Unable to Load Requests</h3>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {/* Loading */}
+
+        {loading && !error && (
+          <div className="empty-state">
+            <h3>Loading Requests...</h3>
+            <p>
+              Fetching requests from the server.
+            </p>
+          </div>
+        )}
+
         {/* Request Cards */}
-        <section className="requests-list">
-          {filteredRequests.length > 0 ? (
-            filteredRequests.map((request) => (
-              <IncomingRequestCard
-                key={request.id}
-                request={request}
-                onAccept={handleAccept}
-                onDecline={handleDecline}
-              />
-            ))
-          ) : (
-            <div className="empty-state">
-              <h3>No Requests Found</h3>
-              <p>There are no requests available.</p>
-            </div>
-          )}
-        </section>
+
+        {!loading && !error && (
+          <section className="requests-list">
+
+            {filteredRequests.length > 0 ? (
+              filteredRequests.map((request) => (
+                <IncomingRequestCard
+                  key={request._id}
+                  request={request}
+                  onAccept={handleAccept}
+                  onDecline={handleDecline}
+                />
+              ))
+            ) : (
+              <div className="empty-state">
+                <h3>No Requests Found</h3>
+                <p>
+                  There are no pending requests
+                  available.
+                </p>
+              </div>
+            )}
+
+          </section>
+        )}
+
       </main>
     </div>
   );

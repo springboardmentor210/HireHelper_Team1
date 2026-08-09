@@ -1,43 +1,38 @@
-import axios from 'axios';
+import axios from "axios";
 
-/**
- * Axios instance pre-configured for the HireHelper API.
- * Reads base URL from environment variable VITE_API_BASE_URL or defaults to http://localhost:5000/api.
- */
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "/api";
+
 const api = axios.create({
-  baseURL: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000,
 });
 
-// Request Interceptor: Attach Auth Token if available
+// Attach authentication token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token = localStorage.getItem("token");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Global Error Handler
+// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response?.status;
-    if (status === 401) {
-      console.warn('Unauthorized access - 401');
-    } else if (status === 403) {
-      console.warn('Forbidden resource - 403');
-    } else if (status === 404) {
-      console.warn('Resource not found - 404');
-    } else if (status >= 500) {
-      console.error('Server error - 500 range');
+    if (error.response?.status === 401) {
+      console.warn("Unauthorized request - 401");
     }
+
     return Promise.reject(error);
   }
 );
