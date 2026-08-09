@@ -77,6 +77,20 @@ const taskSchema = new mongoose.Schema(
       default: [],
     },
 
+    // GeoJSON point for distance-based sort/filtering.
+    // coordinates order is [longitude, latitude], per GeoJSON spec.
+    coordinates: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: undefined,
+      },
+    },
+
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -112,6 +126,7 @@ const taskSchema = new mongoose.Schema(
 taskSchema.index({ title: "text", description: "text" });
 taskSchema.index({ status: 1, category: 1 });
 taskSchema.index({ postedBy: 1 });
+taskSchema.index({ coordinates: "2dsphere" });
 
 export const TASK_CATEGORIES = CATEGORIES;
 export const TASK_STATUSES = STATUSES;
