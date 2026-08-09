@@ -8,12 +8,15 @@ const filesToImagePaths = (files = [], singleFile = null) => {
   if (files && files.length > 0) {
     return files.map((file) => `/uploads/tasks/${file.filename}`);
   }
+
   if (singleFile) {
     return [`/uploads/tasks/${singleFile.filename}`];
   }
+
   return [];
 };
-// Create task
+
+// Create task.
 export const createTask = asyncHandler(async (req, res) => {
   const {
     title,
@@ -25,9 +28,11 @@ export const createTask = asyncHandler(async (req, res) => {
     endTime,
     category,
     price,
+    lat,
+    lng,
   } = req.body;
 
-  // Required fields
+  // Required fields.
   if (!title || !description || !location || !startDate || !startTime || !category) {
     return res
       .status(400)
@@ -59,6 +64,20 @@ export const createTask = asyncHandler(async (req, res) => {
 
   const images = filesToImagePaths(req.files, req.file);
 
+  let coordinates;
+
+  if (lat !== undefined && lng !== undefined && lat !== "" && lng !== "") {
+    const latNum = Number(lat);
+    const lngNum = Number(lng);
+
+    if (!Number.isNaN(latNum) && !Number.isNaN(lngNum)) {
+      coordinates = {
+        type: "Point",
+        coordinates: [lngNum, latNum],
+      };
+    }
+  }
+
   const task = await Task.create({
     title,
     description,
@@ -70,15 +89,84 @@ export const createTask = asyncHandler(async (req, res) => {
     category,
     price: numericPrice,
     images,
+    coordinates,
     postedBy: req.user._id,
   });
 
   return res.status(201).json(new ApiResponse(201, "Task created successfully", task));
 });
 
-// Fetch task feed
+// Fetch task feed.
 export const getFeed = asyncHandler(async (req, res) => {
-  const { category, search, sort = "newest", page = 1, limit = 12 } = req.query;
+  const { category, search, sort = "newest", page = 1, limit = 12, lat, lng } = req.query;
+
+  const pageNum = Math.max(Number(page) || 1, 1);
+  const limitNum = Math.min(Math.max(Number(limit) || 12, 1), 50);
+  const skip = (pageNum - 1) * limitNum;
+
+  if (category && category !== "all" && !TASK_CATEGORIES.includes(category)) {
+    return res
+      .status(400)
+      .json(new ApiError(400, `Category must be one of: ${TASK_CATEGORIES.join(", ")}`));
+  }
+
+  if (sort === "distance" && lat !== undefined && lng !== undefined) {
+    const latNum = Number(lat);
+    const lngNum = Number(lng);
+
+    if (Number.isNaN(latNum) || Number.isNaN(lngNum)) {
+      return res.status(400).json(new ApiError(400, "lat and lng must be valid numbers"));
+    }
+
+    const matchStage = {
+      status: "active",
+      postedBy: { $ne: req.user._id },
+    };
+
+    if (category && category !== "all") {
+      matchStage.category = category;
+    }
+
+    if (search) {
+      matchStage.$text = { $search: search };
+    }
+
+    const pipeline = [
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lngNum, latNum] },
+          distanceField: "distanceInMeters",
+          query: matchStage,
+          spherical: true,
+        },
+      },
+      { $skip: skip },
+      { $limit: limitNum },
+    ];
+
+    const [tasks, total] = await Promise.all([
+      Task.aggregate(pipeline),
+      Task.countDocuments(matchStage),
+    ]);
+
+    // Populate task owner details.
+    await Task.populate(tasks, {
+      path: "postedBy",
+      select: "firstName lastName profilePicture",
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, "Feed fetched successfully", {
+        tasks,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      })
+    );
+  }
 
   const query = {
     status: "active",
@@ -86,11 +174,6 @@ export const getFeed = asyncHandler(async (req, res) => {
   };
 
   if (category && category !== "all") {
-    if (!TASK_CATEGORIES.includes(category)) {
-      return res
-        .status(400)
-        .json(new ApiError(400, `Category must be one of: ${TASK_CATEGORIES.join(", ")}`));
-    }
     query.category = category;
   }
 
@@ -105,10 +188,6 @@ export const getFeed = asyncHandler(async (req, res) => {
   };
 
   const sortOption = sortMap[sort] || sortMap.newest;
-
-  const pageNum = Math.max(Number(page) || 1, 1);
-  const limitNum = Math.min(Math.max(Number(limit) || 12, 1), 50);
-  const skip = (pageNum - 1) * limitNum;
 
   const [tasks, total] = await Promise.all([
     Task.find(query)
@@ -132,7 +211,7 @@ export const getFeed = asyncHandler(async (req, res) => {
   );
 });
 
-// Fetch user's tasks
+// Fetch user's tasks.
 export const getMyTasks = asyncHandler(async (req, res) => {
   const { status, category, sort = "newest", page = 1, limit = 12 } = req.query;
 
@@ -144,6 +223,7 @@ export const getMyTasks = asyncHandler(async (req, res) => {
         .status(400)
         .json(new ApiError(400, `Status must be one of: ${TASK_STATUSES.join(", ")}`));
     }
+
     query.status = status;
   }
 
@@ -178,7 +258,7 @@ export const getMyTasks = asyncHandler(async (req, res) => {
     ]),
   ]);
 
-  // Calculate task statistics
+  // Calculate task statistics.
   const stats = {
     active: 0,
     inProgress: 0,
@@ -192,6 +272,7 @@ export const getMyTasks = asyncHandler(async (req, res) => {
 
     if (row._id === "active") stats.active = row.count;
     if (row._id === "in_progress") stats.inProgress = row.count;
+
     if (row._id === "completed") {
       stats.completed = row.count;
       stats.totalEarnings = row.totalValue;
@@ -212,7 +293,7 @@ export const getMyTasks = asyncHandler(async (req, res) => {
   );
 });
 
-// Fetch task by ID
+// Fetch task by ID.
 export const getTaskById = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id).populate(
     "postedBy",
@@ -226,7 +307,7 @@ export const getTaskById = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "Task fetched successfully", task));
 });
 
-// Update task
+// Update task.
 export const updateTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id);
 
@@ -244,7 +325,7 @@ export const updateTask = asyncHandler(async (req, res) => {
       .json(new ApiError(400, "Only active tasks can be edited"));
   }
 
-  // Editable task fields
+  // Editable task fields.
   const editableFields = [
     "title",
     "description",
@@ -278,7 +359,7 @@ export const updateTask = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "Task updated successfully", task));
 });
 
-// Update task status
+// Update task status.
 export const updateTaskStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
 
@@ -313,7 +394,7 @@ export const updateTaskStatus = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, `Task marked as ${status}`, task));
 });
 
-// Delete task
+// Delete task.
 export const deleteTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id);
 
