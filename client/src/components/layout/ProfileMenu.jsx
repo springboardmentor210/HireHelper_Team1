@@ -1,4 +1,5 @@
 import React from "react";
+import { getProfileImageUrl } from "../../utils/profileImage";
 import { useNavigate } from "react-router-dom";
 import {
   User,
@@ -21,6 +22,16 @@ export default function ProfileMenu({ user, onClose }) {
     onClose?.();
   };
 
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+
+    onClose?.();
+    navigate("/login");
+  };
+
   return (
     <div
       style={{
@@ -38,7 +49,6 @@ export default function ProfileMenu({ user, onClose }) {
       }}
     >
       {/* Header */}
-
       <div
         style={{
           display: "flex",
@@ -49,8 +59,8 @@ export default function ProfileMenu({ user, onClose }) {
       >
         {user?.profilePicture ? (
           <img
-            src={user.profilePicture}
-            alt={fullName}
+            src={getProfileImageUrl(user.profilePicture)}
+            alt={`${fullName || "User"} profile`}
             style={{
               width: 62,
               height: 62,
@@ -61,7 +71,7 @@ export default function ProfileMenu({ user, onClose }) {
         ) : (
           <img
             src="https://api.dicebear.com/7.x/adventurer/svg?seed=John"
-            alt=""
+            alt="Profile"
             style={{
               width: 62,
               height: 62,
@@ -78,7 +88,7 @@ export default function ProfileMenu({ user, onClose }) {
               color: "#111827",
             }}
           >
-            {fullName}
+            {fullName || "John Doe"}
           </div>
 
           <div
@@ -116,42 +126,42 @@ export default function ProfileMenu({ user, onClose }) {
       />
 
       {/* View Profile */}
-
       <button
+        type="button"
         style={menuStyle}
-        onClick={() => handleNavigate("/settings")}
+        onClick={() => handleNavigate("/settings#profile")}
       >
         <div style={leftStyle}>
           <User size={19} />
-          View Profile
+          <span>View Profile</span>
         </div>
 
         <ChevronRight size={18} />
       </button>
 
       {/* Edit Profile */}
-
       <button
+        type="button"
         style={menuStyle}
-        onClick={() => handleNavigate("/settings")}
+        onClick={() => handleNavigate("/settings#personal-info")}
       >
         <div style={leftStyle}>
           <Pencil size={19} />
-          Edit Profile
+          <span>Edit Profile</span>
         </div>
 
         <ChevronRight size={18} />
       </button>
 
       {/* Change Password */}
-
       <button
+        type="button"
         style={menuStyle}
-        onClick={() => handleNavigate("/forgot-password")}
+        onClick={() => handleNavigate("/settings#security")}
       >
         <div style={leftStyle}>
           <Lock size={19} />
-          Change Password
+          <span>Change Password</span>
         </div>
 
         <ChevronRight size={18} />
@@ -164,18 +174,14 @@ export default function ProfileMenu({ user, onClose }) {
         }}
       />
 
-      {/* Logout */}
-
+      {/* Sign Out */}
       <button
+        type="button"
         style={{
           ...menuStyle,
           color: "#EF4444",
         }}
-        onClick={() => {
-          localStorage.removeItem("user");
-          navigate("/login");
-          onClose?.();
-        }}
+        onClick={handleSignOut}
       >
         <div
           style={{
@@ -184,7 +190,7 @@ export default function ProfileMenu({ user, onClose }) {
           }}
         >
           <LogOut size={19} />
-          Sign Out
+          <span>Sign Out</span>
         </div>
       </button>
     </div>

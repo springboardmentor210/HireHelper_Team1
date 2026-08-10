@@ -84,14 +84,15 @@ if (existingUser) {
 
   // Create User
   const user = await User.create({
-    firstName,
-    lastName,
-    email,
-    phone,
-    password: hashedPassword,
-    otp,
-    otpExpiry,
-  });
+  firstName,
+  lastName,
+  email,
+  phone,
+  password: hashedPassword,
+  passwordUpdatedAt: new Date(),
+  otp,
+  otpExpiry,
+});
 
   // Send OTP Email
   try {
@@ -114,7 +115,79 @@ if (existingUser) {
   );
 });
 
+export const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
 
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return res
+      .status(400)
+      .json(
+        new ApiError(
+          400,
+          "Current password, new password, and confirm password are required"
+        )
+      );
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "New passwords do not match"));
+  }
+
+  if (newPassword.length < 6) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "New password must be at least 6 characters"));
+  }
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    return res
+      .status(404)
+      .json(new ApiError(404, "User not found"));
+  }
+
+  const isCurrentPasswordCorrect = await bcrypt.compare(
+    currentPassword,
+    user.password
+  );
+
+  if (!isCurrentPasswordCorrect) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "Current password is incorrect"));
+  }
+
+  const isSamePassword = await bcrypt.compare(
+    newPassword,
+    user.password
+  );
+
+  if (isSamePassword) {
+    return res
+      .status(400)
+      .json(new ApiError(400, "New password must be different from current password"));
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    newPassword,
+    SALT_ROUNDS
+  );
+
+  user.password = hashedPassword;
+  user.passwordUpdatedAt = new Date();
+
+  await user.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Password changed successfully"
+    )
+  );
+});
 
 export const verifyOTP = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
@@ -330,23 +403,158 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const getProfile = asyncHandler(async (req, res) => {
+  const user = req.user.toObject();
 
-    return res.status(200).json(
+  delete user.password;
+  delete user.otp;
+  delete user.otpExpiry;
+  delete user.resetPasswordToken;
+  delete user.resetPasswordTokenExpiry;
 
-        new ApiResponse(
-
-            200,
-
-            "Profile fetched successfully",
-
-            req.user
-
-        )
-
-    );
-
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Profile fetched successfully",
+      user
+    )
+  );
 });
+export const updateProfile = asyncHandler(async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    phone,
+    bio,
+  } = req.body;
 
+  if (!firstName || !firstName.trim()) {
+    return res
+      .status(400)
+      .json(
+        new ApiError(
+          400,
+          "First name is required"
+        )
+      );
+  }
+
+  if (!lastName || !lastName.trim()) {
+    return res
+      .status(400)
+      .json(
+        new ApiError(
+          400,
+          "Last name is required"
+        )
+      );
+  }
+
+  if (!email || !email.trim()) {
+    return res
+      .status(400)
+      .json(
+        new ApiError(
+          400,
+          "Email is required"
+        )
+      );
+  }
+
+  const normalizedEmail =
+    email.trim().toLowerCase();
+
+  const normalizedPhone =
+    phone?.trim() || "";
+
+  // Check whether another user already owns this email.
+  const existingEmailUser =
+    await User.findOne({
+      email: normalizedEmail,
+      _id: { $ne: req.user._id },
+    });
+
+  if (existingEmailUser) {
+    return res
+      .status(409)
+      .json(
+        new ApiError(
+          409,
+          "Email address is already in use"
+        )
+      );
+  }
+
+  // Check phone only when one was supplied.
+  if (normalizedPhone) {
+    const existingPhoneUser =
+      await User.findOne({
+        phone: normalizedPhone,
+        _id: { $ne: req.user._id },
+      });
+
+    if (existingPhoneUser) {
+      return res
+        .status(409)
+        .json(
+          new ApiError(
+            409,
+            "Phone number is already in use"
+          )
+        );
+    }
+  }
+
+  const user = await User.findById(
+    req.user._id
+  );
+
+  if (!user) {
+    return res
+      .status(404)
+      .json(
+        new ApiError(
+          404,
+          "User not found"
+        )
+      );
+  }
+
+  user.firstName = firstName.trim();
+  user.lastName = lastName.trim();
+  user.email = normalizedEmail;
+  user.phone = normalizedPhone;
+  user.bio = bio?.trim() || "";
+
+  if (req.file) {
+    user.profilePicture =
+      `/uploads/profiles/${req.file.filename}`;
+  } else if (
+    req.body.removeProfilePicture === "true"
+  ) {
+    user.profilePicture = "";
+  }
+
+  await user.save();
+
+  // Never send sensitive authentication fields
+  // back to the frontend.
+  const updatedUser = user.toObject();
+
+  delete updatedUser.password;
+  delete updatedUser.otp;
+  delete updatedUser.otpExpiry;
+  delete updatedUser.resetPasswordToken;
+  delete updatedUser.resetPasswordTokenExpiry;
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      "Profile updated successfully",
+      updatedUser
+    )
+  );
+});
 export const logout = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(

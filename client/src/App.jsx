@@ -16,10 +16,10 @@ import ForgotPassword from "./features/auth/pages/ForgotPassword";
 import ResetPassword from "./features/auth/pages/ResetPassword";
 import Settings from "./features/settings/pages/Settings";
 import Dashboard from "./features/dashboard/pages/Dashboard";
-
 import Requests from "./features/requests/pages/Requests";
 import MyRequests from "./features/requests/pages/MyRequests";
 import NotificationsPage from "./features/notifications/pages/NotificationsPage";
+import Saved from "./features/saved/pages/Saved";
 
 function App() {
   return (
@@ -114,61 +114,22 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Protected Settings */}
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
         {/* Feed - Publicly accessible to browse */}
         <Route path="/feed" element={<Feed />} />
 
-        {/* Protected Requests Routes */}
-        <Route
-          path="/requests"
-          element={
-            <ProtectedRoute>
-              <Requests />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/myrequests"
-          element={
-            <ProtectedRoute>
-              <MyRequests />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-requests"
-          element={
-            <ProtectedRoute>
-              <MyRequests />
-            </ProtectedRoute>
-          }
-        />
+        {/* Requests */}
+        <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
+
+        {/* My Requests */}
+        <Route path="/myrequests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
+        <Route path="/my-requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
 
         {/* Other Protected Routes */}
-        <Route
-          path="/saved"
-          element={
-            <ProtectedRoute>
-              <MyTasks />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/notifications"
-          element={
-            <ProtectedRoute>
-              <NotificationsPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/saved" element={<ProtectedRoute><Saved /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+
 
         {/* 404 */}
         <Route
