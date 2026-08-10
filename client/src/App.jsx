@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { NotificationProvider } from "./context/NotificationContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Feature Pages
 import MyTasks from "./features/tasks/pages/MyTasks";
@@ -14,10 +15,10 @@ import ForgotPassword from "./features/auth/pages/ForgotPassword";
 import ResetPassword from "./features/auth/pages/ResetPassword";
 import Settings from "./features/settings/pages/Settings";
 import Dashboard from "./features/dashboard/pages/Dashboard";
-
 import Requests from "./features/requests/pages/Requests";
 import MyRequests from "./features/requests/pages/MyRequests";
 import NotificationsPage from "./features/notifications/pages/NotificationsPage";
+import Saved from "./features/saved/pages/Saved";
 
 function App() {
   return (
@@ -27,15 +28,15 @@ function App() {
         <Route path="/" element={<Navigate to="/mytasks" replace />} />
 
         {/* Task Routes */}
-        <Route path="/mytasks" element={<MyTasks />} />
-        <Route path="/tasks" element={<MyTasks />} />
-        <Route path="/tasks/:taskId" element={<MyTasks />} />
-        <Route path="/tasks/:taskId/applicants" element={<MyTasks />} />
+        <Route path="/mytasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
+        <Route path="/tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
+        <Route path="/tasks/:taskId" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
+        <Route path="/tasks/:taskId/applicants" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
 
         {/* Add Task Routes */}
-        <Route path="/addtasks" element={<AddTask />} />
-        <Route path="/add-task" element={<AddTask />} />
-        <Route path="/tasks/add" element={<AddTask />} />
+        <Route path="/addtasks" element={<ProtectedRoute><AddTask /></ProtectedRoute>} />
+        <Route path="/add-task" element={<ProtectedRoute><AddTask /></ProtectedRoute>} />
+        <Route path="/tasks/add" element={<ProtectedRoute><AddTask /></ProtectedRoute>} />
 
         {/* Authentication */}
         <Route path="/home" element={<Home />} />
@@ -47,21 +48,21 @@ function App() {
 
         {/* Dashboard & Settings */}
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
         {/* Feed */}
         <Route path="/feed" element={<Feed />} />
 
         {/* Requests */}
-        <Route path="/requests" element={<Requests />} />
+        <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
 
         {/* My Requests */}
-        <Route path="/myrequests" element={<MyRequests />} />
-        <Route path="/my-requests" element={<MyRequests />} />
+        <Route path="/myrequests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
+        <Route path="/my-requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
 
         {/* Other Routes */}
-        <Route path="/saved" element={<MyTasks />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/saved" element={<ProtectedRoute><Saved /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
 
         {/* 404 */}
         <Route

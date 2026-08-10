@@ -5,7 +5,6 @@ export default function TaskGrid({
   tasks,
   onViewApplicants,
   onViewDetails,
-  onBookmark,
   onDelete,
 }) {
   return (
@@ -16,7 +15,6 @@ export default function TaskGrid({
           task={task}
           onViewApplicants={onViewApplicants}
           onViewDetails={onViewDetails}
-          onBookmark={onBookmark}
           onDelete={onDelete}
         />
       ))}

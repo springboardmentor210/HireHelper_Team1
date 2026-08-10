@@ -111,14 +111,7 @@ export default function MyTasks() {
   }, [tasks, filters, debouncedSearch]);
 
   // Action Handlers
-  const handleBookmark = async (taskId) => {
-    try {
-      await taskService.bookmarkTask(taskId);
-      loadData();
-    } catch (err) {
-      console.error("Bookmark action failed:", err);
-    }
-  };
+
 
   const handleDelete = async (taskId) => {
     if (window.confirm("Are you sure you want to delete this task?")) {
@@ -174,7 +167,6 @@ export default function MyTasks() {
             tasks={filteredTasks}
             onViewApplicants={(task) => setApplicantModalTask(task)}
             onViewDetails={(task) => setDetailModalTask(task)}
-            onBookmark={handleBookmark}
             onDelete={handleDelete}
           />
         )}

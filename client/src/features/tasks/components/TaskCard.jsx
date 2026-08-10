@@ -1,5 +1,4 @@
 import React from "react";
-import { Heart } from "lucide-react";
 import TaskMenu from "./TaskMenu";
 
 const defaultAvatars = [
@@ -12,7 +11,6 @@ export default function TaskCard({
   task,
   onViewApplicants,
   onViewDetails,
-  onBookmark,
   onDelete,
 }) {
   const getStatusClass = (status) => {
@@ -61,7 +59,7 @@ export default function TaskCard({
 
   return (
     <div className="task-card-item">
-      {/* Image Header with Status Overlay & Heart Icon */}
+      {/* Image Header with Status Overlay */}
       <div className="card-image-header">
         <img
           src={taskImage}
@@ -69,18 +67,6 @@ export default function TaskCard({
           className="task-cover-img"
         />
         <span className={getStatusClass(task.status)}>{task.status}</span>
-        <button
-          type="button"
-          className={`card-heart-btn ${task.isBookmarked ? "bookmarked" : ""}`}
-          onClick={() => onBookmark(task.id || task._id)}
-          aria-label="Bookmark"
-        >
-          <Heart
-            size={16}
-            fill={task.isBookmarked ? "#ef4444" : "none"}
-            color={task.isBookmarked ? "#ef4444" : "#64748b"}
-          />
-        </button>
       </div>
 
       {/* Card Content Body */}
@@ -139,7 +125,6 @@ export default function TaskCard({
               task={task}
               onViewApplicants={onViewApplicants}
               onViewDetails={onViewDetails}
-              onBookmark={onBookmark}
               onDelete={onDelete}
             />
           </div>

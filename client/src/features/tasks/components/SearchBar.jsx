@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Search, Bell } from "lucide-react";
 import { useNotifications } from "../../../context/NotificationContext";
 import NotificationsDropdown from "../../notifications/components/NotificationsDropdown";
+import "../../../components/layout/SearchBar.css";
 
 export default function SearchBar({ value, onChange, onNotificationClick }) {
   const [isOpen, setIsOpen] = useState(false);
