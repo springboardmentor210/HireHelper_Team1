@@ -6,7 +6,6 @@ export default function TaskGrid({
   onViewApplicants,
   onViewDetails,
   onDuplicate,
-  onBookmark,
   onDelete,
 }) {
   return (
@@ -18,7 +17,6 @@ export default function TaskGrid({
           onViewApplicants={onViewApplicants}
           onViewDetails={onViewDetails}
           onDuplicate={onDuplicate}
-          onBookmark={onBookmark}
           onDelete={onDelete}
         />
       ))}

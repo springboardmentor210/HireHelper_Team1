@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MoreVertical, Copy, Bookmark, Trash2, Eye, Users } from "lucide-react";
+import { MoreVertical, Copy, Trash2, Eye, Users } from "lucide-react";
 
-export default function TaskMenu({ task, onViewApplicants, onViewDetails, onDuplicate, onBookmark, onDelete }) {
+export default function TaskMenu({ task, onViewApplicants, onViewDetails, onDuplicate, onDelete }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -44,15 +44,6 @@ export default function TaskMenu({ task, onViewApplicants, onViewDetails, onDupl
           >
             <Eye size={16} />
             <span>View Details</span>
-          </button>
-
-          <button
-            type="button"
-            className="menu-item-btn"
-            onClick={() => { setOpen(false); onBookmark(task.id); }}
-          >
-            <Bookmark size={16} />
-            <span>{task.isBookmarked ? "Remove Bookmark" : "Bookmark Task"}</span>
           </button>
 
           <button
