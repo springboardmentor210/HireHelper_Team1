@@ -404,27 +404,6 @@ svg.search-icon {
 .status-pill.scheduled { background: #0284c7; }
 .status-pill.completed { background: #374151; }
 
-.card-heart-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.15s ease;
-}
-
-.card-heart-btn:hover {
-  transform: scale(1.1);
-}
-
 .card-body-content {
   padding: 16px 20px;
   display: flex;

@@ -66,7 +66,6 @@ export const mapTaskData = (task) => {
     images,
     image: images[0] || "",
     applicants: task.applicantsCount ?? task.applicants ?? 0,
-    isBookmarked: Boolean(task.isBookmarked),
     earnings:
       task.status === "completed" || task.status === "Completed" ? price : 0,
     applicantList: task.applicantList || [],
@@ -131,16 +130,6 @@ export const updateTask = async (id, payload) => {
 export const deleteTask = async (id) => {
   const { data } = await api.delete(`/tasks/${id}`);
   return data?.data || data;
-};
-
-// PATCH /api/tasks/:id/bookmark
-export const bookmarkTask = async (id) => {
-  try {
-    const { data } = await api.patch(`/tasks/${id}/bookmark`);
-    return data?.data || data;
-  } catch (err) {
-    return { id, success: true };
-  }
 };
 
 // POST /api/tasks/:id/duplicate
