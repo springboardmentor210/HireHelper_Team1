@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { getProfileImageUrl } from "../../../utils/profileImage";
 import { useNavigate } from "react-router-dom";
 import { useNotifications } from "../../../context/NotificationContext";
 import NotificationsDropdown from "../../notifications/components/NotificationsDropdown";
@@ -105,7 +106,7 @@ export default function TopNavbar({ user }) {
           >
             {user?.profilePicture ? (
               <img
-                src={user.profilePicture}
+                src={getProfileImageUrl(user.profilePicture)}
                 alt={`${user.firstName || "User"} profile`}
               />
             ) : (
