@@ -1,0 +1,147 @@
+.saved-layout {
+  display: flex;
+}
+
+.saved-main {
+  flex: 1;
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.saved-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.saved-header-left h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.saved-header-left p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+.saved-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.saved-empty-icon {
+  font-size: 2rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.saved-empty-state h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.saved-empty-state p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.saved-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.saved-card-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.saved-card-unsave {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.saved-card-unsave .filled {
+  color: #ef4444;
+}
+
+.saved-card-body {
+  padding: 1rem;
+}
+
+.saved-card-category {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.saved-card-body h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 8px 0 4px 0;
+}
+
+.saved-card-location {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 4px 0;
+}
+
+.saved-card-owner {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.form-error {
+  color: #ef4444;
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+  .saved-main {
+    margin-left: 0;
+    width: 100%;
+    padding: 1.5rem;
+  }
+}
