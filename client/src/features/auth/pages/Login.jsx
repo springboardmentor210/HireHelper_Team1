@@ -44,12 +44,14 @@ const Login = () => {
     navigate("/dashboard");
 
   } catch (error) {
+    const status = error.response?.status;
+    const errorMessage = error.response?.data?.message || "Login failed";
 
-    alert(
-      error.response?.data?.message ||
-      "Login failed"
-    );
+    alert(errorMessage);
 
+    if (status === 403 || errorMessage.toLowerCase().includes("verify your email")) {
+      navigate("/verify-otp", { state: { email } });
+    }
   } finally {
 
     setLoading(false);
