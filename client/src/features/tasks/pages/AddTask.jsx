@@ -113,10 +113,7 @@ export default function AddTask() {
       return;
     }
 
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("accessToken") ||
-      localStorage.getItem("authToken");
+    const token = localStorage.getItem("token");
 
     if (!token) {
       setError("Access Denied: You are not logged in. Please sign in to create a task.");

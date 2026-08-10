@@ -24,8 +24,9 @@ const userSchema = new mongoose.Schema(
 
     phone: {
       type: String,
-      required: [false, "Phone number is optional"],
+      required: false,
       unique: true,
+      sparse: true,
       trim: true,
     },
 
@@ -33,10 +34,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
     },
+    passwordUpdatedAt: {
+  type: Date,
+  default: null,
+},
 
     profilePicture: {
       type: String,
       default: "",
+    },
+
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 500,
     },
 
     isVerified: {
@@ -55,13 +67,13 @@ const userSchema = new mongoose.Schema(
     },
 
     resetPasswordToken: {
-     type: String,
-     default: null,
+      type: String,
+      default: null,
     },
 
     resetPasswordTokenExpiry: {
-    type: Date,
-    default: null,
+      type: Date,
+      default: null,
     },
   },
   {
