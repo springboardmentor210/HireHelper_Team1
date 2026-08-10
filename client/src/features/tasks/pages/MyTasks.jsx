@@ -111,15 +111,6 @@ export default function MyTasks() {
   }, [tasks, filters, debouncedSearch]);
 
   // Action Handlers
-  const handleBookmark = async (taskId) => {
-    try {
-      await taskService.bookmarkTask(taskId);
-      loadData();
-    } catch (err) {
-      console.error("Bookmark action failed:", err);
-    }
-  };
-
   const handleDuplicate = async (taskId) => {
     try {
       await taskService.duplicateTask(taskId);
@@ -184,7 +175,6 @@ export default function MyTasks() {
             onViewApplicants={(task) => setApplicantModalTask(task)}
             onViewDetails={(task) => setDetailModalTask(task)}
             onDuplicate={handleDuplicate}
-            onBookmark={handleBookmark}
             onDelete={handleDelete}
           />
         )}

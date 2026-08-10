@@ -206,11 +206,16 @@ body {
 }
 
 /* Security Card */
+/* =========================
+   Security Card
+========================= */
+
 .security-card {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  padding: 28px;
 }
 
 .security-info {
@@ -219,17 +224,20 @@ body {
 }
 
 .security-info h3 {
-  margin: 0 0 12px 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
 }
 
 .password-details {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .password-details .label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #111;
 }
@@ -239,7 +247,59 @@ body {
   color: #777;
 }
 
+/* Password form inside Security Card */
 
+.security-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.security-card .input-group {
+  margin-bottom: 0;
+}
+
+.security-card .input-group label {
+  margin-bottom: 7px;
+}
+
+.security-card .input-group input {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+/* Password input wrapper */
+
+.password-input-wrapper {
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+}
+
+/* Change Password button */
+
+.security-card .save-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  min-width: 150px;
+}
+
+/* Last updated */
+
+.security-card > .password-details {
+  padding-top: 2px;
+  border-top: 1px solid #eee;
+}
+
+.security-card > .password-details .hint {
+  padding-top: 12px;
+  font-size: 12px;
+  color: #777;
+}
 /* Buttons */
 .btn {
   padding: 10px 20px;

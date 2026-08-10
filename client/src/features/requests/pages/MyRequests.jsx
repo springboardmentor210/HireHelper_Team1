@@ -6,31 +6,30 @@ import RequestCard from "../components/RequestCard";
 import CancelRequestModal from "../components/CancelRequestModal";
 import EmptyState from "../components/EmptyState";
 import * as requestService from "../../../services/requestService";
+import { useNotifications } from "../../../context/NotificationContext";
 import "../styles/MyRequests.css";
 
 export default function MyRequests() {
   const [requests, setRequests] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const { notifications } = useNotifications();
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [cancelModalRequest, setCancelModalRequest] = useState(null);
 
   // Load initial data
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [reqs, notifs] = await Promise.all([
-          requestService.getMyRequests(),
-          requestService.getNotifications(),
-        ]);
-        setRequests(reqs || []);
-        setNotifications(notifs || []);
-      } catch (err) {
-        console.error("Failed to load requests data:", err);
-      }
+  async function fetchData() {
+    try {
+      const reqs = await requestService.getMyRequests();
+
+      setRequests(reqs?.data?.requests || []);
+    } catch (err) {
+      console.error("Failed to load requests data:", err);
     }
-    fetchData();
-  }, []);
+  }
+
+  fetchData();
+}, []);
 
   // Compute status counts for tabs
   const counts = useMemo(() => {
