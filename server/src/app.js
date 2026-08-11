@@ -5,6 +5,7 @@ import taskRoutes from "./routes/task.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import requestRoutes from "./routes/request.routes.js";
 import savedTaskRoutes from "./routes/savedTask.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/saved", savedTaskRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/uploads", express.static("src/uploads"));
 
 // Global Error Handler
