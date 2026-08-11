@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MoreVertical, Copy, Trash2, Eye, Users } from "lucide-react";
+import { MoreVertical, Copy, Trash2, Eye } from "lucide-react";
 
-export default function TaskMenu({ task, onViewApplicants, onViewDetails, onDuplicate, onDelete }) {
+export default function TaskMenu({ task, onViewDetails, onDuplicate, onDelete }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -28,14 +28,6 @@ export default function TaskMenu({ task, onViewApplicants, onViewDetails, onDupl
 
       {open && (
         <div className="task-dropdown-menu">
-          <button
-            type="button"
-            className="menu-item-btn"
-            onClick={() => { setOpen(false); onViewApplicants(task); }}
-          >
-            <Users size={16} />
-            <span>View Applicants ({task.applicants || 0})</span>
-          </button>
 
           <button
             type="button"
