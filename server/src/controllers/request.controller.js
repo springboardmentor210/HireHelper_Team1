@@ -1,5 +1,6 @@
 import Request, { REQUEST_STATUSES } from "../models/Request.js";
 import Task from "../models/Task.js";
+import { createNotification } from "./notification.controller.js";
 
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
@@ -65,6 +66,17 @@ export const createRequest = asyncHandler(async (req, res) => {
 
   task.applicantsCount = (task.applicantsCount || 0) + 1;
   await task.save();
+
+  // Notify the task owner that a new helper has requested their task
+  await createNotification({
+    recipient: task.postedBy,
+    sender: req.user._id,
+    type: "request",
+    category: "new_request",
+    title: `New request for ${task.title}`,
+    message: `${req.user.firstName} ${req.user.lastName} wants help with "${task.title}". Review and respond.`,
+    relatedId: request._id,
+  });
 
   return res.status(201).json(new ApiResponse(201, "Request sent successfully", request));
 });
@@ -226,6 +238,17 @@ export const acceptRequest = asyncHandler(async (req, res) => {
   task.assignedTo = request.requester;
   await task.save();
 
+  // Notify the requester that their request was accepted
+  await createNotification({
+    recipient: request.requester,
+    sender: req.user._id,
+    type: "request",
+    category: "request_accepted",
+    title: "Your request has been accepted",
+    message: `${req.user.firstName} ${req.user.lastName} accepted your request for ${task.title}.`,
+    relatedId: request._id,
+  });
+
   return res.status(200).json(new ApiResponse(200, "Request accepted successfully", request));
 });
 
@@ -247,6 +270,17 @@ export const declineRequest = asyncHandler(async (req, res) => {
 
   request.status = "declined";
   await request.save();
+
+  // Notify the requester that their request was declined
+  await createNotification({
+    recipient: request.requester,
+    sender: req.user._id,
+    type: "request",
+    category: "request_declined",
+    title: "Your request was declined",
+    message: `${req.user.firstName} ${req.user.lastName} declined your request.`,
+    relatedId: request._id,
+  });
 
   return res.status(200).json(new ApiResponse(200, "Request declined", request));
 });
