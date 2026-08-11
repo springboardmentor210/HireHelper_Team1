@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { NotificationProvider } from "./context/NotificationContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicOnlyRoute from "./components/PublicOnlyRoute";
 
 // Feature Pages
 import MyTasks from "./features/tasks/pages/MyTasks";
@@ -24,33 +25,98 @@ function App() {
   return (
     <NotificationProvider>
       <Routes>
-        {/* Root redirect */}
-        <Route path="/" element={<Navigate to="/mytasks" replace />} />
+        {/* Root redirect to Dashboard hub */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/* Task Routes */}
-        <Route path="/mytasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
-        <Route path="/tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
-        <Route path="/tasks/:taskId" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
-        <Route path="/tasks/:taskId/applicants" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
+        {/* Protected Task Routes */}
+        <Route
+          path="/mytasks"
+          element={
+            <ProtectedRoute>
+              <MyTasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <MyTasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks/:taskId"
+          element={
+            <ProtectedRoute>
+              <MyTasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks/:taskId/applicants"
+          element={
+            <ProtectedRoute>
+              <MyTasks />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Add Task Routes */}
-        <Route path="/addtasks" element={<ProtectedRoute><AddTask /></ProtectedRoute>} />
-        <Route path="/add-task" element={<ProtectedRoute><AddTask /></ProtectedRoute>} />
-        <Route path="/tasks/add" element={<ProtectedRoute><AddTask /></ProtectedRoute>} />
+        {/* Protected Add Task Routes */}
+        <Route
+          path="/addtasks"
+          element={
+            <ProtectedRoute>
+              <AddTask />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-task"
+          element={
+            <ProtectedRoute>
+              <AddTask />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks/add"
+          element={
+            <ProtectedRoute>
+              <AddTask />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Authentication */}
+        {/* Authentication Routes */}
         <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <Login />
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicOnlyRoute>
+              <Register />
+            </PublicOnlyRoute>
+          }
+        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
 
-        {/* Dashboard & Settings */}
+        {/* Main Landing & Dashboard Hub (renders GuestDashboard, NewUserDashboard, or ReturningDashboard) */}
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* Protected Settings */}
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
-        {/* Feed */}
+        {/* Feed - Publicly accessible to browse */}
         <Route path="/feed" element={<Feed />} />
 
         {/* Requests */}
@@ -60,14 +126,15 @@ function App() {
         <Route path="/myrequests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
         <Route path="/my-requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
 
-        {/* Other Routes */}
+        {/* Other Protected Routes */}
         <Route path="/saved" element={<ProtectedRoute><Saved /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+
 
         {/* 404 */}
         <Route
           path="*"
-          element={<Navigate to="/mytasks" replace />}
+          element={<Navigate to="/dashboard" replace />}
         />
       </Routes>
     </NotificationProvider>

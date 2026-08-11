@@ -173,6 +173,33 @@ function Feed() {
   });
 
   const handleRequest = (task) => {
+    const token = localStorage.getItem("token");
+    let user = null;
+
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        user = JSON.parse(storedUser);
+      }
+    } catch (err) {
+      console.error("Failed to parse user in Feed handleRequest:", err);
+    }
+
+    // 1. Guest -> redirect to login
+    if (!token) {
+      alert("Please sign in first to request help on tasks.");
+      navigate("/login");
+      return;
+    }
+
+    // 2. Unverified user -> redirect to verify OTP
+    if (user && user.isVerified === false) {
+      alert("Please verify your email address before sending task requests.");
+      navigate("/verify-otp", { state: { email: user.email } });
+      return;
+    }
+
+    // 3. Authenticated & verified user -> proceed
     if (requestTaskHandler) {
       requestTaskHandler(task);
     } else {
