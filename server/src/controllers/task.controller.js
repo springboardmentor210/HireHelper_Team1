@@ -5,10 +5,25 @@ import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 const filesToImagePaths = (files = [], singleFile = null) => {
-  if (files && files.length > 0) {
-    return files.map((file) => `/uploads/tasks/${file.filename}`);
+  // upload.fields() returns an object:
+  // { image: [file], images: [file1, file2] }
+
+  if (files && !Array.isArray(files) && typeof files === "object") {
+    const allFiles = Object.values(files).flat();
+
+    return allFiles.map(
+      (file) => `/uploads/tasks/${file.filename}`
+    );
   }
 
+  // Handles upload.array()
+  if (Array.isArray(files) && files.length > 0) {
+    return files.map(
+      (file) => `/uploads/tasks/${file.filename}`
+    );
+  }
+
+  // Handles upload.single()
   if (singleFile) {
     return [`/uploads/tasks/${singleFile.filename}`];
   }
@@ -78,20 +93,25 @@ export const createTask = asyncHandler(async (req, res) => {
     }
   }
 
-  const task = await Task.create({
-    title,
-    description,
-    location,
-    startDate,
-    startTime,
-    endDate: endDate || null,
-    endTime: endTime || null,
-    category,
-    price: numericPrice,
-    images,
-    coordinates,
-    postedBy: req.user._id,
-  });
+  const taskData = {
+  title,
+  description,
+  location,
+  startDate,
+  startTime,
+  endDate: endDate || null,
+  endTime: endTime || null,
+  category,
+  price: numericPrice,
+  images,
+  postedBy: req.user._id,
+};
+
+if (coordinates) {
+  taskData.coordinates = coordinates;
+}
+
+const task = await Task.create(taskData);
 
   return res.status(201).json(new ApiResponse(201, "Task created successfully", task));
 });

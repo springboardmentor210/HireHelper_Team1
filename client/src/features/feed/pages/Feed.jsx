@@ -1,173 +1,165 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import Sidebar from "../../../components/layout/Sidebar";
 import { useTasks } from "../../../context/TaskContext";
 import SearchBar from "../../tasks/components/SearchBar";
-import { MapPin, Clock } from "lucide-react";
+import { MapPin, Clock, ChevronDown } from "lucide-react";
+import { getFeedTasks } from "../../../services/taskService";
 
 import "../styles/Feed.css";
-
-import movingImage from "../../../assets/images/moving.png";
-import paintingImage from "../../../assets/images/painting.png";
-import packingImage from "../../../assets/images/packing.png";
-import plumbingImage from "../../../assets/images/plumbing.png";
-import deliveryImage from "../../../assets/images/delivery.png";
-import gardeningImage from "../../../assets/images/gardening.png";
-import garageCleaningImage from "../../../assets/images/garagecleaning.png";
-import gardenCleaningImage from "../../../assets/images/gardencleaning.png";
-
-const defaultTasks = [
-  {
-    id: 1,
-    category: "Moving",
-    title: "Help Moving Furniture",
-    description:
-      "Need help moving furniture from my apartment to a new house. Heavy lifting required.",
-    location: "Downtown Seattle, WA",
-    date: "Jul 5, 2026",
-    time: "2:00 PM - 6:00 PM",
-    user: "Robert Wilson",
-    image: movingImage,
-  },
-  {
-    id: 2,
-    category: "Painting",
-    title: "Room Painting Project",
-    description:
-      "Need help painting two bedrooms. Paint and supplies provided. Looking for someone with painting experience.",
-    location: "Downtown Seattle, WA",
-    date: "Jul 5, 2026",
-    time: "2:00 PM - 6:00 PM",
-    user: "Robert Wilson",
-    image: paintingImage,
-  },
-  {
-    id: 3,
-    category: "Packaging",
-    title: "Help Packing Household Items",
-    description:
-      "Looking for someone to help pack household items safely before moving to a new apartment.",
-    location: "Seattle, WA",
-    date: "Jul 5, 2026",
-    time: "11:00 AM - 3:00 PM",
-    user: "Robert Wilson",
-    image: packingImage,
-  },
-  {
-    id: 4,
-    category: "Plumbing",
-    title: "Kitchen Plumbing Assistance",
-    description:
-      "Need help checking a leaking kitchen sink and replacing a damaged pipe connection.",
-    location: "Downtown Seattle, WA",
-    date: "Jul 6, 2026",
-    time: "2:00 PM - 5:00 PM",
-    user: "David Miller",
-    image: plumbingImage,
-  },
-  {
-    id: 5,
-    category: "Painting",
-    title: "Living Room Painting",
-    description:
-      "Looking for someone with basic painting experience to help repaint my living room.",
-    location: "Bellevue, WA",
-    date: "Jul 6, 2026",
-    time: "10:00 AM - 2:00 PM",
-    user: "Sophia Brown",
-    image: paintingImage,
-  },
-  {
-    id: 6,
-    category: "Cleaning",
-    title: "Garden Cleanup",
-    description:
-      "Looking for someone to help clean up my backyard garden. Weeding, pruning and general cleanup.",
-    location: "Bellevue, WA",
-    date: "Jul 5, 2026",
-    time: "9:00 AM - 1:00 PM",
-    user: "Robert Wilson",
-    image: gardenCleaningImage,
-  },
-  {
-    id: 7,
-    category: "Delivery",
-    title: "Help With Grocery Delivery",
-    description:
-      "Need someone to pick up groceries from a nearby store and deliver them to my home.",
-    location: "Seattle, WA",
-    date: "Jul 6, 2026",
-    time: "10:00 AM - 12:00 PM",
-    user: "Emily Davis",
-    image: deliveryImage,
-  },
-  {
-    id: 8,
-    category: "Gardening",
-    title: "Backyard Gardening Help",
-    description:
-      "Looking for someone to help plant flowers and organize the backyard garden.",
-    location: "Bellevue, WA",
-    date: "Jul 7, 2026",
-    time: "8:00 AM - 11:00 AM",
-    user: "Michael Brown",
-    image: gardeningImage,
-  },
-  {
-    id: 9,
-    category: "Cleaning",
-    title: "Garage Cleaning Help",
-    description:
-      "Need help cleaning and organizing my garage. Basic cleaning tools will be provided.",
-    location: "Redmond, WA",
-    date: "Jul 8, 2026",
-    time: "3:00 PM - 6:00 PM",
-    user: "Sarah Miller",
-    image: garageCleaningImage,
-  },
-];
 
 function Feed() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sort, setSort] = useState("newest");
+
+  const [feedTasks, setFeedTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [showMoreCategories, setShowMoreCategories] = useState(false);
+
+  const [userLocation, setUserLocation] = useState({
+    lat: null,
+    lng: null,
+  });
+
   const navigate = useNavigate();
 
-  let contextTasks = null;
   let requestTaskHandler = null;
 
   try {
     const taskContext = useTasks();
+
     if (taskContext) {
-      contextTasks = taskContext.feedTasks;
       requestTaskHandler = taskContext.requestTask;
     }
   } catch {
-    // TaskContext unavailable in some route contexts
+    // Feed can still work even when TaskContext is not available.
   }
 
-  const taskList = contextTasks && contextTasks.length > 0 ? contextTasks : defaultTasks;
-
   const categories = [
-    "All",
-    "Moving",
-    "Gardening",
-    "Cleaning",
-    "Painting",
-    "Assembly",
-    "Pet Care",
+    { label: "All", value: "all" },
+    { label: "Moving", value: "moving" },
+    { label: "Gardening", value: "gardening" },
+    { label: "Cleaning", value: "cleaning" },
+    { label: "Painting", value: "painting" },
+    { label: "Assembly", value: "assembly" },
+    { label: "Pet Care", value: "pet_care" },
   ];
 
-  const filteredTasks = taskList.filter((task) => {
-    const searchValue = search.toLowerCase();
+  const moreCategories = [
+    { label: "Tech", value: "tech_help" },
+    { label: "Car Care", value: "car_care" },
+    { label: "Other", value: "other" },
+  ];
+
+  // Ask for location only when the user chooses distance sorting.
+  const getUserLocation = () => {
+    if (!navigator.geolocation) {
+      setError("Location services are not supported by this browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      () => {
+        // Distance sorting will simply fall back to normal sorting.
+        setUserLocation({
+          lat: null,
+          lng: null,
+        });
+      }
+    );
+  };
+
+  // Load the feed whenever search, category or sorting changes.
+  useEffect(() => {
+    const loadFeed = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const params = {
+          category: selectedCategory,
+          search: search.trim(),
+          sort,
+          page: 1,
+          limit: 12,
+        };
+
+        // Send coordinates only when distance sorting is selected.
+        if (
+          sort === "distance" &&
+          userLocation.lat !== null &&
+          userLocation.lng !== null
+        ) {
+          params.lat = userLocation.lat;
+          params.lng = userLocation.lng;
+        }
+
+        const tasks = await getFeedTasks(params);
+
+        setFeedTasks(tasks);
+      } catch (err) {
+        console.error("Failed to load feed:", err);
+
+        setError("Unable to load tasks. Please try again.");
+        setFeedTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFeed();
+  }, [
+    selectedCategory,
+    search,
+    sort,
+    userLocation.lat,
+    userLocation.lng,
+  ]);
+
+  const handleSortChange = (event) => {
+    const value = event.target.value;
+
+    setSort(value);
+
+    if (value === "distance") {
+      getUserLocation();
+    }
+  };
+
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    setShowMoreCategories(false);
+  };
+
+  // Keep a small frontend filter as an extra safety check.
+  const filteredTasks = feedTasks.filter((task) => {
+    const searchValue = search.trim().toLowerCase();
 
     const matchesSearch =
-      (task.title && task.title.toLowerCase().includes(searchValue)) ||
-      (task.category && task.category.toLowerCase().includes(searchValue)) ||
-      (task.location && task.location.toLowerCase().includes(searchValue));
+      !searchValue ||
+      (task.title &&
+        task.title.toLowerCase().includes(searchValue)) ||
+      (task.description &&
+        task.description.toLowerCase().includes(searchValue)) ||
+      (task.category &&
+        task.category.toLowerCase().includes(searchValue)) ||
+      (task.location &&
+        task.location.toLowerCase().includes(searchValue));
 
     const matchesCategory =
-      selectedCategory === "All" ||
-      (task.category && task.category.toLowerCase() === selectedCategory.toLowerCase());
+      selectedCategory === "all" ||
+      (task.category &&
+        task.category.toLowerCase().replace(/\s+/g, "_") ===
+          selectedCategory);
 
     return matchesSearch && matchesCategory;
   });
@@ -178,28 +170,35 @@ function Feed() {
 
     try {
       const storedUser = localStorage.getItem("user");
+
       if (storedUser) {
         user = JSON.parse(storedUser);
       }
     } catch (err) {
-      console.error("Failed to parse user in Feed handleRequest:", err);
+      console.error("Failed to parse user:", err);
     }
 
-    // 1. Guest -> redirect to login
+    // Guests need to sign in before requesting a task.
     if (!token) {
       alert("Please sign in first to request help on tasks.");
       navigate("/login");
       return;
     }
 
-    // 2. Unverified user -> redirect to verify OTP
+    // Unverified users need to complete verification first.
     if (user && user.isVerified === false) {
-      alert("Please verify your email address before sending task requests.");
-      navigate("/verify-otp", { state: { email: user.email } });
+      alert(
+        "Please verify your email address before sending task requests."
+      );
+
+      navigate("/verify-otp", {
+        state: { email: user.email },
+      });
+
       return;
     }
 
-    // 3. Authenticated & verified user -> proceed
+    // Use the existing request flow.
     if (requestTaskHandler) {
       requestTaskHandler(task);
     } else {
@@ -225,104 +224,271 @@ function Feed() {
           />
         </header>
 
+        {/* Main categories and the extra category menu. */}
         <div className="category-bar">
           {categories.map((category) => (
             <button
-              key={category}
+              key={category.value}
+              type="button"
               className={
-                selectedCategory === category
+                selectedCategory === category.value
                   ? "category-btn active-category"
                   : "category-btn"
               }
-              onClick={() => setSelectedCategory(category)}
+              onClick={() =>
+                handleCategoryChange(category.value)
+              }
             >
-              {category}
+              {category.label}
             </button>
           ))}
 
-          <button className="category-btn">More ▼</button>
+          <div className="more-category-wrapper">
+            <button
+              type="button"
+              className="category-btn more-category-btn"
+              onClick={() =>
+                setShowMoreCategories((previous) => !previous)
+              }
+              aria-expanded={showMoreCategories}
+            >
+              More
+              <ChevronDown
+                size={15}
+                className={
+                  showMoreCategories
+                    ? "more-chevron open"
+                    : "more-chevron"
+                }
+              />
+            </button>
+
+            {showMoreCategories && (
+              <div className="more-category-menu">
+                {moreCategories.map((category) => (
+                  <button
+                    key={category.value}
+                    type="button"
+                    className={
+                      selectedCategory === category.value
+                        ? "more-category-item selected"
+                        : "more-category-item"
+                    }
+                    onClick={() =>
+                      handleCategoryChange(category.value)
+                    }
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
+        {/* Sorting controls. */}
         <div className="filter-bar">
-          <select>
-            <option>Sort</option>
+          <select
+            value={
+              sort === "newest" || sort === "oldest"
+                ? sort
+                : "newest"
+            }
+            onChange={(event) => setSort(event.target.value)}
+            aria-label="Sort tasks by date"
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
           </select>
 
-          <select>
-            <option>Distance</option>
+          <select
+            value={sort === "distance" ? "distance" : ""}
+            onChange={handleSortChange}
+            aria-label="Sort tasks by distance"
+          >
+            <option value="" disabled>
+              Distance
+            </option>
+            <option value="distance">Distance</option>
           </select>
 
-          <select>
-            <option>Price</option>
+          <select
+            value={
+              sort === "price_low" || sort === "price_high"
+                ? sort
+                : "price_low"
+            }
+            onChange={(event) => setSort(event.target.value)}
+            aria-label="Sort tasks by price"
+          >
+            <option value="price_low">
+              Price: Low to High
+            </option>
+
+            <option value="price_high">
+              Price: High to Low
+            </option>
           </select>
 
-          <button className="filter-btn">
-            Filter
+          <button
+            type="button"
+            className="filter-btn"
+            onClick={() => {
+              setSelectedCategory("all");
+              setSearch("");
+              setSort("newest");
+              setShowMoreCategories(false);
+            }}
+          >
+            Reset
           </button>
         </div>
 
         <section className="feed-content">
-          <div className="task-grid">
-            {filteredTasks.map((task) => (
-              <article className="task-card" key={task.id || task._id}>
-                <div className="task-image-container">
-                  <img
-                    className="task-image"
-                    src={task.image || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80"}
-                    alt={task.title}
-                  />
-                </div>
-
-                <div className="task-body">
-                  <span
-                    className={`category-badge ${task.category ? task.category.toLowerCase() : ""}`}
-                  >
-                    {task.category}
-                  </span>
-
-                  <h3>{task.title}</h3>
-
-                  <p className="task-description">
-                    {task.description}
-                  </p>
-
-                  <div className="task-detail">
-                    <MapPin size={14} />
-                    <span>{task.location}</span>
-                  </div>
-
-                  <div className="task-detail">
-                    <Clock size={14} />
-
-                    <span>
-                      {task.date || task.startDate} • {task.time || task.startTime}
-                    </span>
-                  </div>
-
-                  <div className="task-footer">
-                    <div className="task-user">
-                      <div className="user-avatar"></div>
-                      <span>{task.user || (task.postedBy ? `${task.postedBy.firstName || ''} ${task.postedBy.lastName || ''}` : "User")}</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="request-button"
-                      onClick={() => handleRequest(task)}
-                    >
-                      Request
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {filteredTasks.length === 0 && (
+          {loading && (
             <div className="empty-feed">
-              <h3>No tasks found</h3>
-              <p>Try searching with another task name.</p>
+              <h3>Loading tasks...</h3>
+              <p>
+                Please wait while available tasks are loading.
+              </p>
             </div>
+          )}
+
+          {error && !loading && (
+            <div className="empty-feed">
+              <h3>{error}</h3>
+              <p>
+                Please check the server connection and try again.
+              </p>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <>
+              {filteredTasks.length > 0 ? (
+                <div className="task-grid">
+                  {filteredTasks.map((task) => {
+                    const postedBy = task.postedBy;
+
+                    const userName =
+                      task.user ||
+                      (postedBy
+                        ? `${postedBy.firstName || ""} ${
+                            postedBy.lastName || ""
+                          }`.trim()
+                        : "User");
+
+                    const imagePath =
+                      task.image || task.images?.[0];
+
+                    const taskImage = imagePath
+                      ? imagePath.startsWith("http")
+                        ? imagePath
+                        : `http://localhost:5000${imagePath}`
+                      : "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80";
+
+                    return (
+                      <article
+                        className="task-card"
+                        key={task.id || task._id}
+                      >
+                        <div className="task-image-container">
+                          <img
+                            className="task-image"
+                            src={taskImage}
+                            alt={task.title || "Task"}
+                            onError={(event) => {
+                              event.currentTarget.src =
+                                "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80";
+                            }}
+                          />
+                        </div>
+
+                        <div className="task-body">
+                          <span
+                            className={`category-badge ${
+                              task.category
+                                ? task.category
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                                : ""
+                            }`}
+                          >
+                            {task.category || "General"}
+                          </span>
+
+                          <h3>
+                            {task.title || "Untitled Task"}
+                          </h3>
+
+                          <p className="task-description">
+                            {task.description ||
+                              "No description available."}
+                          </p>
+
+                          <div className="task-detail">
+                            <MapPin size={14} />
+
+                            <span>
+                              {task.location ||
+                                "Location not specified"}
+                            </span>
+                          </div>
+
+                          <div className="task-detail">
+                            <Clock size={14} />
+
+                            <span>
+                              {task.date ||
+                                task.startDate ||
+                                ""}
+
+                              {(task.date ||
+                                task.startDate) &&
+                              (task.time ||
+                                task.startTime)
+                                ? " • "
+                                : ""}
+
+                              {task.time ||
+                                task.startTime ||
+                                ""}
+                            </span>
+                          </div>
+
+                          <div className="task-footer">
+                            <div className="task-user">
+                              <div className="user-avatar"></div>
+
+                              <span>{userName}</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              className="request-button"
+                              onClick={() =>
+                                handleRequest(task)
+                              }
+                            >
+                              Request
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="empty-feed">
+                  <h3>No tasks found</h3>
+
+                  <p>
+                    Try searching with another task name or
+                    category.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </section>
       </main>

@@ -24,6 +24,7 @@ body {
   color: #172033;
 }
 
+/* Main feed layout */
 .feed-layout {
   width: 100%;
   min-height: 100vh;
@@ -35,10 +36,11 @@ body {
   flex: 1;
   min-width: 0;
   min-height: 100vh;
-  margin-left: 240px; 
+  margin-left: 240px;
   width: calc(100% - 240px);
 }
 
+/* Header */
 .feed-header {
   min-height: 120px;
   padding: 28px 42px;
@@ -47,8 +49,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap:20px;
+  gap: 20px;
 }
+
+.feed-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.feed-header p {
+  margin: 6px 0 0;
+  color: #98a2b3;
+}
+
+/* Search and notification */
 .search-notification-bar {
   display: flex;
   align-items: center;
@@ -121,8 +136,7 @@ body {
   border: 2px solid #ffffff;
 }
 
-/* ===================== CATEGORY BAR ===================== */
-
+/* Category buttons */
 .category-bar {
   display: flex;
   align-items: center;
@@ -154,8 +168,76 @@ body {
   border-color: #111827;
 }
 
-/* ===================== FILTER BAR ===================== */
+.active-category:hover {
+  background: #111827;
+  color: #ffffff;
+}
 
+/* More category dropdown */
+.more-category-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.more-category-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.more-chevron {
+  transition: transform 0.2s ease;
+}
+
+.more-chevron.open {
+  transform: rotate(180deg);
+}
+
+.more-category-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 170px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  z-index: 9999;
+}
+
+.more-category-item {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #475467;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.more-category-item:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.more-category-item.selected {
+  background: #111827;
+  color: #ffffff;
+}
+
+.more-category-item.selected:hover {
+  background: #111827;
+  color: #ffffff;
+}
+
+/* Filter bar */
 .filter-bar {
   display: flex;
   align-items: center;
@@ -169,9 +251,14 @@ body {
   padding: 10px 14px;
   border: 1px solid #d0d5dd;
   border-radius: 10px;
-  background: white;
+  background: #ffffff;
   font-size: 14px;
   cursor: pointer;
+  outline: none;
+}
+
+.filter-bar select:focus {
+  border-color: #94a3b8;
 }
 
 .filter-btn {
@@ -180,31 +267,23 @@ body {
   border: none;
   border-radius: 10px;
   background: #111827;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
 }
 
 .filter-btn:hover {
-  background: #000;
+  background: #000000;
 }
 
-.feed-header h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.feed-header p {
-  margin: 6px 0 0;
-  color: #98a2b3;
-}
+/* Feed content */
 .feed-content {
   min-height: calc(100vh - 110px);
   padding: 32px 42px;
   background: #f8fafc;
 }
 
+/* Task grid */
 .task-grid {
   width: 100%;
   display: grid;
@@ -213,6 +292,7 @@ body {
   align-items: stretch;
 }
 
+/* Task card */
 .task-card {
   min-width: 0;
   overflow: hidden;
@@ -221,8 +301,10 @@ body {
   border-radius: 18px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-  transition: transform .3s ease, box-shadow .3s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .task-card:hover {
@@ -230,6 +312,7 @@ body {
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
 }
 
+/* Task image */
 .task-image-container {
   width: 100%;
   height: 200px;
@@ -259,6 +342,7 @@ body {
   font-weight: 500;
 }
 
+/* Task body */
 .task-body {
   padding: 18px;
   flex: 1;
@@ -266,6 +350,7 @@ body {
   flex-direction: column;
 }
 
+/* Category badge */
 .category-badge {
   width: fit-content;
   display: inline-block;
@@ -313,6 +398,32 @@ body {
   color: #4d7c0f;
 }
 
+.category-badge.assembly {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.category-badge.pet-care {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.category-badge.tech {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.category-badge.car-care {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.category-badge.other {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Task text */
 .task-body h3 {
   margin: 10px 0 7px;
   color: #172033;
@@ -328,6 +439,7 @@ body {
   line-height: 1.5;
 }
 
+/* Task details */
 .task-detail {
   display: flex;
   align-items: center;
@@ -341,6 +453,7 @@ body {
   flex-shrink: 0;
 }
 
+/* Task footer */
 .task-footer {
   display: flex;
   align-items: center;
@@ -370,18 +483,22 @@ body {
   height: 27px;
 }
 
+/* Request button */
 .request-button {
   border: none;
   border-radius: 10px;
   padding: 10px 18px;
   background: #111827;
-  color: #fff;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .request-button:hover {
-  background: #000;
+  background: #000000;
   transform: translateY(-2px);
 }
 
@@ -389,11 +506,21 @@ body {
   transform: translateY(0);
 }
 
+/* Empty feed */
 .empty-feed {
   text-align: center;
   padding: 70px 20px;
 }
 
+.empty-feed h3 {
+  margin-bottom: 8px;
+}
+
+.empty-feed p {
+  color: #98a2b3;
+}
+
+/* Logout */
 .logout-btn {
   background: transparent;
   border: none;
@@ -409,20 +536,30 @@ body {
   color: #ef4444;
 }
 
-.empty-feed h3 {
-  margin-bottom: 8px;
-}
-
-.empty-feed p {
-  color: #98a2b3;
-}
-
+/* Responsive - tablets */
 @media (max-width: 1050px) {
   .task-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .feed-header {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .category-bar,
+  .filter-bar {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .feed-content {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
 }
 
+/* Responsive - mobile */
 @media (max-width: 760px) {
   .feed-sidebar {
     display: none;
@@ -438,6 +575,15 @@ body {
     align-items: flex-start;
     gap: 20px;
     flex-direction: column;
+  }
+
+  .search-notification-bar {
+    width: 100%;
+  }
+
+  .search-input-wrapper {
+    flex: 1;
+    width: auto;
   }
 
   .feed-content {
@@ -464,5 +610,9 @@ body {
   .category-btn {
     font-size: 13px;
   }
-}
 
+  .more-category-menu {
+    left: 0;
+    right: auto;
+  }
+}

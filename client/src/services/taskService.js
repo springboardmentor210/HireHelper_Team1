@@ -108,14 +108,46 @@ export const getTaskById = async (id) => {
 // POST /api/tasks
 export const createTask = async (payload) => {
   const todayDate = new Date().toISOString().split("T")[0];
-  const body = {
-    ...payload,
-    price: payload.price ?? (payload.budget ? Number(payload.budget) : 0),
-    startDate: payload.startDate || todayDate,
-    startTime: payload.startTime || "10:00 AM",
-  };
-  const { data } = await api.post("/tasks", body);
+
+  const formData = new FormData();
+
+  formData.append("title", payload.title?.trim() || "");
+  formData.append("description", payload.description?.trim() || "");
+  formData.append("location", payload.location?.trim() || "");
+  formData.append("category", payload.category || "");
+
+  formData.append(
+    "price",
+    payload.price ?? (payload.budget ? Number(payload.budget) : 0)
+  );
+
+  formData.append(
+    "startDate",
+    payload.startDate || todayDate
+  );
+
+  formData.append(
+    "startTime",
+    payload.startTime || "10:00"
+  );
+
+  if (payload.endDate) {
+    formData.append("endDate", payload.endDate);
+  }
+
+  if (payload.endTime) {
+    formData.append("endTime", payload.endTime);
+  }
+
+  // Send the actual image file
+  if (payload.image instanceof File) {
+    formData.append("image", payload.image);
+  }
+
+  const { data } = await api.post("/tasks", formData);
+
   const task = data?.data || data;
+
   return mapTaskData(task);
 };
 
@@ -156,4 +188,13 @@ export const getApplicants = async (id) => {
 export const getStatistics = async () => {
   const result = await getMyTasks();
   return result.stats;
+};
+// GET /api/tasks/feed
+export const getFeedTasks = async (params = {}) => {
+  const { data } = await api.get("/tasks/feed", { params });
+
+  const payload = data?.data || data || {};
+  const rawTasks = payload.tasks || [];
+
+  return rawTasks.map(mapTaskData);
 };
