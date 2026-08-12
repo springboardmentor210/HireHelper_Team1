@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MoreVertical, Copy, Trash2, Eye } from "lucide-react";
+<<<<<<< HEAD
+import { MoreVertical, Trash2, Eye } from "lucide-react";
 
-export default function TaskMenu({ task, onViewDetails, onDuplicate, onDelete }) {
+export default function TaskMenu({ task, onViewDetails, onDelete }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -38,14 +39,7 @@ export default function TaskMenu({ task, onViewDetails, onDuplicate, onDelete })
             <span>View Details</span>
           </button>
 
-          <button
-            type="button"
-            className="menu-item-btn"
-            onClick={() => { setOpen(false); onDuplicate(task.id); }}
-          >
-            <Copy size={16} />
-            <span>Duplicate Task</span>
-          </button>
+
 
           <div className="menu-divider" />
 

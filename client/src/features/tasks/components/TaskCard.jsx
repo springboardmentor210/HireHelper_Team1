@@ -11,7 +11,6 @@ export default function TaskCard({
   task,
   onViewApplicants,
   onViewDetails,
-  onDuplicate,
   onDelete,
 }) {
   const getStatusClass = (status) => {
@@ -125,7 +124,6 @@ export default function TaskCard({
             <TaskMenu
               task={task}
               onViewDetails={onViewDetails}
-              onDuplicate={onDuplicate}
               onDelete={onDelete}
             />
           </div>

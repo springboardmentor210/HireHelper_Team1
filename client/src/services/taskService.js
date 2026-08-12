@@ -164,15 +164,7 @@ export const deleteTask = async (id) => {
   return data?.data || data;
 };
 
-// POST /api/tasks/:id/duplicate
-export const duplicateTask = async (id) => {
-  try {
-    const { data } = await api.post(`/tasks/${id}/duplicate`);
-    return mapTaskData(data?.data || data);
-  } catch (err) {
-    return { id, success: false };
-  }
-};
+
 
 // GET /api/tasks/:id/applicants
 export const getApplicants = async (id) => {
