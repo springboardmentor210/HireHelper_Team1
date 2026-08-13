@@ -10,7 +10,7 @@ import "../styles/Feed.css";
 
 function Feed() {
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [sort, setSort] = useState("newest");
 
   const [feedTasks, setFeedTasks] = useState([]);
@@ -86,12 +86,15 @@ function Feed() {
         setError("");
 
         const params = {
-          category: selectedCategory,
-          search: search.trim(),
-          sort,
-          page: 1,
-          limit: 12,
-        };
+  search: search.trim(),
+  sort,
+  page: 1,
+  limit: 12,
+};
+
+if (selectedCategory !== "All") {
+  params.category = selectedCategory;
+}
 
         // Send coordinates only when distance sorting is selected.
         if (
@@ -164,47 +167,58 @@ function Feed() {
     return matchesSearch && matchesCategory;
   });
 
-  const handleRequest = (task) => {
-    const token = localStorage.getItem("token");
-    let user = null;
 
-    try {
-      const storedUser = localStorage.getItem("user");
+const handleRequest = async (task) => {
+  const token = localStorage.getItem("token");
+  let user = null;
 
-      if (storedUser) {
-        user = JSON.parse(storedUser);
-      }
-    } catch (err) {
-      console.error("Failed to parse user:", err);
+  try {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      user = JSON.parse(storedUser);
     }
+  } catch (err) {
+    console.error("Failed to parse user:", err);
+  }
 
-    // Guests need to sign in before requesting a task.
-    if (!token) {
-      alert("Please sign in first to request help on tasks.");
-      navigate("/login");
-      return;
-    }
+  if (!token) {
+    alert("Please sign in first to request help on tasks.");
+    navigate("/login");
+    return;
+  }
 
-    // Unverified users need to complete verification first.
-    if (user && user.isVerified === false) {
-      alert(
-        "Please verify your email address before sending task requests."
-      );
+  if (user && user.isVerified === false) {
+    alert(
+      "Please verify your email address before sending task requests."
+    );
 
-      navigate("/verify-otp", {
-        state: { email: user.email },
-      });
+    navigate("/verify-otp", {
+      state: { email: user.email },
+    });
 
-      return;
-    }
+    return;
+  }
 
-    // Use the existing request flow.
-    if (requestTaskHandler) {
-      requestTaskHandler(task);
-    } else {
-      alert(`Request sent for: ${task.title}`);
-    }
-  };
+  if (!requestTaskHandler) {
+    alert("Request service is unavailable. Please try again.");
+    return;
+  }
+
+  try {
+    await requestTaskHandler(task);
+
+    alert(`Request sent for: ${task.title}`);
+  } catch (error) {
+    console.error("Request failed:", error);
+
+    alert(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to send request. Please try again."
+    );
+  }
+};
 
   return (
     <div className="feed-layout">

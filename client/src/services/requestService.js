@@ -21,6 +21,15 @@ export const getMyRequests = async (params = {}) => {
   return response.data;
 };
 
+export const createRequest = async (taskId, message) => {
+  const response = await api.post("/requests", {
+    taskId,
+    message,
+  });
+
+  return response.data;
+};
+
 // Accept an incoming request
 export const acceptRequest = async (requestId) => {
   const response = await api.patch(

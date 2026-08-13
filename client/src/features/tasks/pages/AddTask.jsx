@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
 import api from "../../../config/api";
 import { createTask } from "../../../services/taskService";
-import SearchBar from "../../tasks/components/SearchBar"; 
+import SearchBar from "../../tasks/components/SearchBar";
 import "./AddTask.css";
 import {
   FiMapPin,
   FiX,
   FiUploadCloud,
-} from "react-icons/fi"; 
+} from "react-icons/fi";
 
 const categories = [
   { label: "Moving", value: "moving" },
@@ -26,10 +26,9 @@ const categories = [
 export default function AddTask() {
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
-  
-  // Added search state for the SearchBar
+
   const [search, setSearch] = useState("");
-  
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -42,8 +41,12 @@ export default function AddTask() {
     category: "",
   });
 
+  // Actual image file
   const [image, setImage] = useState(null);
+
+  // Only used for displaying preview
   const [imagePreview, setImagePreview] = useState(null);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -59,15 +62,23 @@ export default function AddTask() {
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     if (!file.type.startsWith("image/")) {
       setError("Please select a valid image.");
       return;
     }
 
+    // Store the REAL File object.
+    // This is what will be uploaded to the backend.
     setImage(file);
-    setImagePreview(URL.createObjectURL(file));
+
+    // Create preview only for the UI.
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+
     setError("");
   };
 
@@ -78,6 +89,36 @@ export default function AddTask() {
 
     setImage(null);
     setImagePreview(null);
+  };
+
+  const getCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject({
+          code: "NOT_SUPPORTED",
+          message:
+            "Location services are not supported by this browser.",
+        });
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (locationError) => {
+          reject(locationError);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    });
   };
 
   const handleSubmit = async (event) => {
@@ -94,29 +135,35 @@ export default function AddTask() {
       return;
     }
 
-    // End date validation if provided
+    // End date validation
     if (
       formData.endDate &&
       formData.endDate < formData.startDate
     ) {
-      setError("End date cannot be before the start date.");
+      setError(
+        "End date cannot be before the start date."
+      );
       return;
     }
 
-    // Same date → end time must be later
+    // Same date -> end time must be later
     if (
       formData.endDate === formData.startDate &&
       formData.endTime &&
       formData.endTime <= formData.startTime
     ) {
-      setError("End time must be later than the start time.");
+      setError(
+        "End time must be later than the start time."
+      );
       return;
     }
 
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setError("Access Denied: You are not logged in. Please sign in to create a task.");
+      setError(
+        "Access Denied: You are not logged in. Please sign in to create a task."
+      );
       return;
     }
 
@@ -124,37 +171,144 @@ export default function AddTask() {
     setLoading(true);
 
     try {
+      // Get user's real coordinates
+      const { lat, lng } = await getCurrentLocation();
+
       if (typeof createTask === "function") {
         await createTask({
           ...formData,
-          image: imagePreview || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80"
+
+          // Send actual coordinates
+          lat,
+          lng,
+
+          // IMPORTANT:
+          // Send the actual File object, NOT imagePreview.
+          image: image,
         });
       } else {
+        // Fallback API request
         const taskData = new FormData();
-        taskData.append("title", formData.title.trim());
-        taskData.append("description", formData.description.trim());
-        taskData.append("location", formData.location.trim());
-        if (formData.budget) taskData.append("price", formData.budget);
-        if (formData.startDate) taskData.append("startDate", formData.startDate);
-        if (formData.startTime) taskData.append("startTime", formData.startTime);
-        taskData.append("category", formData.category);
 
-        if (formData.endDate) taskData.append("endDate", formData.endDate);
-        if (formData.endTime) taskData.append("endTime", formData.endTime);
-        if (image) taskData.append("image", image);
+        taskData.append(
+          "title",
+          formData.title.trim()
+        );
+
+        taskData.append(
+          "description",
+          formData.description.trim()
+        );
+
+        taskData.append(
+          "location",
+          formData.location.trim()
+        );
+
+        if (formData.budget) {
+          taskData.append(
+            "price",
+            formData.budget
+          );
+        }
+
+        if (formData.startDate) {
+          taskData.append(
+            "startDate",
+            formData.startDate
+          );
+        }
+
+        if (formData.startTime) {
+          taskData.append(
+            "startTime",
+            formData.startTime
+          );
+        }
+
+        taskData.append(
+          "category",
+          formData.category
+        );
+
+        if (formData.endDate) {
+          taskData.append(
+            "endDate",
+            formData.endDate
+          );
+        }
+
+        if (formData.endTime) {
+          taskData.append(
+            "endTime",
+            formData.endTime
+          );
+        }
+
+        // Send coordinates
+        taskData.append("lat", lat);
+        taskData.append("lng", lng);
+
+        // Send actual image file
+        if (image instanceof File) {
+          taskData.append("image", image);
+        }
 
         await api.post("/tasks", taskData);
       }
 
       alert("Task created successfully!");
+
       navigate("/mytasks");
     } catch (err) {
-      console.error("Task creation failed:", err);
-      if (err.response?.status === 401) {
-        setError("Access Denied: Please log in to create a task.");
-      } else {
+      console.error(
+        "Task creation failed:",
+        err
+      );
+
+      // Location permission denied
+      if (err?.code === 1) {
         setError(
-          err.response?.data?.message ||
+          "Location permission was denied. Please allow location access to create a task."
+        );
+      }
+
+      // Location unavailable
+      else if (err?.code === 2) {
+        setError(
+          "Unable to determine your location. Please try again."
+        );
+      }
+
+      // Location timeout
+      else if (err?.code === 3) {
+        setError(
+          "Location request timed out. Please try again."
+        );
+      }
+
+      // Browser does not support location
+      else if (
+        err?.code === "NOT_SUPPORTED"
+      ) {
+        setError(
+          "Location services are not supported by this browser."
+        );
+      }
+
+      // Authentication error
+      else if (
+        err?.response?.status === 401
+      ) {
+        setError(
+          "Access Denied: Please log in to create a task."
+        );
+      }
+
+      // Backend error
+      else {
+        setError(
+          err?.response?.data?.message ||
             "Failed to create task. Please try again."
         );
       }
@@ -168,17 +322,21 @@ export default function AddTask() {
       <Sidebar />
 
       <main className="add-task-main">
-        {/* Replaced old header actions with reusable SearchBar */}
         <header className="add-task-topbar">
           <div className="topbar-headings">
             <h1>Add Task</h1>
-            <p>Create a task and find someone to help you</p>
+
+            <p>
+              Create a task and find someone to help you
+            </p>
           </div>
 
           <SearchBar
             value={search}
             onChange={setSearch}
-            onNotificationClick={() => navigate("/notifications")}
+            onNotificationClick={() =>
+              navigate("/notifications")
+            }
           />
         </header>
 
@@ -186,12 +344,19 @@ export default function AddTask() {
           <div className="add-task-card">
             <div className="form-heading">
               <h2>Add New Task</h2>
-              <p>Create a task and find someone to help you</p>
+
+              <p>
+                Create a task and find someone to help you
+              </p>
             </div>
 
             <form onSubmit={handleSubmit}>
+              {/* Task Title */}
               <div className="form-group">
-                <label htmlFor="title">Task Title</label>
+                <label htmlFor="title">
+                  Task Title
+                </label>
+
                 <input
                   id="title"
                   name="title"
@@ -203,13 +368,18 @@ export default function AddTask() {
                   autoComplete="off"
                   required
                 />
+
                 <span className="character-count">
                   {formData.title.length}/100
                 </span>
               </div>
 
+              {/* Description */}
               <div className="form-group">
-                <label htmlFor="description">Description</label>
+                <label htmlFor="description">
+                  Description
+                </label>
+
                 <textarea
                   id="description"
                   name="description"
@@ -220,13 +390,18 @@ export default function AddTask() {
                   autoComplete="off"
                   required
                 />
+
                 <span className="character-count">
                   {formData.description.length}/1000
                 </span>
               </div>
 
+              {/* Budget */}
               <div className="form-group">
-                <label htmlFor="budget">Budget (₹ / $)</label>
+                <label htmlFor="budget">
+                  Budget (₹ / $)
+                </label>
+
                 <input
                   id="budget"
                   name="budget"
@@ -237,8 +412,12 @@ export default function AddTask() {
                 />
               </div>
 
+              {/* Location */}
               <div className="form-group">
-                <label htmlFor="location">Location</label>
+                <label htmlFor="location">
+                  Location
+                </label>
+
                 <div className="input-with-icon">
                   <input
                     id="location"
@@ -250,13 +429,18 @@ export default function AddTask() {
                     autoComplete="street-address"
                     required
                   />
+
                   <FiMapPin className="input-icon" />
                 </div>
               </div>
 
+              {/* Date and Time */}
               <div className="date-time-grid">
                 <div className="form-group">
-                  <label htmlFor="startDate">Start Date</label>
+                  <label htmlFor="startDate">
+                    Start Date
+                  </label>
+
                   <input
                     id="startDate"
                     name="startDate"
@@ -268,7 +452,10 @@ export default function AddTask() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="startTime">Start Time</label>
+                  <label htmlFor="startTime">
+                    Start Time
+                  </label>
+
                   <input
                     id="startTime"
                     name="startTime"
@@ -279,19 +466,27 @@ export default function AddTask() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="endDate">End Date (Optional)</label>
+                  <label htmlFor="endDate">
+                    End Date (Optional)
+                  </label>
+
                   <input
                     id="endDate"
                     name="endDate"
                     type="date"
-                    min={formData.startDate || today}
+                    min={
+                      formData.startDate || today
+                    }
                     value={formData.endDate}
                     onChange={handleChange}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="endTime">End Time (Optional)</label>
+                  <label htmlFor="endTime">
+                    End Time (Optional)
+                  </label>
+
                   <input
                     id="endTime"
                     name="endTime"
@@ -302,8 +497,12 @@ export default function AddTask() {
                 </div>
               </div>
 
+              {/* Category */}
               <div className="form-group">
-                <label htmlFor="category">Category</label>
+                <label htmlFor="category">
+                  Category
+                </label>
+
                 <select
                   id="category"
                   name="category"
@@ -311,17 +510,27 @@ export default function AddTask() {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select a category</option>
+                  <option value="">
+                    Select a category
+                  </option>
+
                   {categories.map((category) => (
-                    <option key={typeof category === "object" ? category.value : category} value={typeof category === "object" ? category.value : category}>
-                      {typeof category === "object" ? category.label : category}
+                    <option
+                      key={category.value}
+                      value={category.value}
+                    >
+                      {category.label}
                     </option>
                   ))}
                 </select>
               </div>
 
+              {/* Image */}
               <div className="form-group">
-                <label htmlFor="taskImage">Task Image (Optional)</label>
+                <label htmlFor="taskImage">
+                  Task Image (Optional)
+                </label>
+
                 <div className="image-upload-area">
                   {imagePreview ? (
                     <div className="image-preview-wrapper">
@@ -330,6 +539,7 @@ export default function AddTask() {
                         alt="Task preview"
                         className="task-image-preview"
                       />
+
                       <button
                         type="button"
                         className="remove-image"
@@ -340,14 +550,23 @@ export default function AddTask() {
                       </button>
                     </div>
                   ) : (
-                    <label className="upload-placeholder" htmlFor="taskImage">
+                    <label
+                      className="upload-placeholder"
+                      htmlFor="taskImage"
+                    >
                       <FiUploadCloud className="upload-icon" />
+
                       <div className="upload-text">
-                        <span className="upload-link">Upload a file</span> or drag and drop
+                        <span className="upload-link">
+                          Upload a file
+                        </span>{" "}
+                        or drag and drop
                       </div>
+
                       <span className="upload-hint">
                         PNG, JPG, GIF up to 10MB
                       </span>
+
                       <input
                         id="taskImage"
                         name="image"
@@ -359,17 +578,32 @@ export default function AddTask() {
                     </label>
                   )}
                 </div>
-                {error && <p className="form-error">{error}</p>}
+
+                {error && (
+                  <p className="form-error">
+                    {error}
+                  </p>
+                )}
               </div>
 
+              {/* Buttons */}
               <div className="form-actions">
-                <button type="submit" className="post-task-button" disabled={loading}>
-                  {loading ? "Posting..." : "Post Task"}
+                <button
+                  type="submit"
+                  className="post-task-button"
+                  disabled={loading}
+                >
+                  {loading
+                    ? "Posting..."
+                    : "Post Task"}
                 </button>
+
                 <button
                   type="button"
                   className="cancel-task-button"
-                  onClick={() => navigate("/mytasks")}
+                  onClick={() =>
+                    navigate("/mytasks")
+                  }
                 >
                   Cancel
                 </button>

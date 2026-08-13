@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-<<<<<<< HEAD
 import { MoreVertical, Trash2, Eye } from "lucide-react";
 
 export default function TaskMenu({ task, onViewDetails, onDelete }) {
@@ -12,8 +11,12 @@ export default function TaskMenu({ task, onViewDetails, onDelete }) {
         setOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -29,24 +32,27 @@ export default function TaskMenu({ task, onViewDetails, onDelete }) {
 
       {open && (
         <div className="task-dropdown-menu">
-
           <button
             type="button"
             className="menu-item-btn"
-            onClick={() => { setOpen(false); onViewDetails(task); }}
+            onClick={() => {
+              setOpen(false);
+              onViewDetails(task);
+            }}
           >
             <Eye size={16} />
             <span>View Details</span>
           </button>
-
-
 
           <div className="menu-divider" />
 
           <button
             type="button"
             className="menu-item-btn danger"
-            onClick={() => { setOpen(false); onDelete(task.id); }}
+            onClick={() => {
+              setOpen(false);
+              onDelete(task.id);
+            }}
           >
             <Trash2 size={16} />
             <span>Delete Task</span>
