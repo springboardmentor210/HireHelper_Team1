@@ -36,7 +36,7 @@ export default function RecommendedTasks({ tasks = [] }) {
           {tasks.map((task) => (
             <div key={task._id} className="recommended-card">
               <img
-                src={`http://localhost:5001${task.image}`}
+                src={`http://localhost:5000${task.image}`}
                 alt={task.title}
                 className="recommended-image"
               />
