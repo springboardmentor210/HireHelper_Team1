@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
 import { loginUser } from "../services/auth.service";
+import toast from "react-hot-toast";
 
 import "./Login.css";
 
@@ -39,7 +40,7 @@ const Login = () => {
       JSON.stringify(response.data.user)
     );
 
-    alert(response.message);
+    toast.success(response.message || "Login successful!");
 
     navigate("/dashboard");
 
@@ -47,7 +48,7 @@ const Login = () => {
     const status = error.response?.status;
     const errorMessage = error.response?.data?.message || "Login failed";
 
-    alert(errorMessage);
+    toast.error(errorMessage);
 
     if (status === 403 || errorMessage.toLowerCase().includes("verify your email")) {
       navigate("/verify-otp", { state: { email } });

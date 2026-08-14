@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import { resetPassword } from "../services/auth.service";
+import toast from "react-hot-toast";
 
 import "./ResetPassword.css";
 
@@ -36,7 +37,8 @@ const [showConfirmPassword, setShowConfirmPassword] =
   e.preventDefault();
 
   if (password !== confirmPassword) {
-    return alert("Passwords do not match");
+    toast.error("Passwords do not match");
+    return;
   }
 
   try {
@@ -51,13 +53,13 @@ const [showConfirmPassword, setShowConfirmPassword] =
       }
     );
 
-    alert(response.message);
+    toast.success(response.message || "Password reset successfully!");
 
     navigate("/login");
 
   } catch (error) {
 
-    alert(
+    toast.error(
       error.response?.data?.message ||
       "Failed to reset password"
     );

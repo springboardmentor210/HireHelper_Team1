@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import { NotificationProvider } from "./context/NotificationContext";
 import { TaskProvider } from "./context/TaskContext";
@@ -27,6 +28,24 @@ import Saved from "./features/saved/pages/Saved";
 function App() {
   return (
     <NotificationProvider>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            borderRadius: "10px",
+            background: "#1e1e2e",
+            color: "#fff",
+            fontSize: "14px",
+          },
+          success: {
+            iconTheme: { primary: "#4ade80", secondary: "#fff" },
+          },
+          error: {
+            iconTheme: { primary: "#f87171", secondary: "#fff" },
+          },
+        }}
+      />
       <TaskProvider>
         <Routes>
           {/* Root redirect to Dashboard hub */}

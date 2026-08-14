@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
 import { registerUser } from "../services/auth.service";
+import toast from "react-hot-toast";
 
 import "./Register.css";
 
@@ -43,7 +44,7 @@ const Register = () => {
 
     const response = await registerUser(formData);
 
-    alert(response.message);
+    toast.success(response.message || "Account created! Please verify your email.");
 
     navigate("/verify-otp", {
       state: {
@@ -53,7 +54,7 @@ const Register = () => {
 
   } catch (error) {
 
-    alert(
+    toast.error(
       error.response?.data?.message ||
       "Registration failed"
     );

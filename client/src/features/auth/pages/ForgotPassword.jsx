@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import { forgotPassword } from "../services/auth.service";
+import toast from "react-hot-toast";
 
 import "./ForgotPassword.css";
 
@@ -24,13 +25,13 @@ const [loading, setLoading] = useState(false);
 
     const response = await forgotPassword(email);
 
-    alert(response.message);
+    toast.success(response.message || "Reset link sent! Check your inbox.");
 
     navigate("/login");
 
   } catch (error) {
 
-    alert(
+    toast.error(
       error.response?.data?.message ||
       "Failed to send reset link"
     );

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
 import api from "../../../config/api";
 import { createTask } from "../../../services/taskService";
+import toast from "react-hot-toast";
 import SearchBar from "../../tasks/components/SearchBar";
 import "./AddTask.css";
 import {
@@ -257,7 +258,7 @@ export default function AddTask() {
         await api.post("/tasks", taskData);
       }
 
-      alert("Task created successfully!");
+      toast.success("Task created successfully!");
 
       navigate("/mytasks");
     } catch (err) {

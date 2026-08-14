@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { verifyOTP, resendOTP } from "../services/auth.service";
+import toast from "react-hot-toast";
 
 import "./VerifyOTP.css";
 const VerifyOTP = () => {
@@ -49,7 +50,8 @@ const VerifyOTP = () => {
   const otpCode = otp.join("");
 
   if (otpCode.length !== 6) {
-    return alert("Please enter all 6 digits.");
+    toast.error("Please enter all 6 digits.");
+    return;
   }
 
   try {
@@ -60,13 +62,13 @@ const VerifyOTP = () => {
       otp: otpCode,
     });
 
-    alert(response.message);
+    toast.success(response.message || "Email verified successfully!");
 
     navigate("/login");
 
   } catch (error) {
 
-    alert(
+    toast.error(
       error.response?.data?.message ||
       "OTP Verification Failed"
     );
@@ -84,11 +86,11 @@ const VerifyOTP = () => {
 
     const response = await resendOTP(email);
 
-    alert(response.message);
+    toast.success(response.message || "OTP resent! Check your inbox.");
 
   } catch (error) {
 
-    alert(
+    toast.error(
       error.response?.data?.message ||
       "Failed to resend OTP"
     );
