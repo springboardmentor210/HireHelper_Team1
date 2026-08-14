@@ -81,15 +81,35 @@ export const createTask = asyncHandler(async (req, res) => {
 
   let coordinates;
 
-  if (lat !== undefined && lng !== undefined && lat !== "" && lng !== "") {
-    const latNum = Number(lat);
-    const lngNum = Number(lng);
+  if (location && typeof location === "string" && location.trim() !== "") {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          location.trim()
+        )}&format=json&limit=1`,
+        {
+          headers: {
+            "User-Agent": "HireHelper/1.0",
+          },
+        }
+      );
 
-    if (!Number.isNaN(latNum) && !Number.isNaN(lngNum)) {
-      coordinates = {
-        type: "Point",
-        coordinates: [lngNum, latNum],
-      };
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        const latNum = Number(data[0].lat);
+        const lngNum = Number(data[0].lon);
+
+        if (!Number.isNaN(latNum) && !Number.isNaN(lngNum)) {
+          coordinates = {
+            type: "Point",
+            coordinates: [lngNum, latNum],
+          };
+        }
+      }
+    } catch (err) {
+      console.warn("Geocoding failed for location:", location, err.message);
+      // We fail gracefully and just don't set coordinates
     }
   }
 
