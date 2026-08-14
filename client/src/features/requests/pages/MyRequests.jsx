@@ -1,16 +1,27 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
+
 import Sidebar from "../../../components/layout/Sidebar";
+
 import MyRequestsHeader from "../components/MyRequestsHeader";
 import RequestTabs from "../components/RequestTabs";
 import RequestCard from "../components/RequestCard";
 import CancelRequestModal from "../components/CancelRequestModal";
 import EmptyState from "../components/EmptyState";
+
 import * as requestService from "../../../services/requestService";
+
+import { getConversations } from "../../chat/services/chat.service";
+
+import { useNavigate } from "react-router-dom";
+
 import { useNotifications } from "../../../context/NotificationContext";
+
 import "../styles/MyRequests.css";
 
+// =========================================================
+// CONVERT BACKEND STATUS TO UI STATUS
+// =========================================================
 
-// Convert backend status to the format currently used by the UI.
 const formatStatus = (status) => {
   switch (String(status || "").toLowerCase()) {
     case "pending":
@@ -33,10 +44,14 @@ const formatStatus = (status) => {
   }
 };
 
+// =========================================================
+// MAP BACKEND REQUEST TO REQUEST CARD FORMAT
+// =========================================================
 
-// Convert a backend request into the object expected by RequestCard.
 const mapRequestData = (request) => {
-  if (!request) return null;
+  if (!request) {
+    return null;
+  }
 
   const task = request.task || {};
   const taskOwner = request.taskOwner || {};
@@ -71,7 +86,10 @@ const mapRequestData = (request) => {
       : [];
 
   return {
-    // Request information
+    // =====================================================
+    // REQUEST INFORMATION
+    // =====================================================
+
     id,
     _id: id,
 
@@ -83,7 +101,10 @@ const mapRequestData = (request) => {
 
     createdAtFormatted,
 
-    // Task information
+    // =====================================================
+    // TASK INFORMATION
+    // =====================================================
+
     taskId: task._id || task.id,
 
     taskTitle:
@@ -100,7 +121,10 @@ const mapRequestData = (request) => {
 
     images,
 
-    // Owner information
+    // =====================================================
+    // OWNER INFORMATION
+    // =====================================================
+
     ownerName,
 
     ownerInitials,
@@ -109,17 +133,30 @@ const mapRequestData = (request) => {
 
     avatarColor: "#334155",
 
-    // UI state
+    // =====================================================
+    // UI STATE
+    // =====================================================
+
     isExpanded: false,
   };
 };
 
+// =========================================================
+// PAGE
+// =========================================================
 
 export default function MyRequests() {
-  const [requests, setRequests] = useState([]);
+  const navigate = useNavigate();
 
   const { notifications } =
     useNotifications();
+
+  // =======================================================
+  // STATE
+  // =======================================================
+
+  const [requests, setRequests] =
+    useState([]);
 
   const [activeTab, setActiveTab] =
     useState("all");
@@ -127,8 +164,10 @@ export default function MyRequests() {
   const [search, setSearch] =
     useState("");
 
-  const [cancelModalRequest, setCancelModalRequest] =
-    useState(null);
+  const [
+    cancelModalRequest,
+    setCancelModalRequest,
+  ] = useState(null);
 
   const [loading, setLoading] =
     useState(true);
@@ -136,55 +175,73 @@ export default function MyRequests() {
   const [error, setError] =
     useState("");
 
-
-  // ============================
+  // =======================================================
   // LOAD MY REQUESTS
-  // ============================
+  // =======================================================
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        setError("");
+    let cancelled = false;
 
-        const response =
-          await requestService.getMyRequests();
+    const timer = setTimeout(() => {
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          setError("");
 
-        const rawRequests =
-          response?.data?.requests ||
-          response?.requests ||
-          [];
+          const response =
+            await requestService.getMyRequests();
 
-        const mappedRequests =
-          rawRequests
-            .map(mapRequestData)
-            .filter(Boolean);
+          if (cancelled) {
+            return;
+          }
 
-        setRequests(mappedRequests);
-      } catch (err) {
-        console.error(
-          "Failed to load requests data:",
-          err
-        );
+          const rawRequests =
+            response?.data?.requests ||
+            response?.requests ||
+            [];
 
-        setError(
-          err.response?.data?.message ||
-            "Failed to load your requests."
-        );
+          const mappedRequests =
+            rawRequests
+              .map(mapRequestData)
+              .filter(Boolean);
 
-        setRequests([]);
-      } finally {
-        setLoading(false);
-      }
-    }
+          setRequests(mappedRequests);
+        } catch (err) {
+          if (cancelled) {
+            return;
+          }
 
-    fetchData();
+          console.error(
+            "Failed to load requests data:",
+            err
+          );
+
+          setError(
+            err?.response?.data?.message ||
+              err?.message ||
+              "Failed to load your requests."
+          );
+
+          setRequests([]);
+        } finally {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        }
+      };
+
+      fetchData();
+    }, 0);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
 
-
-  // ============================
+  // =======================================================
   // STATUS COUNTS
-  // ============================
+  // =======================================================
 
   const counts = useMemo(() => {
     return {
@@ -212,16 +269,17 @@ export default function MyRequests() {
     };
   }, [requests]);
 
-
-  // ============================
+  // =======================================================
   // FILTER REQUESTS
-  // ============================
+  // =======================================================
 
   const filteredRequests = useMemo(() => {
     let result = [...requests];
 
+    // -----------------------------------------------------
+    // STATUS TAB
+    // -----------------------------------------------------
 
-    // Status tab
     if (activeTab !== "all") {
       result = result.filter(
         (request) =>
@@ -229,8 +287,10 @@ export default function MyRequests() {
       );
     }
 
+    // -----------------------------------------------------
+    // SEARCH
+    // -----------------------------------------------------
 
-    // Search
     if (search.trim()) {
       const query =
         search.trim().toLowerCase();
@@ -270,7 +330,6 @@ export default function MyRequests() {
       });
     }
 
-
     return result;
   }, [
     requests,
@@ -278,15 +337,15 @@ export default function MyRequests() {
     search,
   ]);
 
-
-  // ============================
-  // EXPAND / COLLAPSE
-  // ============================
+  // =======================================================
+  // EXPAND / COLLAPSE REQUEST
+  // =======================================================
 
   const handleToggleExpand = (id) => {
     setRequests((previous) =>
       previous.map((request) =>
-        request.id === id
+        String(request.id) ===
+        String(id)
           ? {
               ...request,
               isExpanded:
@@ -297,10 +356,9 @@ export default function MyRequests() {
     );
   };
 
-
-  // ============================
+  // =======================================================
   // OPEN CANCEL MODAL
-  // ============================
+  // =======================================================
 
   const handleOpenCancelModal = (
     request
@@ -308,103 +366,236 @@ export default function MyRequests() {
     setCancelModalRequest(request);
   };
 
+  // =======================================================
+  // CANCEL REQUEST
+  // =======================================================
 
-  // ============================
-  // CONFIRM CANCEL
-  // ============================
+  const handleConfirmCancel =
+    async (id) => {
+      try {
+        setError("");
 
-  const handleConfirmCancel = async (
-    id
+        await requestService.cancelRequest(
+          id
+        );
+
+        setRequests((previous) =>
+          previous.map((request) =>
+            String(request.id) ===
+            String(id)
+              ? {
+                  ...request,
+                  status: "Cancelled",
+                  isExpanded: false,
+                }
+              : request
+          )
+        );
+
+        setCancelModalRequest(null);
+      } catch (err) {
+        console.error(
+          "Failed to cancel request:",
+          err
+        );
+
+        setError(
+          err?.response?.data?.message ||
+            err?.message ||
+            "Failed to cancel request."
+        );
+      }
+    };
+
+  // =======================================================
+  // OPEN CHAT
+  // =======================================================
+
+  const handleOpenChat = async (
+    request
   ) => {
     try {
-      await requestService.cancelRequest(
-        id
+      setError("");
+
+      // Chat is available only after acceptance.
+      if (
+        request?.status !==
+        "Accepted"
+      ) {
+        setError(
+          "Chat is available only after the request has been accepted."
+        );
+
+        return;
+      }
+
+      // The mapped request contains taskId.
+      if (!request?.taskId) {
+        setError(
+          "Task information is missing."
+        );
+
+        return;
+      }
+
+      // ---------------------------------------------------
+      // Get user's conversations
+      // ---------------------------------------------------
+
+      const response =
+        await getConversations();
+
+      const data =
+        response?.data || [];
+
+      const conversations =
+        Array.isArray(data)
+          ? data
+          : data?.conversations || [];
+
+      // ---------------------------------------------------
+      // Find conversation for this task
+      // ---------------------------------------------------
+
+      const conversation =
+        conversations.find(
+          (item) => {
+            const conversationTaskId =
+              item?.task?._id ||
+              item?.task;
+
+            return (
+              String(
+                conversationTaskId
+              ) ===
+              String(
+                request.taskId
+              )
+            );
+          }
+        );
+
+      // ---------------------------------------------------
+      // Conversation doesn't exist yet
+      // ---------------------------------------------------
+
+      if (!conversation?._id) {
+        setError(
+          "Conversation is not available yet. Please try again."
+        );
+
+        return;
+      }
+
+      // ---------------------------------------------------
+      // Open conversation
+      // ---------------------------------------------------
+
+      navigate(
+        `/chat/${conversation._id}`
       );
-
-      setRequests((previous) =>
-        previous.map((request) =>
-          request.id === id
-            ? {
-                ...request,
-
-                status: "Cancelled",
-
-                isExpanded: false,
-              }
-            : request
-        )
-      );
-
-      setCancelModalRequest(null);
     } catch (err) {
       console.error(
-        "Failed to cancel request:",
+        "Failed to open chat:",
         err
       );
 
-      alert(
-        err.response?.data?.message ||
-          "Failed to cancel request. Please try again."
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Unable to open chat."
       );
     }
   };
 
-
-  // ============================
+  // =======================================================
   // RESET FILTERS
-  // ============================
+  // =======================================================
 
   const handleResetFilters = () => {
     setActiveTab("all");
     setSearch("");
+    setError("");
   };
 
+  // =======================================================
+  // TAB CHANGE
+  // =======================================================
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearch("");
+    setError("");
+  };
+
+  // =======================================================
+  // RENDER
+  // =======================================================
 
   return (
     <div className="my-requests-layout">
+      {/* ===================================================
+          SIDEBAR
+      =================================================== */}
 
       <Sidebar />
 
+      {/* ===================================================
+          MAIN CONTENT
+      =================================================== */}
 
       <main className="my-requests-main-content">
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
-        {/* Header */}
         <MyRequestsHeader
           search={search}
           onSearchChange={setSearch}
           notifications={notifications}
         />
 
+        {/* =================================================
+            TABS
+        ================================================= */}
 
-        {/* Tabs */}
         <RequestTabs
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           counts={counts}
           onFilterClick={() => {}}
         />
 
+        {/* =================================================
+            LOADING
+        ================================================= */}
 
-        {/* Loading */}
         {loading && (
           <div className="requests-loading">
-            <p>Loading your requests...</p>
+            <p>
+              Loading your requests...
+            </p>
           </div>
         )}
 
+        {/* =================================================
+            ERROR
+        ================================================= */}
 
-        {/* Error */}
         {!loading && error && (
           <div className="requests-error">
             <p>{error}</p>
           </div>
         )}
 
+        {/* =================================================
+            REQUEST CONTENT
+        ================================================= */}
 
-        {/* Content */}
         {!loading &&
           !error &&
-          (filteredRequests.length === 0 ? (
+          (filteredRequests.length ===
+          0 ? (
             <EmptyState
               activeTab={activeTab}
               searchQuery={search}
@@ -412,7 +603,6 @@ export default function MyRequests() {
             />
           ) : (
             <section className="requests-list-container">
-
               {filteredRequests.map(
                 (request) => (
                   <RequestCard
@@ -424,32 +614,35 @@ export default function MyRequests() {
                     onCancelRequest={
                       handleOpenCancelModal
                     }
+                    onChat={
+                      handleOpenChat
+                    }
                   />
                 )
               )}
-
             </section>
           ))}
 
+        {/* =================================================
+            CANCEL MODAL
+        ================================================= */}
 
+        {cancelModalRequest && (
+          <CancelRequestModal
+            request={
+              cancelModalRequest
+            }
+            onClose={() =>
+              setCancelModalRequest(
+                null
+              )
+            }
+            onConfirm={
+              handleConfirmCancel
+            }
+          />
+        )}
       </main>
-
-
-      {/* Cancel Modal */}
-      {cancelModalRequest && (
-        <CancelRequestModal
-          request={cancelModalRequest}
-
-          onClose={() =>
-            setCancelModalRequest(null)
-          }
-
-          onConfirm={
-            handleConfirmCancel
-          }
-        />
-      )}
-
     </div>
   );
 }

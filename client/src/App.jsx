@@ -23,19 +23,87 @@ import Requests from "./features/requests/pages/Requests";
 import MyRequests from "./features/requests/pages/MyRequests";
 import NotificationsPage from "./features/notifications/pages/NotificationsPage";
 import Saved from "./features/saved/pages/Saved";
+import Chat from "./features/chat/pages/Chat";
 
 function App() {
   return (
     <NotificationProvider>
       <TaskProvider>
         <Routes>
-          {/* Root redirect to Dashboard hub */}
+
+          {/* =====================================================
+              ROOT
+          ===================================================== */}
+
           <Route
             path="/"
-            element={<Navigate to="/dashboard" replace />}
+            element={
+              <Navigate
+                to="/dashboard"
+                replace
+              />
+            }
           />
 
-          {/* Protected Task Routes */}
+          {/* =====================================================
+              AUTHENTICATION ROUTES
+          ===================================================== */}
+
+          <Route
+            path="/home"
+            element={<Home />}
+          />
+
+          <Route
+            path="/login"
+            element={
+              <PublicOnlyRoute>
+                <Login />
+              </PublicOnlyRoute>
+            }
+          />
+
+          <Route
+            path="/register"
+            element={
+              <PublicOnlyRoute>
+                <Register />
+              </PublicOnlyRoute>
+            }
+          />
+
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPassword />}
+          />
+
+          <Route
+            path="/verify-otp"
+            element={<VerifyOTP />}
+          />
+
+          {/* =====================================================
+              DASHBOARD
+          ===================================================== */}
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* =====================================================
+              TASK ROUTES
+          ===================================================== */}
+
           <Route
             path="/mytasks"
             element={
@@ -72,7 +140,10 @@ function App() {
             }
           />
 
-          {/* Protected Add Task Routes */}
+          {/* =====================================================
+              ADD TASK
+          ===================================================== */}
+
           <Route
             path="/addtasks"
             element={
@@ -100,65 +171,23 @@ function App() {
             }
           />
 
-          {/* Authentication Routes */}
-          <Route path="/home" element={<Home />} />
+          {/* =====================================================
+              FEED
+          ===================================================== */}
 
           <Route
-            path="/login"
-            element={
-              <PublicOnlyRoute>
-                <Login />
-              </PublicOnlyRoute>
-            }
-          />
-
-          <Route
-            path="/register"
-            element={
-              <PublicOnlyRoute>
-                <Register />
-              </PublicOnlyRoute>
-            }
-          />
-
-          <Route
-            path="/forgot-password"
-            element={<ForgotPassword />}
-          />
-
-          <Route
-            path="/reset-password/:token"
-            element={<ResetPassword />}
-          />
-
-          <Route
-            path="/verify-otp"
-            element={<VerifyOTP />}
-          />
-
-          {/* Dashboard */}
-          <Route
-            path="/dashboard"
-            element={<Dashboard />}
-          />
-
-          {/* Protected Settings */}
-          <Route
-            path="/settings"
+            path="/feed"
             element={
               <ProtectedRoute>
-                <Settings />
+                <Feed />
               </ProtectedRoute>
             }
           />
 
-          {/* Feed */}
-          <Route
-            path="/feed"
-            element={<Feed />}
-          />
+          {/* =====================================================
+              REQUESTS
+          ===================================================== */}
 
-          {/* Requests */}
           <Route
             path="/requests"
             element={
@@ -168,7 +197,10 @@ function App() {
             }
           />
 
-          {/* My Requests */}
+          {/* =====================================================
+              MY REQUESTS
+          ===================================================== */}
+
           <Route
             path="/myrequests"
             element={
@@ -187,7 +219,10 @@ function App() {
             }
           />
 
-          {/* Other Protected Routes */}
+          {/* =====================================================
+              SAVED
+          ===================================================== */}
+
           <Route
             path="/saved"
             element={
@@ -196,6 +231,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* =====================================================
+              NOTIFICATIONS
+          ===================================================== */}
 
           <Route
             path="/notifications"
@@ -206,11 +245,65 @@ function App() {
             }
           />
 
-          {/* 404 */}
+          {/* =====================================================
+              CHAT
+          ===================================================== */}
+
+          <Route
+  path="/chat/:conversationId"
+  element={
+    <ProtectedRoute>
+      <Chat />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/chat"
+  element={
+    <ProtectedRoute>
+      <Chat />
+    </ProtectedRoute>
+  }
+/>
+
+          {/* /messages is an alias for /chat */}
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* =====================================================
+              SETTINGS
+          ===================================================== */}
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* =====================================================
+              404
+          ===================================================== */}
+
           <Route
             path="*"
-            element={<Navigate to="/dashboard" replace />}
+            element={
+              <Navigate
+                to="/dashboard"
+                replace
+              />
+            }
           />
+
         </Routes>
       </TaskProvider>
     </NotificationProvider>

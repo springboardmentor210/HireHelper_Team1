@@ -1,6 +1,7 @@
 import {
   Star,
   Briefcase,
+  MessageCircle,
 } from "lucide-react";
 
 import "../styles/Requests.css";
@@ -9,6 +10,7 @@ const IncomingRequestCard = ({
   request,
   onAccept,
   onDecline,
+  onChat,
 }) => {
   // =========================
   // Backend Request Data
@@ -19,6 +21,7 @@ const IncomingRequestCard = ({
     requester = {},
     task = {},
     message = "",
+    status,
   } = request || {};
 
   // =========================
@@ -50,7 +53,10 @@ const IncomingRequestCard = ({
 
   const handleAccept = () => {
     if (!_id) {
-      console.error("Request ID is missing:", request);
+      console.error(
+        "Request ID is missing:",
+        request
+      );
       return;
     }
 
@@ -59,12 +65,39 @@ const IncomingRequestCard = ({
 
   const handleDecline = () => {
     if (!_id) {
-      console.error("Request ID is missing:", request);
+      console.error(
+        "Request ID is missing:",
+        request
+      );
       return;
     }
 
     onDecline(_id);
   };
+
+  const handleChat = () => {
+    if (!request?._id) {
+      console.error(
+        "Request ID is missing:",
+        request
+      );
+      return;
+    }
+
+    if (status !== "accepted") {
+      console.warn(
+        "Chat is only available for accepted requests."
+      );
+      return;
+    }
+
+    if (typeof onChat === "function") {
+      onChat(request);
+    }
+  };
+
+  const isAccepted =
+    status === "accepted";
 
   return (
     <article className="request-card">
@@ -87,7 +120,9 @@ const IncomingRequestCard = ({
             />
           ) : (
             <div className="request-avatar request-avatar-fallback">
-              {requesterName.charAt(0).toUpperCase()}
+              {requesterName
+                .charAt(0)
+                .toUpperCase()}
             </div>
           )}
 
@@ -103,28 +138,30 @@ const IncomingRequestCard = ({
 
               {/* Rating */}
 
-              {rating !== undefined && rating !== null && (
-                <div className="request-rating">
+              {rating !== undefined &&
+                rating !== null && (
+                  <div className="request-rating">
 
-                  <Star
-                    size={15}
-                    fill="#F4B400"
-                    stroke="#F4B400"
-                  />
+                    <Star
+                      size={15}
+                      fill="#F4B400"
+                      stroke="#F4B400"
+                    />
 
-                  <span>
-                    {rating}
-                  </span>
+                    <span>
+                      {rating}
+                    </span>
 
-                  {reviews !== undefined &&
-                    reviews !== null && (
-                      <small>
-                        ({reviews} reviews)
-                      </small>
-                    )}
+                    {reviews !==
+                      undefined &&
+                      reviews !== null && (
+                        <small>
+                          ({reviews} reviews)
+                        </small>
+                      )}
 
-                </div>
-              )}
+                  </div>
+                )}
 
             </div>
 
@@ -139,25 +176,42 @@ const IncomingRequestCard = ({
           </div>
         </div>
 
-        {/* Accept / Decline */}
+        {/* =========================
+            Action Buttons
+        ========================= */}
 
         <div className="request-buttons">
 
-          <button
-            type="button"
-            className="accept-btn"
-            onClick={handleAccept}
-          >
-            Accept
-          </button>
+          {isAccepted ? (
+            <button
+              type="button"
+              className="accept-btn"
+              onClick={handleChat}
+            >
+              <MessageCircle
+                size={16}
+              />
+              Chat
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="accept-btn"
+                onClick={handleAccept}
+              >
+                Accept
+              </button>
 
-          <button
-            type="button"
-            className="decline-btn"
-            onClick={handleDecline}
-          >
-            Decline
-          </button>
+              <button
+                type="button"
+                className="decline-btn"
+                onClick={handleDecline}
+              >
+                Decline
+              </button>
+            </>
+          )}
 
         </div>
 
@@ -182,7 +236,8 @@ const IncomingRequestCard = ({
           <div className="task-title-row">
 
             <h4>
-              {task.title || "Untitled Task"}
+              {task.title ||
+                "Untitled Task"}
             </h4>
 
             {task.category && (
