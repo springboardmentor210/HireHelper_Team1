@@ -1,6 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Bell, ChevronDown } from 'lucide-react';
 import Sidebar from "../../../components/layout/Sidebar";
+import { useNotifications } from "../../../context/NotificationContext";
+import NotificationsDropdown from "../../notifications/components/NotificationsDropdown";
 import './Settings.css';
 import avatarImg from '../../../assets/settings-image/Ellipse 77.png';
 import searchImg from '../../../assets/settings-image/search-interface-symbol (2) 1.png';
@@ -17,6 +19,20 @@ export default function Settings() {
 
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
+
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+  const { unreadCount } = useNotifications() || { unreadCount: 0 };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setNotifOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -57,11 +73,30 @@ export default function Settings() {
           <div className="topbar-right">
             <div className="search-bar">
               <img src={searchImg} alt="Search" className="search-icon" />
-              <input type="text" placeholder="Search tasks..." />
+              <input 
+                type="text" 
+                placeholder="Search tasks..." 
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    window.location.href = `/mytasks?search=${e.target.value}`;
+                  }
+                }}
+              />
             </div>
-            <div className="notification-bell">
-              <Bell fill="#fbbf24" stroke="none" size={24} />
-              <span className="notification-dot">1</span>
+            <div className="notification-bell" ref={notifRef} style={{ position: 'relative' }}>
+              <button 
+                type="button" 
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                onClick={() => setNotifOpen(prev => !prev)}
+              >
+                <Bell fill="#fbbf24" stroke="none" size={24} />
+                {unreadCount > 0 && <span className="notification-dot">{unreadCount}</span>}
+              </button>
+              {notifOpen && (
+                <div style={{ position: 'absolute', top: '100%', right: '0', zIndex: 50 }}>
+                  <NotificationsDropdown onClose={() => setNotifOpen(false)} />
+                </div>
+              )}
             </div>
           </div>
         </header>
