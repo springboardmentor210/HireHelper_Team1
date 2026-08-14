@@ -11,6 +11,7 @@ import {
   Settings,
   ChevronRight,
   AlertCircle,
+  BellRing,
 } from "lucide-react";
 import { useNotifications } from "../../../context/NotificationContext";
 import NotificationSettingsModal from "./NotificationSettingsModal";
@@ -188,7 +189,7 @@ export default function NotificationsDropdown({ onClose }) {
             onClick={handleViewAll}
           >
             <div className="notif-footer-left">
-              <MessageSquare size={18} />
+              <MessageSquare size={18} fill="currentColor" />
               <span>View all notifications</span>
             </div>
             <ChevronRight size={18} className="chevron" />
@@ -200,7 +201,7 @@ export default function NotificationsDropdown({ onClose }) {
             onClick={() => setSettingsModalOpen(true)}
           >
             <div className="notif-footer-left">
-              <Settings size={18} />
+              <BellRing size={18} fill="currentColor" />
               <span>Notification settings</span>
             </div>
           </button>

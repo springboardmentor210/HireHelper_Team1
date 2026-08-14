@@ -92,11 +92,7 @@ export default function Settings() {
                 <Bell fill="#fbbf24" stroke="none" size={24} />
                 {unreadCount > 0 && <span className="notification-dot">{unreadCount}</span>}
               </button>
-              {notifOpen && (
-                <div style={{ position: 'absolute', top: '100%', right: '0', zIndex: 50 }}>
-                  <NotificationsDropdown onClose={() => setNotifOpen(false)} />
-                </div>
-              )}
+              {notifOpen && <NotificationsDropdown onClose={() => setNotifOpen(false)} />}
             </div>
           </div>
         </header>
