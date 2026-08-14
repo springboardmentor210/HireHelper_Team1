@@ -1,8 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useMemo,
-} from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import Sidebar from "../../../components/layout/Sidebar";
 
@@ -14,9 +10,7 @@ import EmptyState from "../components/EmptyState";
 
 import * as requestService from "../../../services/requestService";
 
-import {
-  getConversations,
-} from "../../chat/services/chat.service";
+import { getConversations } from "../../chat/services/chat.service";
 
 import { useNavigate } from "react-router-dom";
 
@@ -24,19 +18,145 @@ import { useNotifications } from "../../../context/NotificationContext";
 
 import "../styles/MyRequests.css";
 
+// =========================================================
+// CONVERT BACKEND STATUS TO UI STATUS
+// =========================================================
+
+const formatStatus = (status) => {
+  switch (String(status || "").toLowerCase()) {
+    case "pending":
+      return "Pending";
+
+    case "accepted":
+      return "Accepted";
+
+    case "completed":
+      return "Completed";
+
+    case "cancelled":
+      return "Cancelled";
+
+    case "declined":
+      return "Declined";
+
+    default:
+      return status || "Pending";
+  }
+};
+
+// =========================================================
+// MAP BACKEND REQUEST TO REQUEST CARD FORMAT
+// =========================================================
+
+const mapRequestData = (request) => {
+  if (!request) {
+    return null;
+  }
+
+  const task = request.task || {};
+  const taskOwner = request.taskOwner || {};
+
+  const id = request._id || request.id;
+
+  const ownerName =
+    `${taskOwner.firstName || ""} ${
+      taskOwner.lastName || ""
+    }`.trim() || "Task Owner";
+
+  const ownerInitials =
+    `${taskOwner.firstName?.charAt(0) || ""}${
+      taskOwner.lastName?.charAt(0) || ""
+    }`.toUpperCase() || "TO";
+
+  const createdAtFormatted = request.createdAt
+    ? new Date(request.createdAt).toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }
+      )
+    : "Date unavailable";
+
+  const images = Array.isArray(task.images)
+    ? task.images
+    : task.image
+      ? [task.image]
+      : [];
+
+  return {
+    // =====================================================
+    // REQUEST INFORMATION
+    // =====================================================
+
+    id,
+    _id: id,
+
+    message: request.message || "",
+
+    status: formatStatus(request.status),
+
+    createdAt: request.createdAt || null,
+
+    createdAtFormatted,
+
+    // =====================================================
+    // TASK INFORMATION
+    // =====================================================
+
+    taskId: task._id || task.id,
+
+    taskTitle:
+      task.title || "Untitled Task",
+
+    category:
+      task.category || "General",
+
+    location:
+      task.location || "Location not specified",
+
+    taskImage:
+      images[0] || "",
+
+    images,
+
+    // =====================================================
+    // OWNER INFORMATION
+    // =====================================================
+
+    ownerName,
+
+    ownerInitials,
+
+    avatarBg: "#f1f5f9",
+
+    avatarColor: "#334155",
+
+    // =====================================================
+    // UI STATE
+    // =====================================================
+
+    isExpanded: false,
+  };
+};
+
+// =========================================================
+// PAGE
+// =========================================================
+
 export default function MyRequests() {
   const navigate = useNavigate();
 
-  // =========================================================
+  const { notifications } =
+    useNotifications();
+
+  // =======================================================
   // STATE
-  // =========================================================
+  // =======================================================
 
   const [requests, setRequests] =
     useState([]);
-
-  const {
-    notifications,
-  } = useNotifications();
 
   const [activeTab, setActiveTab] =
     useState("all");
@@ -49,15 +169,15 @@ export default function MyRequests() {
     setCancelModalRequest,
   ] = useState(null);
 
-  const [error, setError] =
-    useState("");
-
   const [loading, setLoading] =
     useState(true);
 
-  // =========================================================
-  // LOAD REQUESTS
-  // =========================================================
+  const [error, setError] =
+    useState("");
+
+  // =======================================================
+  // LOAD MY REQUESTS
+  // =======================================================
 
   useEffect(() => {
     let cancelled = false;
@@ -75,12 +195,17 @@ export default function MyRequests() {
             return;
           }
 
-          const data =
-            response?.data || {};
+          const rawRequests =
+            response?.data?.requests ||
+            response?.requests ||
+            [];
 
-          setRequests(
-            data.requests || []
-          );
+          const mappedRequests =
+            rawRequests
+              .map(mapRequestData)
+              .filter(Boolean);
+
+          setRequests(mappedRequests);
         } catch (err) {
           if (cancelled) {
             return;
@@ -94,7 +219,7 @@ export default function MyRequests() {
           setError(
             err?.response?.data?.message ||
               err?.message ||
-              "Failed to load requests."
+              "Failed to load your requests."
           );
 
           setRequests([]);
@@ -114,9 +239,9 @@ export default function MyRequests() {
     };
   }, []);
 
-  // =========================================================
-  // COUNTS
-  // =========================================================
+  // =======================================================
+  // STATUS COUNTS
+  // =======================================================
 
   const counts = useMemo(() => {
     return {
@@ -124,34 +249,37 @@ export default function MyRequests() {
 
       pending: requests.filter(
         (request) =>
-          request.status === "pending"
+          request.status === "Pending"
       ).length,
 
       accepted: requests.filter(
         (request) =>
-          request.status === "accepted"
+          request.status === "Accepted"
       ).length,
 
       completed: requests.filter(
         (request) =>
-          request.status === "completed"
+          request.status === "Completed"
       ).length,
 
       cancelled: requests.filter(
         (request) =>
-          request.status === "cancelled"
+          request.status === "Cancelled"
       ).length,
     };
   }, [requests]);
 
-  // =========================================================
+  // =======================================================
   // FILTER REQUESTS
-  // =========================================================
+  // =======================================================
 
   const filteredRequests = useMemo(() => {
     let result = [...requests];
 
-    // Status filter
+    // -----------------------------------------------------
+    // STATUS TAB
+    // -----------------------------------------------------
+
     if (activeTab !== "all") {
       result = result.filter(
         (request) =>
@@ -159,51 +287,47 @@ export default function MyRequests() {
       );
     }
 
-    // Search
+    // -----------------------------------------------------
+    // SEARCH
+    // -----------------------------------------------------
+
     if (search.trim()) {
-      const q =
-        search
-          .trim()
-          .toLowerCase();
+      const query =
+        search.trim().toLowerCase();
 
-      result = result.filter(
-        (request) => {
-          const task =
-            request.task || {};
+      result = result.filter((request) => {
+        return (
+          String(
+            request.taskTitle || ""
+          )
+            .toLowerCase()
+            .includes(query) ||
 
-          const owner =
-            request.taskOwner || {};
+          String(
+            request.ownerName || ""
+          )
+            .toLowerCase()
+            .includes(query) ||
 
-          const taskTitle =
-            task.title || "";
+          String(
+            request.category || ""
+          )
+            .toLowerCase()
+            .includes(query) ||
 
-          const category =
-            task.category || "";
+          String(
+            request.location || ""
+          )
+            .toLowerCase()
+            .includes(query) ||
 
-          const ownerName =
-            `${owner.firstName || ""} ${
-              owner.lastName || ""
-            }`.trim();
-
-          const message =
-            request.message || "";
-
-          return (
-            taskTitle
-              .toLowerCase()
-              .includes(q) ||
-            ownerName
-              .toLowerCase()
-              .includes(q) ||
-            category
-              .toLowerCase()
-              .includes(q) ||
-            message
-              .toLowerCase()
-              .includes(q)
-          );
-        }
-      );
+          String(
+            request.message || ""
+          )
+            .toLowerCase()
+            .includes(query)
+        );
+      });
     }
 
     return result;
@@ -213,29 +337,28 @@ export default function MyRequests() {
     search,
   ]);
 
-  // =========================================================
-  // EXPAND REQUEST
-  // =========================================================
+  // =======================================================
+  // EXPAND / COLLAPSE REQUEST
+  // =======================================================
 
   const handleToggleExpand = (id) => {
     setRequests((previous) =>
-      previous.map(
-        (request) =>
-          String(request._id) ===
-          String(id)
-            ? {
-                ...request,
-                isExpanded:
-                  !request.isExpanded,
-              }
-            : request
+      previous.map((request) =>
+        String(request.id) ===
+        String(id)
+          ? {
+              ...request,
+              isExpanded:
+                !request.isExpanded,
+            }
+          : request
       )
     );
   };
 
-  // =========================================================
-  // CANCEL MODAL
-  // =========================================================
+  // =======================================================
+  // OPEN CANCEL MODAL
+  // =======================================================
 
   const handleOpenCancelModal = (
     request
@@ -243,9 +366,9 @@ export default function MyRequests() {
     setCancelModalRequest(request);
   };
 
-  // =========================================================
+  // =======================================================
   // CANCEL REQUEST
-  // =========================================================
+  // =======================================================
 
   const handleConfirmCancel =
     async (id) => {
@@ -257,16 +380,15 @@ export default function MyRequests() {
         );
 
         setRequests((previous) =>
-          previous.map(
-            (request) =>
-              String(request._id) ===
-              String(id)
-                ? {
-                    ...request,
-                    status: "cancelled",
-                    isExpanded: false,
-                  }
-                : request
+          previous.map((request) =>
+            String(request.id) ===
+            String(id)
+              ? {
+                  ...request,
+                  status: "Cancelled",
+                  isExpanded: false,
+                }
+              : request
           )
         );
 
@@ -285,9 +407,9 @@ export default function MyRequests() {
       }
     };
 
-  // =========================================================
+  // =======================================================
   // OPEN CHAT
-  // =========================================================
+  // =======================================================
 
   const handleOpenChat = async (
     request
@@ -295,10 +417,10 @@ export default function MyRequests() {
     try {
       setError("");
 
-      // Chat is available only after acceptance
+      // Chat is available only after acceptance.
       if (
         request?.status !==
-        "accepted"
+        "Accepted"
       ) {
         setError(
           "Chat is available only after the request has been accepted."
@@ -307,8 +429,8 @@ export default function MyRequests() {
         return;
       }
 
-      // Make sure task exists
-      if (!request?.task?._id) {
+      // The mapped request contains taskId.
+      if (!request?.taskId) {
         setError(
           "Task information is missing."
         );
@@ -316,8 +438,10 @@ export default function MyRequests() {
         return;
       }
 
-      // Fetch conversations belonging
-      // to the logged-in user
+      // ---------------------------------------------------
+      // Get user's conversations
+      // ---------------------------------------------------
+
       const response =
         await getConversations();
 
@@ -329,18 +453,31 @@ export default function MyRequests() {
           ? data
           : data?.conversations || [];
 
-      // Find conversation belonging
-      // to this accepted task
+      // ---------------------------------------------------
+      // Find conversation for this task
+      // ---------------------------------------------------
+
       const conversation =
         conversations.find(
-          (item) =>
-            String(
-              item?.task?._id
-            ) ===
-            String(
-              request.task._id
-            )
+          (item) => {
+            const conversationTaskId =
+              item?.task?._id ||
+              item?.task;
+
+            return (
+              String(
+                conversationTaskId
+              ) ===
+              String(
+                request.taskId
+              )
+            );
+          }
         );
+
+      // ---------------------------------------------------
+      // Conversation doesn't exist yet
+      // ---------------------------------------------------
 
       if (!conversation?._id) {
         setError(
@@ -350,7 +487,10 @@ export default function MyRequests() {
         return;
       }
 
-      // Open actual conversation
+      // ---------------------------------------------------
+      // Open conversation
+      // ---------------------------------------------------
+
       navigate(
         `/chat/${conversation._id}`
       );
@@ -368,9 +508,9 @@ export default function MyRequests() {
     }
   };
 
-  // =========================================================
+  // =======================================================
   // RESET FILTERS
-  // =========================================================
+  // =======================================================
 
   const handleResetFilters = () => {
     setActiveTab("all");
@@ -378,9 +518,9 @@ export default function MyRequests() {
     setError("");
   };
 
-  // =========================================================
+  // =======================================================
   // TAB CHANGE
-  // =========================================================
+  // =======================================================
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -388,32 +528,37 @@ export default function MyRequests() {
     setError("");
   };
 
-  // =========================================================
+  // =======================================================
   // RENDER
-  // =========================================================
+  // =======================================================
 
   return (
     <div className="my-requests-layout">
-      {/* =====================================================
+      {/* ===================================================
           SIDEBAR
-      ===================================================== */}
+      =================================================== */}
 
       <Sidebar />
 
-      {/* =====================================================
+      {/* ===================================================
           MAIN CONTENT
-      ===================================================== */}
+      =================================================== */}
 
       <main className="my-requests-main-content">
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
-        {/* Header */}
         <MyRequestsHeader
           search={search}
           onSearchChange={setSearch}
           notifications={notifications}
         />
 
-        {/* Tabs */}
+        {/* =================================================
+            TABS
+        ================================================= */}
+
         <RequestTabs
           activeTab={activeTab}
           onTabChange={handleTabChange}
@@ -421,32 +566,32 @@ export default function MyRequests() {
           onFilterClick={() => {}}
         />
 
-        {/* Error */}
-        {error && (
-          <div className="empty-state">
-            <h3>
-              Something went wrong
-            </h3>
+        {/* =================================================
+            LOADING
+        ================================================= */}
 
-            <p>{error}</p>
-          </div>
-        )}
-
-        {/* Loading */}
-        {loading && !error && (
-          <div className="empty-state">
-            <h3>
-              Loading requests...
-            </h3>
-
+        {loading && (
+          <div className="requests-loading">
             <p>
-              Fetching your requests
-              from the server.
+              Loading your requests...
             </p>
           </div>
         )}
 
-        {/* Requests */}
+        {/* =================================================
+            ERROR
+        ================================================= */}
+
+        {!loading && error && (
+          <div className="requests-error">
+            <p>{error}</p>
+          </div>
+        )}
+
+        {/* =================================================
+            REQUEST CONTENT
+        ================================================= */}
+
         {!loading &&
           !error &&
           (filteredRequests.length ===
@@ -461,7 +606,7 @@ export default function MyRequests() {
               {filteredRequests.map(
                 (request) => (
                   <RequestCard
-                    key={request._id}
+                    key={request.id}
                     request={request}
                     onToggleExpand={
                       handleToggleExpand
@@ -478,7 +623,10 @@ export default function MyRequests() {
             </section>
           ))}
 
-        {/* Cancel Modal */}
+        {/* =================================================
+            CANCEL MODAL
+        ================================================= */}
+
         {cancelModalRequest && (
           <CancelRequestModal
             request={

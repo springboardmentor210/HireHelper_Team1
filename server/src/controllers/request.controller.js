@@ -1,4 +1,6 @@
-import Request, { REQUEST_STATUSES } from "../models/Request.js";
+import Request, {
+  REQUEST_STATUSES,
+} from "../models/Request.js";
 import Task from "../models/Task.js";
 import Conversation from "../models/Conversation.js";
 import { createNotification } from "./notification.controller.js";
@@ -11,8 +13,15 @@ import asyncHandler from "../utils/asyncHandler.js";
 // HAVERSINE DISTANCE
 // ============================================================
 
-const getDistanceInMiles = (lat1, lng1, lat2, lng2) => {
-  const toRad = (deg) => (deg * Math.PI) / 180;
+const getDistanceInMiles = (
+  lat1,
+  lng1,
+  lat2,
+  lng2
+) => {
+  const toRad = (deg) =>
+    (deg * Math.PI) / 180;
+
   const R = 3958.8;
 
   const dLat = toRad(lat2 - lat1);
@@ -38,106 +47,121 @@ const getDistanceInMiles = (lat1, lng1, lat2, lng2) => {
 // CREATE REQUEST
 // ============================================================
 
-export const createRequest = asyncHandler(async (req, res) => {
-  const { taskId, message } = req.body;
+export const createRequest = asyncHandler(
+  async (req, res) => {
+    const { taskId, message } = req.body;
 
-  if (!taskId || !message || !message.trim()) {
-    return res.status(400).json(
-      new ApiError(
-        400,
-        "taskId and message are required"
+    if (
+      !taskId ||
+      !message ||
+      !message.trim()
+    ) {
+      return res.status(400).json(
+        new ApiError(
+          400,
+          "taskId and message are required"
+        )
+      );
+    }
+
+    const task =
+      await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json(
+        new ApiError(
+          404,
+          "Task not found"
+        )
+      );
+    }
+
+    // User cannot request their own task
+    if (
+      String(task.postedBy) ===
+      String(req.user._id)
+    ) {
+      return res.status(400).json(
+        new ApiError(
+          400,
+          "You cannot request to help with your own task"
+        )
+      );
+    }
+
+    // Task must be active
+    if (task.status !== "active") {
+      return res.status(400).json(
+        new ApiError(
+          400,
+          "This task is not open for requests"
+        )
+      );
+    }
+
+    // Prevent duplicate active requests
+    const existing =
+      await Request.findOne({
+        task: taskId,
+        requester: req.user._id,
+        status: {
+          $in: [
+            "pending",
+            "accepted",
+          ],
+        },
+      });
+
+    if (existing) {
+      return res.status(400).json(
+        new ApiError(
+          400,
+          "You already have an active request for this task"
+        )
+      );
+    }
+
+    const request =
+      await Request.create({
+        task: taskId,
+        requester: req.user._id,
+        taskOwner: task.postedBy,
+        message: message.trim(),
+      });
+
+    // Increase applicants count
+    task.applicantsCount =
+      (task.applicantsCount || 0) + 1;
+
+    await task.save();
+
+    // Notify task owner
+    await createNotification({
+      recipient: task.postedBy,
+      sender: req.user._id,
+      type: "request",
+      category: "new_request",
+      title: `New request for ${task.title}`,
+      message: `${req.user.firstName} ${req.user.lastName} wants help with "${task.title}". Review and respond.`,
+      relatedId: request._id,
+    });
+
+    return res.status(201).json(
+      new ApiResponse(
+        201,
+        "Request sent successfully",
+        request
       )
     );
   }
-
-  const task = await Task.findById(taskId);
-
-  if (!task) {
-    return res.status(404).json(
-      new ApiError(
-        404,
-        "Task not found"
-      )
-    );
-  }
-
-  // User cannot request their own task
-  if (String(task.postedBy) === String(req.user._id)) {
-    return res.status(400).json(
-      new ApiError(
-        400,
-        "You cannot request to help with your own task"
-      )
-    );
-  }
-
-  // Task must be active
-  if (task.status !== "active") {
-    return res.status(400).json(
-      new ApiError(
-        400,
-        "This task is not open for requests"
-      )
-    );
-  }
-
-  // Prevent duplicate active requests
-  const existing = await Request.findOne({
-    task: taskId,
-    requester: req.user._id,
-    status: {
-      $in: ["pending", "accepted"],
-    },
-  });
-
-  if (existing) {
-    return res.status(400).json(
-      new ApiError(
-        400,
-        "You already have an active request for this task"
-      )
-    );
-  }
-
-  const request = await Request.create({
-    task: taskId,
-    requester: req.user._id,
-    taskOwner: task.postedBy,
-    message: message.trim(),
-  });
-
-  // Increase applicants count
-  task.applicantsCount =
-    (task.applicantsCount || 0) + 1;
-
-  await task.save();
-
-  // Notify task owner
-  await createNotification({
-    recipient: task.postedBy,
-    sender: req.user._id,
-    type: "request",
-    category: "new_request",
-    title: `New request for ${task.title}`,
-    message: `${req.user.firstName} ${req.user.lastName} wants help with "${task.title}". Review and respond.`,
-    relatedId: request._id,
-  });
-
-  return res.status(201).json(
-    new ApiResponse(
-      201,
-      "Request sent successfully",
-      request
-    )
-  );
-});
+);
 
 // ============================================================
 // GET INCOMING REQUESTS
 // ============================================================
 
-export const getIncomingRequests = asyncHandler(
-  async (req, res) => {
+export const getIncomingRequests =
+  asyncHandler(async (req, res) => {
     const {
       status = "pending",
       page = 1,
@@ -151,11 +175,17 @@ export const getIncomingRequests = asyncHandler(
     };
 
     if (status !== "all") {
-      if (!REQUEST_STATUSES.includes(status)) {
+      if (
+        !REQUEST_STATUSES.includes(
+          status
+        )
+      ) {
         return res.status(400).json(
           new ApiError(
             400,
-            `Status must be one of: ${REQUEST_STATUSES.join(", ")}`
+            `Status must be one of: ${REQUEST_STATUSES.join(
+              ", "
+            )}`
           )
         );
       }
@@ -169,11 +199,15 @@ export const getIncomingRequests = asyncHandler(
     );
 
     const limitNum = Math.min(
-      Math.max(Number(limit) || 12, 1),
+      Math.max(
+        Number(limit) || 12,
+        1
+      ),
       50
     );
 
-    const skip = (pageNum - 1) * limitNum;
+    const skip =
+      (pageNum - 1) * limitNum;
 
     const [
       requestDocs,
@@ -189,7 +223,9 @@ export const getIncomingRequests = asyncHandler(
           "task",
           "title category startDate startTime location coordinates"
         )
-        .sort({ createdAt: -1 })
+        .sort({
+          createdAt: -1,
+        })
         .skip(skip)
         .limit(limitNum),
 
@@ -220,7 +256,8 @@ export const getIncomingRequests = asyncHandler(
     };
 
     for (const row of statusCounts) {
-      counts[row._id] = row.count;
+      counts[row._id] =
+        row.count;
     }
 
     // Calculate distance when lat/lng are provided
@@ -240,33 +277,36 @@ export const getIncomingRequests = asyncHandler(
       !Number.isNaN(latNum) &&
       !Number.isNaN(lngNum);
 
-    const requests = requestDocs.map(
-      (request) => {
-        const requestObj =
-          request.toObject();
+    const requests =
+      requestDocs.map(
+        (request) => {
+          const requestObj =
+            request.toObject();
 
-        if (
-          hasValidLocation &&
-          request.task?.coordinates?.coordinates
-        ) {
-          const [
-            taskLng,
-            taskLat,
-          ] =
-            request.task.coordinates.coordinates;
-
-          requestObj.distanceInMiles =
-            getDistanceInMiles(
-              latNum,
-              lngNum,
+          if (
+            hasValidLocation &&
+            request.task?.coordinates
+              ?.coordinates
+          ) {
+            const [
+              taskLng,
               taskLat,
-              taskLng
-            );
-        }
+            ] =
+              request.task.coordinates
+                .coordinates;
 
-        return requestObj;
-      }
-    );
+            requestObj.distanceInMiles =
+              getDistanceInMiles(
+                latNum,
+                lngNum,
+                taskLat,
+                taskLng
+              );
+          }
+
+          return requestObj;
+        }
+      );
 
     return res.status(200).json(
       new ApiResponse(
@@ -286,15 +326,14 @@ export const getIncomingRequests = asyncHandler(
         }
       )
     );
-  }
-);
+  });
 
 // ============================================================
 // GET MY REQUESTS
 // ============================================================
 
-export const getMyRequests = asyncHandler(
-  async (req, res) => {
+export const getMyRequests =
+  asyncHandler(async (req, res) => {
     const {
       status = "all",
       page = 1,
@@ -306,11 +345,17 @@ export const getMyRequests = asyncHandler(
     };
 
     if (status !== "all") {
-      if (!REQUEST_STATUSES.includes(status)) {
+      if (
+        !REQUEST_STATUSES.includes(
+          status
+        )
+      ) {
         return res.status(400).json(
           new ApiError(
             400,
-            `Status must be one of: ${REQUEST_STATUSES.join(", ")}`
+            `Status must be one of: ${REQUEST_STATUSES.join(
+              ", "
+            )}`
           )
         );
       }
@@ -324,7 +369,10 @@ export const getMyRequests = asyncHandler(
     );
 
     const limitNum = Math.min(
-      Math.max(Number(limit) || 12, 1),
+      Math.max(
+        Number(limit) || 12,
+        1
+      ),
       50
     );
 
@@ -339,13 +387,15 @@ export const getMyRequests = asyncHandler(
       Request.find(query)
         .populate(
           "task",
-          "title category images status"
+          "title category images status location startDate startTime"
         )
         .populate(
           "taskOwner",
           "firstName lastName profilePicture"
         )
-        .sort({ createdAt: -1 })
+        .sort({
+          createdAt: -1,
+        })
         .skip(skip)
         .limit(limitNum),
 
@@ -354,7 +404,8 @@ export const getMyRequests = asyncHandler(
       Request.aggregate([
         {
           $match: {
-            requester: req.user._id,
+            requester:
+              req.user._id,
           },
         },
         {
@@ -376,7 +427,8 @@ export const getMyRequests = asyncHandler(
     };
 
     for (const row of statusCounts) {
-      counts[row._id] = row.count;
+      counts[row._id] =
+        row.count;
     }
 
     return res.status(200).json(
@@ -397,212 +449,222 @@ export const getMyRequests = asyncHandler(
         }
       )
     );
-  }
-);
+  });
 
 // ============================================================
 // ACCEPT REQUEST
 // ============================================================
 
-// =========================================================
-// Accept request
-// =========================================================
+export const acceptRequest =
+  asyncHandler(async (req, res) => {
+    const request =
+      await Request.findById(
+        req.params.id
+      );
 
-export const acceptRequest = asyncHandler(async (req, res) => {
-  const request = await Request.findById(req.params.id);
+    if (!request) {
+      return res.status(404).json(
+        new ApiError(
+          404,
+          "Request not found"
+        )
+      );
+    }
 
-  if (!request) {
-    return res
-      .status(404)
-      .json(new ApiError(404, "Request not found"));
-  }
-
-  // Only the task owner can accept
-  if (
-    String(request.taskOwner) !==
-    String(req.user._id)
-  ) {
-    return res
-      .status(403)
-      .json(
+    // Only task owner can accept
+    if (
+      String(request.taskOwner) !==
+      String(req.user._id)
+    ) {
+      return res.status(403).json(
         new ApiError(
           403,
           "You can only accept requests on your own tasks"
         )
       );
-  }
+    }
 
-  // Request must still be pending
-  if (request.status !== "pending") {
-    return res
-      .status(400)
-      .json(
+    // Request must still be pending
+    if (
+      request.status !== "pending"
+    ) {
+      return res.status(400).json(
         new ApiError(
           400,
           `Request is already ${request.status}`
         )
       );
-  }
+    }
 
-  // Find associated task
-  const task = await Task.findById(request.task);
+    // Find associated task
+    const task =
+      await Task.findById(
+        request.task
+      );
 
-  if (!task) {
-    return res
-      .status(404)
-      .json(
+    if (!task) {
+      return res.status(404).json(
         new ApiError(
           404,
           "Associated task not found"
         )
       );
-  }
-
-  // =======================================================
-  // ACCEPT REQUEST
-  // =======================================================
-
-  request.status = "accepted";
-
-  await request.save();
-
-  // =======================================================
-  // DECLINE OTHER PENDING REQUESTS
-  // =======================================================
-
-  await Request.updateMany(
-    {
-      task: task._id,
-      _id: { $ne: request._id },
-      status: "pending",
-    },
-    {
-      $set: {
-        status: "declined",
-      },
     }
-  );
 
-  // =======================================================
-  // UPDATE TASK
-  // =======================================================
+    // ========================================================
+    // ACCEPT REQUEST
+    // ========================================================
 
-  task.status = "in_progress";
-  task.assignedTo = request.requester;
+    request.status = "accepted";
 
-  await task.save();
+    await request.save();
 
-  // =======================================================
-  // CREATE / REUSE CONVERSATION
-  // =======================================================
+    // ========================================================
+    // DECLINE OTHER PENDING REQUESTS
+    // ========================================================
 
-  let conversation =
-    await Conversation.findOne({
-      task: task._id,
+    await Request.updateMany(
+      {
+        task: task._id,
+        _id: {
+          $ne: request._id,
+        },
+        status: "pending",
+      },
+      {
+        $set: {
+          status: "declined",
+        },
+      }
+    );
+
+    // ========================================================
+    // UPDATE TASK
+    // ========================================================
+
+    task.status = "in_progress";
+    task.assignedTo =
+      request.requester;
+
+    await task.save();
+
+    // ========================================================
+    // CREATE / REUSE CONVERSATION
+    // ========================================================
+
+    let conversation =
+      await Conversation.findOne({
+        task: task._id,
+      });
+
+    if (!conversation) {
+      conversation =
+        await Conversation.create({
+          task: task._id,
+          participants: [
+            request.taskOwner,
+            request.requester,
+          ],
+        });
+    } else {
+      const participantIds =
+        conversation.participants.map(
+          (id) => String(id)
+        );
+
+      const ownerId =
+        String(request.taskOwner);
+
+      const requesterId =
+        String(request.requester);
+
+      const participants = [
+        ...conversation.participants,
+      ];
+
+      if (
+        !participantIds.includes(
+          ownerId
+        )
+      ) {
+        participants.push(
+          request.taskOwner
+        );
+      }
+
+      if (
+        !participantIds.includes(
+          requesterId
+        )
+      ) {
+        participants.push(
+          request.requester
+        );
+      }
+
+      conversation.participants =
+        participants;
+
+      await conversation.save();
+    }
+
+    // ========================================================
+    // POPULATE CONVERSATION
+    // ========================================================
+
+    const populatedConversation =
+      await Conversation.findById(
+        conversation._id
+      )
+        .populate(
+          "participants",
+          "firstName lastName profilePicture"
+        )
+        .populate(
+          "task",
+          "title status"
+        );
+
+    // ========================================================
+    // NOTIFY REQUESTER
+    // ========================================================
+
+    await createNotification({
+      recipient:
+        request.requester,
+      sender: req.user._id,
+      type: "request",
+      category:
+        "request_accepted",
+      title:
+        "Your request has been accepted",
+      message: `${req.user.firstName} ${req.user.lastName} accepted your request for ${task.title}.`,
+      relatedId: request._id,
     });
 
-  if (!conversation) {
-    conversation =
-      await Conversation.create({
-        task: task._id,
-        participants: [
-          request.taskOwner,
-          request.requester,
-        ],
-      });
-  } else {
-    // Make sure both participants exist
-    const participantIds =
-      conversation.participants.map(
-        (id) => String(id)
-      );
+    // ========================================================
+    // RESPONSE
+    // ========================================================
 
-    const ownerId =
-      String(request.taskOwner);
-
-    const requesterId =
-      String(request.requester);
-
-    const participants =
-      [...conversation.participants];
-
-    if (!participantIds.includes(ownerId)) {
-      participants.push(
-        request.taskOwner
-      );
-    }
-
-    if (
-      !participantIds.includes(
-        requesterId
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        "Request accepted successfully",
+        {
+          request,
+          conversation:
+            populatedConversation,
+        }
       )
-    ) {
-      participants.push(
-        request.requester
-      );
-    }
-
-    conversation.participants =
-      participants;
-
-    await conversation.save();
-  }
-
-  // =======================================================
-  // POPULATE CONVERSATION
-  // =======================================================
-
-  const populatedConversation =
-    await Conversation.findById(
-      conversation._id
-    )
-      .populate(
-        "participants",
-        "firstName lastName profilePicture"
-      )
-      .populate(
-        "task",
-        "title status"
-      );
-
-  // =======================================================
-  // NOTIFY REQUESTER
-  // =======================================================
-
-  await createNotification({
-    recipient: request.requester,
-    sender: req.user._id,
-    type: "request",
-    category: "request_accepted",
-    title:
-      "Your request has been accepted",
-    message: `${req.user.firstName} ${req.user.lastName} accepted your request for ${task.title}.`,
-    relatedId: request._id,
+    );
   });
-
-  // =======================================================
-  // RESPONSE
-  // =======================================================
-
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      "Request accepted successfully",
-      {
-        request,
-        conversation:
-          populatedConversation,
-      }
-    )
-  );
-});
 
 // ============================================================
 // DECLINE REQUEST
 // ============================================================
 
-export const declineRequest = asyncHandler(
-  async (req, res) => {
+export const declineRequest =
+  asyncHandler(async (req, res) => {
     const request =
       await Request.findById(
         req.params.id
@@ -630,7 +692,9 @@ export const declineRequest = asyncHandler(
       );
     }
 
-    if (request.status !== "pending") {
+    if (
+      request.status !== "pending"
+    ) {
       return res.status(400).json(
         new ApiError(
           400,
@@ -645,10 +709,12 @@ export const declineRequest = asyncHandler(
 
     // Notify requester
     await createNotification({
-      recipient: request.requester,
+      recipient:
+        request.requester,
       sender: req.user._id,
       type: "request",
-      category: "request_declined",
+      category:
+        "request_declined",
       title:
         "Your request was declined",
       message: `${req.user.firstName} ${req.user.lastName} declined your request.`,
@@ -662,15 +728,14 @@ export const declineRequest = asyncHandler(
         request
       )
     );
-  }
-);
+  });
 
 // ============================================================
 // CANCEL REQUEST
 // ============================================================
 
-export const cancelRequest = asyncHandler(
-  async (req, res) => {
+export const cancelRequest =
+  asyncHandler(async (req, res) => {
     const request =
       await Request.findById(
         req.params.id
@@ -698,7 +763,9 @@ export const cancelRequest = asyncHandler(
       );
     }
 
-    if (request.status !== "pending") {
+    if (
+      request.status !== "pending"
+    ) {
       return res.status(400).json(
         new ApiError(
           400,
@@ -733,5 +800,4 @@ export const cancelRequest = asyncHandler(
         request
       )
     );
-  }
-);
+  });
