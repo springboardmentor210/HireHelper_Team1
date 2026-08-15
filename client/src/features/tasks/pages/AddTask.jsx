@@ -91,35 +91,6 @@ export default function AddTask() {
     setImagePreview(null);
   };
 
-  const getCurrentLocation = () => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject({
-          code: "NOT_SUPPORTED",
-          message:
-            "Location services are not supported by this browser.",
-        });
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (locationError) => {
-          reject(locationError);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        }
-      );
-    });
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -171,16 +142,9 @@ export default function AddTask() {
     setLoading(true);
 
     try {
-      // Get user's real coordinates
-      const { lat, lng } = await getCurrentLocation();
-
       if (typeof createTask === "function") {
         await createTask({
           ...formData,
-
-          // Send actual coordinates
-          lat,
-          lng,
 
           // IMPORTANT:
           // Send the actual File object, NOT imagePreview.
