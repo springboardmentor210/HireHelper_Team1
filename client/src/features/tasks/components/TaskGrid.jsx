@@ -3,7 +3,6 @@ import TaskCard from "./TaskCard";
 
 export default function TaskGrid({
   tasks,
-  onViewApplicants,
   onViewDetails,
   onDelete,
 }) {
@@ -13,7 +12,6 @@ export default function TaskGrid({
         <TaskCard
           key={task.id}
           task={task}
-          onViewApplicants={onViewApplicants}
           onViewDetails={onViewDetails}
           onDelete={onDelete}
         />

@@ -100,9 +100,6 @@ export const mapTaskData = (task) => {
       task.status === "Completed"
         ? price
         : 0,
-
-    applicantList:
-      task.applicantList || [],
   };
 };
 
@@ -297,24 +294,6 @@ export const deleteTask = async (id) => {
     );
 
   return data?.data || data;
-};
-
-// GET /api/tasks/:id/applicants
-export const getApplicants = async (id) => {
-  try {
-    const { data } =
-      await api.get(
-        `/tasks/${id}/applicants`
-      );
-
-    return (
-      data?.data ||
-      data ||
-      []
-    );
-  } catch (err) {
-    return [];
-  }
 };
 
 // GET /api/tasks/statistics

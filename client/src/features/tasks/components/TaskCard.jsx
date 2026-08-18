@@ -11,7 +11,6 @@ const API_BASE_URL = "http://localhost:5000";
 
 export default function TaskCard({
   task,
-  onViewApplicants,
   onViewDetails,
   onDelete,
 }) {
@@ -158,24 +157,13 @@ export default function TaskCard({
           </div>
 
           <div className="card-actions-right">
-            {task.status === "Completed" ||
-            task.status === "completed" ? (
-              <button
-                type="button"
-                className="action-pill-btn"
-                onClick={() => onViewDetails(task)}
-              >
-                View Details
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="action-pill-btn"
-                onClick={() => onViewApplicants(task)}
-              >
-                View Applicants
-              </button>
-            )}
+            <button
+              type="button"
+              className="action-pill-btn"
+              onClick={() => onViewDetails(task)}
+            >
+              View Details
+            </button>
 
             <TaskMenu
               task={task}
