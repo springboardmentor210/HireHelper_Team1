@@ -7,7 +7,6 @@ import FilterBar from "../components/FilterBar";
 import TaskGrid from "../components/TaskGrid";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import EmptyState from "../components/EmptyState";
-import ApplicantsModal from "../components/ApplicantsModal";
 import TaskDetailsModal from "../components/TaskDetailsModal";
 import * as taskService from "../../../services/taskService";
 import "../Styles/MyTasks.css";
@@ -32,7 +31,6 @@ export default function MyTasks() {
     sort: "newest",
   });
 
-  const [applicantModalTask, setApplicantModalTask] = useState(null);
   const [detailModalTask, setDetailModalTask] = useState(null);
 
   // Search Debounce Effect
@@ -165,20 +163,11 @@ export default function MyTasks() {
         ) : (
           <TaskGrid
             tasks={filteredTasks}
-            onViewApplicants={(task) => setApplicantModalTask(task)}
             onViewDetails={(task) => setDetailModalTask(task)}
             onDelete={handleDelete}
           />
         )}
       </main>
-
-      {/* Applicants Modal Overlay */}
-      {applicantModalTask && (
-        <ApplicantsModal
-          task={applicantModalTask}
-          onClose={() => setApplicantModalTask(null)}
-        />
-      )}
 
       {/* Task Details Modal Overlay */}
       {detailModalTask && (
