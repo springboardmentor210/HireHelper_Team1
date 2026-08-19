@@ -97,7 +97,7 @@ export default function TopNavbar({ user }) {
         <div className="profile-wrapper">
           <button
             type="button"
-            className="profile-menu"
+            className="topbar-profile-btn"
             onClick={() =>
               setProfileOpen((previous) => !previous)
             }

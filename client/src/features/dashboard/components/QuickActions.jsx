@@ -1,10 +1,6 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  PlusCircle,
-  Search,
-  UserCheck,
-  Clipboard,
-} from "lucide-react";
+import "./QuickActions.css";
 
 export default function QuickActions() {
   const navigate = useNavigate();
@@ -12,29 +8,29 @@ export default function QuickActions() {
   const actions = [
     {
       title: "Post a Task",
-      icon: <PlusCircle size={20} />,
+      icon: "📝",
       path: "/addtasks",
     },
     {
       title: "Browse Feed",
-      icon: <Search size={20} />,
+      icon: "🔍",
       path: "/feed",
     },
     {
       title: "Become a Helper",
-      icon: <UserCheck size={20} />,
-      path: "/register",
+      icon: "🧑‍🔧",
+      path: "/feed",
     },
     {
       title: "My Tasks",
-      icon: <Clipboard size={20} />,
+      icon: "📋",
       path: "/mytasks",
     },
   ];
 
   return (
     <section className="quick-actions">
-      <h2 className="section-title">Quick Actions</h2>
+      <h2 className="quick-actions-title">Quick Actions</h2>
 
       <div className="quick-actions-grid">
         {actions.map((action) => (
@@ -44,16 +40,11 @@ export default function QuickActions() {
             className="quick-action-card"
             onClick={() => navigate(action.path)}
           >
-            <div className="quick-action-icon">
-              {action.icon}
-            </div>
-
-            <span className="quick-action-title">
-              {action.title}
-            </span>
+            <span className="quick-action-icon">{action.icon}</span>
+            <span className="quick-action-title">{action.title}</span>
           </button>
         ))}
       </div>
     </section>
   );
-}
+}

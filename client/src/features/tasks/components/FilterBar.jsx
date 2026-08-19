@@ -1,81 +1,128 @@
 import React from "react";
-import { Filter, Grid, Folder, ArrowUpDown } from "lucide-react";
+import { Grid, Folder, ArrowUpDown } from "lucide-react";
 
-export default function FilterBar({ filters, onChange, categories = [] }) {
-  const handleStatusChange = (e) => {
-    onChange({ ...filters, status: e.target.value });
+export default function FilterBar({
+  filters,
+  onChange,
+  categories = [],
+}) {
+  const handleStatusChange = (event) => {
+    onChange({
+      ...filters,
+      status: event.target.value,
+    });
   };
 
-  const handleCategoryChange = (e) => {
-    onChange({ ...filters, category: e.target.value });
+  const handleCategoryChange = (event) => {
+    onChange({
+      ...filters,
+      category: event.target.value,
+    });
   };
 
-  const handleSortChange = (e) => {
-    onChange({ ...filters, sort: e.target.value });
+  const handleSortChange = (event) => {
+    onChange({
+      ...filters,
+      sort: event.target.value,
+    });
   };
 
   return (
     <div className="filter-bar-container">
       <div className="filter-controls-left">
-        {/* Status Dropdown */}
+
         <div className="select-wrapper">
-          <Grid size={16} className="select-icon" />
+          <Grid
+            size={16}
+            className="select-icon"
+          />
+
           <select
-            value={filters.status}
+            value={filters?.status || "all"}
             onChange={handleStatusChange}
             className="filter-select"
+            aria-label="Filter by status"
           >
-            <option value="all">All Status</option>
-            <option value="Active">Active</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Completed">Completed</option>
+            <option value="all">
+              All Status
+            </option>
+
+            <option value="Active">
+              Active
+            </option>
+
+            <option value="In Progress">
+              In Progress
+            </option>
+
+            <option value="Scheduled">
+              Scheduled
+            </option>
+
+            <option value="Completed">
+              Completed
+            </option>
           </select>
         </div>
 
-        {/* Category Dropdown */}
         <div className="select-wrapper">
-          <Folder size={16} className="select-icon" />
+          <Folder
+            size={16}
+            className="select-icon"
+          />
+
           <select
-            value={filters.category}
+            value={filters?.category || "all"}
             onChange={handleCategoryChange}
             className="filter-select"
+            aria-label="Filter by category"
           >
-            <option value="all">All Categories</option>
-            <option value="Tech">Tech</option>
-            <option value="Car Care">Car Care</option>
-            <option value="Gardening">Gardening</option>
-            <option value="Assembly">Assembly</option>
-            <option value="Cleaning">Cleaning</option>
-            <option value="Moving">Moving</option>
-            <option value="Painting">Painting</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+            <option value="all">
+              All Categories
+            </option>
+
+            {categories.map((category) => (
+              <option
+                key={category}
+                value={category}
+              >
+                {category}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* Sort Dropdown */}
         <div className="select-wrapper">
-          <ArrowUpDown size={16} className="select-icon" />
+          <ArrowUpDown
+            size={16}
+            className="select-icon"
+          />
+
           <select
-            value={filters.sort}
+            value={filters?.sort || "newest"}
             onChange={handleSortChange}
             className="filter-select"
+            aria-label="Sort tasks"
           >
-            <option value="newest">Sort: Newest</option>
-            <option value="oldest">Sort: Oldest</option>
-            <option value="budget-high">Budget: High to Low</option>
-            <option value="budget-low">Budget: Low to High</option>
+            <option value="newest">
+              Sort: Newest
+            </option>
+
+            <option value="oldest">
+              Sort: Oldest
+            </option>
+
+            <option value="budget-high">
+              Budget: High to Low
+            </option>
+
+            <option value="budget-low">
+              Budget: Low to High
+            </option>
           </select>
         </div>
-      </div>
 
-      {/* Filter Button */}
-      <button className="filter-btn">
-        <Filter size={16} />
-        <span>Filter</span>
-      </button>
+      </div>
     </div>
   );
 }

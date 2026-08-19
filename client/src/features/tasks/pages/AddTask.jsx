@@ -363,17 +363,21 @@ export default function AddTask() {
               {/* Budget */}
               <div className="form-group">
                 <label htmlFor="budget">
-                  Budget (₹ / $)
+                  Budget (₹)
                 </label>
 
-                <input
-                  id="budget"
-                  name="budget"
-                  type="number"
-                  value={formData.budget}
-                  onChange={handleChange}
-                  placeholder="e.g., 1200"
-                />
+                <div className="input-with-prefix">
+                  <span className="input-prefix">₹</span>
+                  <input
+                    id="budget"
+                    name="budget"
+                    type="number"
+                    value={formData.budget}
+                    onChange={handleChange}
+                    placeholder="e.g., 1200"
+                    min="0"
+                  />
+                </div>
               </div>
 
               {/* Location */}

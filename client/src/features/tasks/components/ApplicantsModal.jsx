@@ -4,13 +4,15 @@ import { X, Star, CheckCircle, MessageSquare } from "lucide-react";
 export default function ApplicantsModal({ task, onClose }) {
   if (!task) return null;
 
+  const defaultApplicants = [
+    { id: "a1", name: "Sarah Jenkins", rating: 4.9, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80", offer: "₹1,200" },
+    { id: "a2", name: "David Chen", rating: 4.8, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80", offer: "₹1,150" },
+    { id: "a3", name: "Alex Rivera", rating: 4.7, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80", offer: "₹1,200" },
+  ];
+
   const applicants = task.applicantList && task.applicantList.length > 0
     ? task.applicantList
-    : [
-        { id: "a1", name: "Sarah Jenkins", rating: 4.9, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80", offer: "₹1,200" },
-        { id: "a2", name: "David Chen", rating: 4.8, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80", offer: "₹1,150" },
-        { id: "a3", name: "Alex Rivera", rating: 4.7, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80", offer: "₹1,200" },
-      ];
+    : defaultApplicants;
 
   return (
     <div className="modal-backdrop-overlay">

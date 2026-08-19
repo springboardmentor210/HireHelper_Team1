@@ -38,23 +38,23 @@ export default function NewUserDashboard({ user, stats }) {
       {/* Statistics */}
       <div className="stats-grid">
         <StatCard
-          title="Tasks Posted"
-          value={stats?.totalTasks ?? 0}
-        />
-
-        <StatCard
           title="Active Tasks"
           value={stats?.activeTasks ?? 0}
         />
 
         <StatCard
-          title="In Progress"
-          value={stats?.inProgressTasks ?? 0}
+          title="Pending Requests"
+          value={stats?.pendingRequests ?? 0}
         />
 
         <StatCard
           title="Completed Tasks"
           value={stats?.completedTasks ?? 0}
+        />
+
+        <StatCard
+          title="Money Saved"
+          value={stats?.moneySaved ? `₹${stats.moneySaved.toLocaleString()}` : "₹0"}
         />
       </div>
 

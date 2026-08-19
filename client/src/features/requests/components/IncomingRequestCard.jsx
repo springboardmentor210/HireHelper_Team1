@@ -2,6 +2,8 @@ import {
   Star,
   Briefcase,
   MessageCircle,
+  Calendar,
+  MapPin,
 } from "lucide-react";
 
 import "../styles/Requests.css";
@@ -22,6 +24,8 @@ const IncomingRequestCard = ({
     task = {},
     message = "",
     status,
+    createdAt,
+    location,
   } = request || {};
 
   // =========================
@@ -98,6 +102,23 @@ const IncomingRequestCard = ({
 
   const isAccepted =
     status === "accepted";
+
+  // =========================
+  // Formatted Date
+  // =========================
+
+  const formattedDate = createdAt
+    ? new Date(createdAt).toLocaleString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        }
+      )
+    : null;
 
   return (
     <article className="request-card">
@@ -230,7 +251,7 @@ const IncomingRequestCard = ({
         <div className="task-details">
 
           <span className="requesting-for">
-            Requesting for
+            Requesting for:
           </span>
 
           <div className="task-title-row">
@@ -251,6 +272,32 @@ const IncomingRequestCard = ({
         </div>
 
       </div>
+
+      {/* =========================
+          Footer (date / location)
+      ========================= */}
+
+      {(formattedDate || location) && (
+        <div className="request-card-footer">
+          {formattedDate && (
+            <span className="footer-item">
+              <Calendar size={14} />
+              {formattedDate}
+            </span>
+          )}
+
+          {formattedDate && location && (
+            <span className="footer-sep">|</span>
+          )}
+
+          {location && (
+            <span className="footer-item">
+              <MapPin size={14} />
+              {location}
+            </span>
+          )}
+        </div>
+      )}
 
     </article>
   );

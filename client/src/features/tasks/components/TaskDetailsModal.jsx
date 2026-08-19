@@ -1,76 +1,255 @@
 import React from "react";
-import { X, Calendar, Clock, MapPin, Tag, IndianRupee } from "lucide-react";
+import { FiX, FiMapPin, FiCalendar, FiClock, FiUsers } from "react-icons/fi";
+import "./TaskDetailsModal.css";
 
-export default function TaskDetailsModal({ task, onClose }) {
-  if (!task) return null;
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-  const taskImage =
-    (Array.isArray(task.images) && task.images.length > 0 ? task.images[0] : task.image) ||
-    "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&q=80";
+const categoryDisplayMap = {
+  moving: "Moving",
+  gardening: "Gardening",
+  cleaning: "Cleaning",
+  painting: "Painting",
+  assembly: "Assembly",
+  pet_care: "Pet Care",
+  tech_help: "Tech Help",
+  car_care: "Car Care",
+  errands: "Errands",
+  other: "Other",
+};
 
-  const taskPrice = task.price ?? task.budget ?? 0;
-  const displayDate = task.startDate || task.date || "TBD";
-  const displayTime = task.startTime || task.time || "TBD";
+function getCategoryLabel(category) {
+  if (!category) return "Other";
 
   return (
-    <div className="modal-backdrop-overlay">
-      <div className="modal-content-card details">
-        <div className="modal-header-row">
-          <div>
-            <h2 className="modal-title">{task.title}</h2>
-            <span className="category-pill">{task.category || "General"}</span>
+    categoryDisplayMap[String(category).toLowerCase()] ||
+    String(category)
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase())
+  );
+}
+
+function getImageUrl(image) {
+  if (!image) return null;
+
+  if (
+    image.startsWith("http://") ||
+    image.startsWith("https://") ||
+    image.startsWith("data:")
+  ) {
+    return image;
+  }
+
+  const cleanPath = image.startsWith("/") ? image : `/${image}`;
+
+  return `${API_BASE_URL}${cleanPath}`;
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) return "Not specified";
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return dateValue;
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatTime(timeValue) {
+  if (!timeValue) return "Not specified";
+
+  return timeValue;
+}
+
+function formatStatus(status) {
+  if (!status) return "Active";
+
+  return String(status)
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+export default function TaskDetailsModal({ task, onClose }) {
+  if (!task) {
+    return null;
+  }
+
+  const imageSource =
+    task.image ||
+    task.imageUrl ||
+    task.photo ||
+    task.photoUrl ||
+    null;
+
+  const imageUrl = getImageUrl(imageSource);
+
+  const applicantsCount =
+    task.applicants ??
+    task.applicantsCount ??
+    task.applicantCount ??
+    0;
+
+  const price =
+    task.price ??
+    task.budget ??
+    0;
+
+  const status = formatStatus(task.status);
+
+  const category = getCategoryLabel(task.category);
+
+  return (
+    <div
+      className="task-details-modal-overlay"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className="task-details-modal"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="task-details-title"
+      >
+        <button
+          type="button"
+          className="task-details-close"
+          onClick={onClose}
+          aria-label="Close task details"
+        >
+          <FiX />
+        </button>
+
+        {imageUrl && (
+          <div className="task-details-image-wrapper">
+            <img
+              src={imageUrl}
+              alt={task.title || "Task"}
+              className="task-details-image"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
+            />
           </div>
-          <button type="button" className="modal-close-btn" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
+        )}
 
-        <div className="task-details-body">
-          <img
-            src={taskImage}
-            alt={task.title}
-            className="details-cover-image"
-          />
+        <div className="task-details-content">
+          <div className="task-details-header">
+            <div>
+              <span className="task-details-category">
+                {category}
+              </span>
 
-          <div className="details-info-grid">
-            <div className="details-info-item">
-              <IndianRupee size={18} className="info-icon" />
+              <h2 id="task-details-title">
+                {task.title || "Untitled Task"}
+              </h2>
+            </div>
+
+            <span
+              className={`task-details-status status-${String(
+                task.status || "active"
+              )
+                .toLowerCase()
+                .replace(/\s+/g, "-")}`}
+            >
+              {status}
+            </span>
+          </div>
+
+          <div className="task-details-price">
+            ₹{Number(price || 0).toLocaleString("en-IN")}
+          </div>
+
+          <div className="task-details-section">
+            <h3>Description</h3>
+
+            <p>
+              {task.description || "No description provided."}
+            </p>
+          </div>
+
+          <div className="task-details-info-grid">
+            <div className="task-details-info-item">
+              <FiMapPin />
+
               <div>
-                <span className="info-label">Price</span>
-                <span className="info-val green">
-                  ₹{typeof taskPrice === "number" ? taskPrice.toLocaleString() : taskPrice}
-                </span>
+                <span>Location</span>
+                <strong>
+                  {task.location || "Not specified"}
+                </strong>
               </div>
             </div>
 
-            <div className="details-info-item">
-              <Calendar size={18} className="info-icon" />
+            <div className="task-details-info-item">
+              <FiCalendar />
+
               <div>
-                <span className="info-label">Date</span>
-                <span className="info-val">{displayDate}</span>
+                <span>Start Date</span>
+                <strong>
+                  {formatDate(
+                    task.startDate ||
+                      task.start_date ||
+                      task.date
+                  )}
+                </strong>
               </div>
             </div>
 
-            <div className="details-info-item">
-              <Clock size={18} className="info-icon" />
+            <div className="task-details-info-item">
+              <FiClock />
+
               <div>
-                <span className="info-label">Time</span>
-                <span className="info-val">{displayTime}</span>
+                <span>Start Time</span>
+                <strong>
+                  {formatTime(
+                    task.startTime ||
+                      task.start_time
+                  )}
+                </strong>
               </div>
             </div>
 
-            <div className="details-info-item">
-              <MapPin size={18} className="info-icon" />
+            <div className="task-details-info-item">
+              <FiUsers />
+
               <div>
-                <span className="info-label">Location</span>
-                <span className="info-val">{task.location}</span>
+                <span>Applicants</span>
+                <strong>
+                  {applicantsCount}
+                </strong>
               </div>
             </div>
           </div>
 
-          <div className="details-description-box">
-            <h4>Task Description</h4>
-            <p>{task.description}</p>
+          {(task.endDate || task.endTime) && (
+            <div className="task-details-section task-details-schedule">
+              <h3>End Schedule</h3>
+
+              <p>
+                {task.endDate
+                  ? formatDate(task.endDate)
+                  : "No end date"}{" "}
+                {task.endTime
+                  ? `at ${formatTime(task.endTime)}`
+                  : ""}
+              </p>
+            </div>
+          )}
+
+          <div className="task-details-footer">
+            <button
+              type="button"
+              className="task-details-done-button"
+              onClick={onClose}
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>

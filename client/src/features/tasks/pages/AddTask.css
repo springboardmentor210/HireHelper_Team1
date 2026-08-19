@@ -1,470 +1,328 @@
-/* =========================================
-   ADD TASK PAGE
-   Scoped styles - only affects Add Task
-========================================= */
+/* ==========================================================================
+   AddTask.css - Pixel-Perfect Styles matching Figma Design
+   ========================================================================== */
 
 .add-task-page {
-  min-height: 100vh;
-  background: #fdfdfd;
   display: flex;
-  color: #111827;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  background-color: var(--color-background, #fafaf8);
 }
 
-/* =========================================
-   MAIN CONTENT
-========================================= */
-
-.add-task-page .add-task-main {
+.add-task-main {
   flex: 1;
   min-width: 0;
-  padding: 32px 48px;
-  background: #fdfdfd;
-  margin-left: 240px; 
-  width: calc(100% - 240px);
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: 32px 40px 60px;
+  box-sizing: border-box;
+  margin-left: var(--sidebar-width, 240px);
+  width: calc(100% - var(--sidebar-width, 240px));
 }
 
-/* =========================================
-   TOP HEADER
-========================================= */
-
-.add-task-page .add-task-topbar {
+.add-task-topbar {
   display: flex;
-  align-items: center; 
+  align-items: center;
   justify-content: space-between;
-  gap: 30px;
-  margin-bottom: 30px;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 
-.add-task-page .topbar-headings h1 {
-  margin: 0;
-  font-size: 26px;
-  line-height: 1.2;
-  font-weight: 700;
-  color: #111827;
-}
-
-.add-task-page .topbar-headings p {
-  margin: 8px 0 0;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-/* =========================================
-   SEARCH & NOTIFICATION (SearchBar Component)
-========================================= */
-
-.search-notification-bar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 9999px;
-  padding: 8px 18px;
-  width: 280px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-.search-icon {
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.header-search-input {
-  border: none;
-  outline: none;
-  background: transparent;
-  width: 100%;
-  font-size: 14px;
-  color: #1e293b;
-}
-
-.header-search-input::placeholder {
-  color: #94a3b8;
-}
-
-.notification-bell-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #facc15;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  transition: transform 0.15s ease;
-}
-
-.notification-bell-btn:hover {
-  transform: scale(1.05);
-}
-
-.bell-icon {
-  color: #000000;
-}
-
-.notification-badge-dot {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: #ef4444;
-  color: #ffffff;
-  font-size: 10px;
+.topbar-headings h1 {
+  font-size: 28px;
   font-weight: 800;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #ffffff;
-}
-
-/* =========================================
-   FORM CONTAINER (CARD)
-========================================= */
-
-.add-task-page .add-task-content {
-  width: 100%;
-  max-width: 1000px;
-}
-
-.add-task-page .add-task-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-}
-
-.add-task-page .form-heading {
-  margin-bottom: 32px;
-}
-
-.add-task-page .form-heading h2 {
+  color: var(--color-text-primary, #111111);
   margin: 0;
-  font-size: 20px;
-  line-height: 1.3;
-  font-weight: 700;
-  color: #111827;
+  letter-spacing: -0.5px;
 }
 
-.add-task-page .form-heading p {
-  margin: 6px 0 0;
-  font-size: 13px;
-  color: #6b7280;
+.topbar-headings p {
+  font-size: 14px;
+  color: var(--color-text-secondary, #6d6d6d);
+  margin: 4px 0 0 0;
 }
 
-/* =========================================
-   FORM FIELDS
-========================================= */
+.add-task-content {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 
-.add-task-page .form-group {
-  position: relative;
+.add-task-card {
+  width: 100%;
+  max-width: 780px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e8e8e8);
+  border-radius: var(--radius-xl, 20px);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-card, 0 2px 8px rgba(0, 0, 0, 0.03));
+  box-sizing: border-box;
+}
+
+.form-heading {
   margin-bottom: 24px;
 }
 
-.add-task-page .form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
+.form-heading h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text-primary, #111111);
+  margin: 0;
 }
 
-.add-task-page .form-group input,
-.add-task-page .form-group textarea,
-.add-task-page .form-group select {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #374151;
-  font-family: inherit;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.form-heading p {
+  font-size: 13.5px;
+  color: var(--color-text-secondary, #6d6d6d);
+  margin: 4px 0 0 0;
 }
 
-.add-task-page .form-group input,
-.add-task-page .form-group select {
-  height: 42px;
-  padding: 0 14px;
-}
-
-.add-task-page .form-group textarea {
-  min-height: 120px;
-  padding: 14px;
-  resize: vertical;
-  line-height: 1.5;
-}
-
-.add-task-page .form-group input::placeholder,
-.add-task-page .form-group textarea::placeholder {
-  color: #9ca3af;
-}
-
-.add-task-page .form-group input:focus,
-.add-task-page .form-group textarea:focus,
-.add-task-page .form-group select:focus {
-  border-color: #6b7280;
-  box-shadow: 0 0 0 1px #6b7280;
-}
-
-/* =========================================
-   CHARACTER COUNTERS
-========================================= */
-
-.add-task-page .character-count {
-  display: block;
-  margin-top: 6px;
-  text-align: right;
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-/* =========================================
-   LOCATION (Input with Icon)
-========================================= */
-
-.add-task-page .input-with-icon {
+.form-group {
+  margin-bottom: 20px;
   position: relative;
 }
 
-.add-task-page .input-with-icon input {
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111111);
+  margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border, #e8e8e8);
+  border-radius: var(--radius-sm, 10px);
+  font-size: 13.5px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary, #111111);
+  background: var(--color-surface, #ffffff);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--color-border-focus, #111111);
+  box-shadow: 0 0 0 1px var(--color-border-focus, #111111);
+}
+
+.form-group textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.character-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 11.5px;
+  color: var(--color-text-muted, #9e9e9e);
+  font-weight: 500;
+}
+
+.input-with-icon {
+  position: relative;
+  width: 100%;
+}
+
+.input-with-icon input {
   padding-right: 40px;
 }
 
-.add-task-page .input-with-icon .input-icon {
+.input-icon {
   position: absolute;
   right: 14px;
   top: 50%;
-  width: 16px;
-  height: 16px;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: var(--color-text-secondary, #6d6d6d);
+  font-size: 16px;
   pointer-events: none;
 }
 
-/* =========================================
-   DATE + TIME GRID
-========================================= */
-
-.add-task-page .date-time-grid {
+.date-time-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 24px;
-  row-gap: 0;
+  gap: 16px;
 }
 
-.add-task-page input[type="date"]::-webkit-calendar-picker-indicator,
-.add-task-page input[type="time"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.5;
-}
-
-/* =========================================
-   IMAGE UPLOAD
-========================================= */
-
-.add-task-page .image-upload-area {
-  width: 100%;
-  min-height: 200px;
-  box-sizing: border-box;
-  border: 1px dashed #d1d5db;
-  border-radius: 8px;
+/* Budget prefix (₹) */
+.input-with-prefix {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: #ffffff;
 }
 
-.add-task-page .upload-placeholder {
+.input-with-prefix .input-prefix {
+  position: absolute;
+  left: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111111;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
+.input-with-prefix input {
+  padding-left: 28px;
   width: 100%;
-  min-height: 200px;
-  margin: 0 !important;
-  display: flex !important;
+}
+
+/* Image Upload Area */
+.image-upload-area {
+  margin-top: 4px;
+}
+
+.upload-placeholder {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  border: 1.5px dashed #d0d0ce;
+  border-radius: var(--radius-md, 12px);
+  padding: 32px 20px;
+  background: var(--color-background, #fafaf8);
   cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
-.add-task-page .upload-icon {
-  width: 32px;
-  height: 32px;
-  color: #93c5fd;
+.upload-placeholder:hover {
+  background: #f5f5f3;
+  border-color: var(--color-secondary-dark, #1e88e5);
+}
+
+.upload-icon {
+  font-size: 32px;
+  color: var(--color-secondary-dark, #1e88e5);
+  margin-bottom: 8px;
+}
+
+.upload-text {
+  font-size: 13px;
+  color: var(--color-text-secondary, #6d6d6d);
   margin-bottom: 4px;
 }
 
-.add-task-page .upload-text {
-  color: #6b7280;
-  font-size: 14px;
+.upload-link {
+  color: var(--color-secondary-dark, #1e88e5);
+  font-weight: 700;
 }
 
-.add-task-page .upload-link {
-  color: #3b82f6;
-  font-weight: 500;
+.upload-hint {
+  font-size: 11.5px;
+  color: var(--color-text-muted, #9e9e9e);
 }
 
-.add-task-page .upload-hint {
-  color: #9ca3af;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-/* Image preview */
-
-.add-task-page .image-preview-wrapper {
+.image-preview-wrapper {
   position: relative;
   width: 100%;
   height: 200px;
-  padding: 10px;
-  box-sizing: border-box;
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+  border: 1px solid var(--color-border, #e8e8e8);
 }
 
-.add-task-page .task-image-preview {
-  display: block;
+.task-image-preview {
   width: 100%;
   height: 100%;
-  border-radius: 6px;
-  object-fit: contain;
+  object-fit: cover;
 }
 
-.add-task-page .remove-image {
+.remove-image {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: #ffffff;
-  color: #111827;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background: rgba(17, 17, 17, 0.7);
+  color: #ffffff;
+  border: none;
   cursor: pointer;
-}
-
-/* Error */
-
-.add-task-page .form-error {
-  margin: 6px 0 0;
-  color: #ef4444;
-  font-size: 13px;
-}
-
-/* =========================================
-   BUTTONS
-========================================= */
-
-.add-task-page .form-actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  margin-top: 40px;
-}
-
-.add-task-page .post-task-button {
-  width: 400px;
-  max-width: 100%;
-  height: 48px;
-  border: none;
-  border-radius: 6px;
-  background: #111827;
-  color: #ffffff;
   font-size: 16px;
+  transition: background var(--transition-fast, 0.15s ease);
+}
+
+.remove-image:hover {
+  background: var(--color-error, #e53935);
+}
+
+.form-error {
+  margin-top: 8px;
+  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
+  color: var(--color-error, #e53935);
 }
 
-.add-task-page .post-task-button:hover {
-  background: #374151;
+/* Actions */
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
 }
 
-.add-task-page .cancel-task-button {
-  height: 48px;
-  padding: 0 16px;
+.post-task-button {
+  width: 100%;
+  height: 46px;
+  background: var(--color-primary, #111111);
+  color: var(--color-text-inverse, #ffffff);
   border: none;
-  background: transparent;
-  color: #6b7280;
+  border-radius: var(--radius-sm, 8px);
   font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s ease);
+}
+
+.post-task-button:hover:not(:disabled) {
+  background: var(--color-primary-light, #2a2a2a);
+}
+
+.post-task-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-task-button {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary, #6d6d6d);
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
+  transition: color var(--transition-fast, 0.15s ease);
 }
 
-.add-task-page .cancel-task-button:hover {
-  color: #111827;
+.cancel-task-button:hover {
+  color: var(--color-text-primary, #111111);
 }
 
-/* =========================================
-   RESPONSIVE DESIGN
-========================================= */
-
-@media (max-width: 1100px) {
-  .add-task-page .add-task-main {
-    padding: 30px;
-  }
-}
-
-@media (max-width: 850px) {
-  .add-task-page .add-task-topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 30px;
-  }
-
-  /* Updated mobile layout for the new search bar */
-  .search-notification-bar {
+@media (max-width: 860px) {
+  .add-task-main {
+    margin-left: 0;
     width: 100%;
-    justify-content: space-between;
-  }
-  
-  .search-input-wrapper {
-    width: 100%;
+    padding: 20px 24px;
   }
 
-  .add-task-page .date-time-grid {
+  .add-task-card {
+    padding: 24px 20px;
+  }
+
+  .date-time-grid {
     grid-template-columns: 1fr;
-  }
-
-  .add-task-page .add-task-card {
-    padding: 24px;
-  }
-}
-
-@media (max-width: 600px) {
-  .add-task-page .add-task-main {
-    padding: 20px 16px;
-  }
-
-  .add-task-page .topbar-headings h1 {
-    font-size: 22px;
-  }
-
-  .add-task-page .form-actions {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .add-task-page .post-task-button {
-    width: 100%;
   }
 }
