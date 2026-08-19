@@ -9,11 +9,13 @@ import {
   Bookmark,
   Plus,
   Settings,
-  LogOut,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 import ProfileMenu from "./ProfileMenu";
 import { getProfile } from "../../features/auth/services/auth.service";
+import defaultAvatar from "../../assets/settings-image/Group 47.png";
 import "../../styles/Sidebar.css";
 
 export default function Sidebar() {
@@ -91,16 +93,6 @@ export default function Sidebar() {
     return currentPath === path;
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    setUser(null);
-    setShowProfileMenu(false);
-
-    navigate("/login");
-  };
-
   return (
     <>
       <aside className="sidebar feed-sidebar">
@@ -111,7 +103,17 @@ export default function Sidebar() {
           className="sidebar-logo-header"
           onClick={() => navigate("/dashboard")}
         >
-          <h2 className="brand-title">
+          <img
+            src="/logo.png"
+            alt="HireHelper"
+            className="sidebar-logo-img"
+            onError={(e) => {
+              e.target.style.display = "none";
+              e.target.nextSibling.style.display = "block";
+            }}
+          />
+
+          <h2 className="brand-title" style={{ display: "none" }}>
             Hire-a-Helper
           </h2>
         </button>
@@ -146,18 +148,21 @@ export default function Sidebar() {
           }
         >
           <div className="profile-left">
-
-            {user?.profilePicture ? (
-              <img
-  src={getProfileImageUrl(user.profilePicture)}
-  alt="profile"
-  className="profile-avatar"
-/>
-            ) : (
-              <div className="sidebar-profile-avatar-fallback">
-                👶
-              </div>
-            )}
+            <img
+              src={
+                user?.profilePicture &&
+                typeof user.profilePicture === "string" &&
+                user.profilePicture.trim() !== ""
+                  ? getProfileImageUrl(user.profilePicture)
+                  : defaultAvatar
+              }
+              alt="profile"
+              className="profile-avatar"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultAvatar;
+              }}
+            />
 
             <div className="profile-info">
               <h4 className="profile-name">
@@ -174,19 +179,13 @@ export default function Sidebar() {
             </div>
           </div>
 
-          {/* Logout */}
-          <button
-            type="button"
-            className="logout-btn"
-            aria-label="Logout"
-            title="Logout"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleLogout();
-            }}
-          >
-            <LogOut size={16} />
-          </button>
+          <div className="profile-chevron">
+            {showProfileMenu ? (
+              <ChevronUp size={16} />
+            ) : (
+              <ChevronDown size={16} />
+            )}
+          </div>
         </div>
       </aside>
 

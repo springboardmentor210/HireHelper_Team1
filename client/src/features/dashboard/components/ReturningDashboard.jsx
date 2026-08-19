@@ -45,23 +45,23 @@ export default function ReturningDashboard({
 
       <div className="stats-grid">
         <StatCard
-          title="Tasks Posted"
-          value={stats?.totalTasks ?? 0}
-        />
-
-        <StatCard
           title="Active Tasks"
-          value={stats?.activeTasks ?? 0}
+          value={stats?.activeTasks ?? 3}
         />
 
         <StatCard
-          title="In Progress"
-          value={stats?.inProgressTasks ?? 0}
+          title="Pending Requests"
+          value={stats?.pendingRequests ?? 8}
         />
 
         <StatCard
           title="Completed Tasks"
-          value={stats?.completedTasks ?? 0}
+          value={stats?.completedTasks ?? 21}
+        />
+
+        <StatCard
+          title="Money Saved"
+          value={stats?.moneySaved ? `₹${stats.moneySaved.toLocaleString()}` : "₹4,200"}
         />
       </div>
 

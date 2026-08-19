@@ -1,48 +1,54 @@
 .dashboard {
-  padding: 30px;
-  background: #f8fafc;
+  padding: 32px 40px 60px;
+  background: var(--color-background, #fafaf8);
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .dashboard-header {
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
 .dashboard-header h1 {
   margin: 0;
-  font-size: 32px;
-  color: #1e293b;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--color-text-primary, #111111);
 }
 
 .dashboard-header p {
-  margin-top: 8px;
-  color: #64748b;
-  font-size: 16px;
+  margin-top: 4px;
+  color: var(--color-text-secondary, #6d6d6d);
+  font-size: 14px;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-bottom: 35px;
+  margin-bottom: 32px;
 }
 
 .dashboard-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 25px;
+  gap: 24px;
 }
 
 .section {
-  background: white;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-xl, 20px);
+  border: 1px solid var(--color-border, #e8e8e8);
+  padding: 24px;
+  box-shadow: var(--shadow-card, 0 2px 8px rgba(0, 0, 0, 0.03));
 }
 
 .section h2 {
-  margin-bottom: 20px;
-  color: #1e293b;
+  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text-primary, #111111);
 }
 
 @media (max-width: 992px) {
@@ -61,6 +67,6 @@
   }
 
   .dashboard {
-    padding: 15px;
+    padding: 20px;
   }
 }

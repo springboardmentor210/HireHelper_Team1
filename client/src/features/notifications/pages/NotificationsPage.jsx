@@ -85,14 +85,10 @@ export default function NotificationsPage() {
       <Sidebar />
 
       <main className="notifications-page-main">
-        <header className="feed-header" style={{ marginBottom: "24px" }}>
-          <div>
-            <h1 style={{ fontSize: "1.8rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>
-              Notifications
-            </h1>
-            <p style={{ color: "#64748b", margin: "4px 0 0 0" }}>
-              Stay updated on your task and request activity
-            </p>
+        <header className="notifications-page-header">
+          <div className="notifications-page-header-left">
+            <h1>Notifications</h1>
+            <p>Stay updated on your task and request activity</p>
           </div>
 
           <SearchBar
@@ -101,7 +97,8 @@ export default function NotificationsPage() {
           />
         </header>
 
-        <div className="notifications-page-card">
+        <div className="notifications-page-content">
+          <div className="notifications-page-card">
           {/* Action Row */}
           <div className="notif-header-row" style={{ marginBottom: "20px" }}>
             {/* Filter Pills */}
@@ -214,6 +211,7 @@ export default function NotificationsPage() {
               })
             )}
           </div>
+        </div>
         </div>
       </main>
 

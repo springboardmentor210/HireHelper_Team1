@@ -1,5 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
+
 import Sidebar from "../../../components/layout/Sidebar";
 import SearchBar from "../components/SearchBar";
 import StatsCards from "../components/StatsCards";
@@ -8,12 +14,15 @@ import TaskGrid from "../components/TaskGrid";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import EmptyState from "../components/EmptyState";
 import TaskDetailsModal from "../components/TaskDetailsModal";
+
 import * as taskService from "../../../services/taskService";
 import "../Styles/MyTasks.css";
 
 export default function MyTasks() {
   const navigate = useNavigate();
+
   const [tasks, setTasks] = useState([]);
+
   const [stats, setStats] = useState({
     active: 12,
     inProgress: 5,
@@ -21,10 +30,13 @@ export default function MyTasks() {
     totalApplicants: 23,
     totalEarnings: 2340,
   });
+
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
+
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [filters, setFilters] = useState({
     status: "all",
     category: "all",
@@ -33,147 +45,300 @@ export default function MyTasks() {
 
   const [detailModalTask, setDetailModalTask] = useState(null);
 
-  // Search Debounce Effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search.trim().toLowerCase());
     }, 300);
+
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Load Tasks and Statistics
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      setError("");
+
       const data = await taskService.getMyTasks();
-      setTasks(data.tasks || []);
-      if (data.stats) {
-        setStats(data.stats);
+
+      const receivedTasks = Array.isArray(data?.tasks)
+        ? data.tasks
+        : [];
+
+      setTasks(receivedTasks);
+
+      if (data?.stats) {
+        setStats((previousStats) => ({
+          ...previousStats,
+          ...data.stats,
+        }));
       }
     } catch (err) {
-      console.error("Failed to load tasks data:", err);
-      setError(err?.response?.data?.message || "Failed to load tasks");
+      console.error("Failed to load My Tasks:", err);
+
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to load tasks. Please try again."
+      );
+
+      setTasks([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
-  // Filter and Sort Logic
+  const categories = useMemo(() => {
+    const uniqueCategories = tasks
+      .map((task) => task?.category)
+      .filter(Boolean)
+      .map((category) => String(category));
+
+    return [...new Set(uniqueCategories)].sort();
+  }, [tasks]);
+
   const filteredTasks = useMemo(() => {
     let result = [...tasks];
 
-    // Status Filter
     if (filters.status !== "all") {
-      result = result.filter((t) => t.status === filters.status);
+      result = result.filter((task) => {
+        const taskStatus = String(
+          task?.status || ""
+        ).toLowerCase();
+
+        return (
+          taskStatus ===
+          String(filters.status).toLowerCase()
+        );
+      });
     }
 
-    // Category Filter
     if (filters.category !== "all") {
-      result = result.filter((t) => t.category === filters.category);
+      result = result.filter((task) => {
+        const taskCategory = String(
+          task?.category || ""
+        ).toLowerCase();
+
+        return (
+          taskCategory ===
+          String(filters.category).toLowerCase()
+        );
+      });
     }
 
-    // Search Query Filter
     if (debouncedSearch) {
-      result = result.filter(
-        (t) =>
-          t.title.toLowerCase().includes(debouncedSearch) ||
-          t.description.toLowerCase().includes(debouncedSearch) ||
-          t.category.toLowerCase().includes(debouncedSearch) ||
-          t.location.toLowerCase().includes(debouncedSearch)
-      );
+      result = result.filter((task) => {
+        const title = String(
+          task?.title || ""
+        ).toLowerCase();
+
+        const description = String(
+          task?.description || ""
+        ).toLowerCase();
+
+        const category = String(
+          task?.category || ""
+        ).toLowerCase();
+
+        const location = String(
+          task?.location || ""
+        ).toLowerCase();
+
+        return (
+          title.includes(debouncedSearch) ||
+          description.includes(debouncedSearch) ||
+          category.includes(debouncedSearch) ||
+          location.includes(debouncedSearch)
+        );
+      });
     }
 
-    // Sorting
-    switch (filters.sort) {
-      case "budget-high":
-      case "price-high":
-        result.sort((a, b) => ((b.price ?? b.budget) || 0) - ((a.price ?? a.budget) || 0));
-        break;
-      case "budget-low":
-      case "price-low":
-        result.sort((a, b) => ((a.price ?? a.budget) || 0) - ((b.price ?? b.budget) || 0));
-        break;
-      case "oldest":
-        result.reverse();
-        break;
-      default: // newest
-        break;
+    if (filters.sort === "newest") {
+      result.sort((a, b) => {
+        const dateA = new Date(
+          a?.createdAt || a?.created_at || 0
+        ).getTime();
+
+        const dateB = new Date(
+          b?.createdAt || b?.created_at || 0
+        ).getTime();
+
+        return dateB - dateA;
+      });
+    }
+
+    if (filters.sort === "oldest") {
+      result.sort((a, b) => {
+        const dateA = new Date(
+          a?.createdAt || a?.created_at || 0
+        ).getTime();
+
+        const dateB = new Date(
+          b?.createdAt || b?.created_at || 0
+        ).getTime();
+
+        return dateA - dateB;
+      });
+    }
+
+    if (filters.sort === "budget-high") {
+      result.sort((a, b) => {
+        const budgetA = Number(
+          a?.budget || a?.price || 0
+        );
+
+        const budgetB = Number(
+          b?.budget || b?.price || 0
+        );
+
+        return budgetB - budgetA;
+      });
+    }
+
+    if (filters.sort === "budget-low") {
+      result.sort((a, b) => {
+        const budgetA = Number(
+          a?.budget || a?.price || 0
+        );
+
+        const budgetB = Number(
+          b?.budget || b?.price || 0
+        );
+
+        return budgetA - budgetB;
+      });
     }
 
     return result;
-  }, [tasks, filters, debouncedSearch]);
+  }, [
+    tasks,
+    filters,
+    debouncedSearch,
+  ]);
 
-  // Action Handlers
-
-
-  const handleDelete = async (taskId) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      try {
-        await taskService.deleteTask(taskId);
-        loadData();
-      } catch (err) {
-        console.error("Delete action failed:", err);
+  const handleDelete = useCallback(
+    async (taskId) => {
+      if (!taskId) {
+        console.error(
+          "Cannot delete task: missing task ID."
+        );
+        return;
       }
-    }
-  };
+
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this task?"
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        setError("");
+
+        await taskService.deleteTask(taskId);
+
+        await loadData();
+      } catch (err) {
+        console.error(
+          "Delete task failed:",
+          err
+        );
+
+        setError(
+          err?.response?.data?.message ||
+            err?.message ||
+            "Failed to delete task. Please try again."
+        );
+      }
+    },
+    [loadData]
+  );
+
+  const handleViewDetails = useCallback(
+    (task) => {
+      setDetailModalTask(task);
+    },
+    []
+  );
+
+  const closeDetailsModal = useCallback(() => {
+    setDetailModalTask(null);
+  }, []);
+
+  const handleNotificationClick = useCallback(() => {
+    navigate("/notifications");
+  }, [navigate]);
 
   return (
     <div className="my-tasks-layout">
-      {/* Recreated exact Sidebar matching Figma */}
       <Sidebar />
 
-      {/* Main Page Area */}
       <main className="my-tasks-main-content">
-        {/* Page Top Header Bar */}
         <header className="my-tasks-header">
           <div className="header-titles">
-            <h1 className="main-page-title">My Tasks</h1>
-            <p className="main-page-subtitle">Manage every task you've created.</p>
+            <h1 className="main-page-title">
+              My Tasks
+            </h1>
+
+            <p className="main-page-subtitle">
+              Manage every task you've created.
+            </p>
           </div>
 
           <SearchBar
             value={search}
             onChange={setSearch}
-            onNotificationClick={() => navigate("/notifications")}
+            onNotificationClick={
+              handleNotificationClick
+            }
           />
         </header>
 
-        {/* 5 Metrics Stats Bar */}
         <StatsCards stats={stats} />
 
-        {/* Filter Dropdowns and Filter Button */}
         <FilterBar
           filters={filters}
           onChange={setFilters}
-          categories={Array.from(new Set(tasks.map((t) => t.category)))}
+          categories={categories}
         />
 
-        {/* Task Cards Grid / States */}
+        {error && (
+          <div
+            className="error-banner"
+            role="alert"
+          >
+            <span>{error}</span>
+
+            <button
+              type="button"
+              onClick={loadData}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <LoadingSkeleton />
-        ) : error ? (
-          <div className="error-banner">{error}</div>
         ) : filteredTasks.length === 0 ? (
           <EmptyState />
         ) : (
           <TaskGrid
             tasks={filteredTasks}
-            onViewDetails={(task) => setDetailModalTask(task)}
+            onViewDetails={handleViewDetails}
             onDelete={handleDelete}
           />
         )}
       </main>
 
-      {/* Task Details Modal Overlay */}
       {detailModalTask && (
         <TaskDetailsModal
           task={detailModalTask}
-          onClose={() => setDetailModalTask(null)}
+          onClose={closeDetailsModal}
         />
       )}
     </div>

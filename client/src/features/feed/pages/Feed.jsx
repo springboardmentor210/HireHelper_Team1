@@ -45,18 +45,18 @@ function Feed() {
 
   const categories = [
     { label: "All", value: "all" },
-    { label: "Moving", value: "moving" },
-    { label: "Gardening", value: "gardening" },
-    { label: "Cleaning", value: "cleaning" },
-    { label: "Painting", value: "painting" },
-    { label: "Assembly", value: "assembly" },
-    { label: "Pet Care", value: "pet_care" },
+    { label: "Moving", value: "moving", icon: "📦" },
+    { label: "Gardening", value: "gardening", icon: "🪴" },
+    { label: "Cleaning", value: "cleaning", icon: "🧽" },
+    { label: "Painting", value: "painting", icon: "🎨" },
+    { label: "Assembly", value: "assembly", icon: "🔨" },
+    { label: "Pet Care", value: "pet_care", icon: "🐾" },
   ];
 
   const moreCategories = [
-    { label: "Tech", value: "tech_help" },
-    { label: "Car Care", value: "car_care" },
-    { label: "Other", value: "other" },
+    { label: "Tech", value: "tech_help", icon: "💻" },
+    { label: "Car Care", value: "car_care", icon: "🚗" },
+    { label: "Other", value: "other", icon: "📋" },
   ];
 
   // Get backend origin from environment configuration.
@@ -481,6 +481,11 @@ function Feed() {
                 handleCategoryChange(category.value)
               }
             >
+              {category.icon && (
+                <span className="category-btn-icon">
+                  {category.icon}
+                </span>
+              )}
               {category.label}
             </button>
           ))}
@@ -721,7 +726,7 @@ function Feed() {
                         </div>
 
                         <div className="task-body">
-                          {/* Category */}
+                          {/* Category and Date Header Row */}
                           <div className="task-category-row">
                             <span
                               className={`category-badge ${
@@ -736,6 +741,22 @@ function Feed() {
                               }`}
                             >
                               {task.category || "General"}
+                            </span>
+
+                            <span className="task-card-date">
+                              {task.date ||
+                                task.startDate ||
+                                (task.createdAt
+                                  ? new Date(
+                                      task.createdAt
+                                    ).toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        month: "short",
+                                        day: "numeric",
+                                      }
+                                    )
+                                  : "")}
                             </span>
                           </div>
 
@@ -783,10 +804,23 @@ function Feed() {
                           {/* Footer */}
                           <div className="task-footer">
                             <div className="task-user">
-                              <div className="user-avatar"></div>
+                              <div className="user-avatar">
+                                {userName.charAt(0).toUpperCase()}
+                              </div>
 
                               <span>{userName}</span>
                             </div>
+
+                            <span className="task-card-price">
+                              {typeof task.price === "number"
+                                ? `₹${task.price}`
+                                : typeof task.budget === "number"
+                                ? `₹${task.budget}`
+                                : typeof task.price === "string" &&
+                                  task.price.startsWith("₹")
+                                ? task.price
+                                : `₹${task.price ?? task.budget ?? 500}`}
+                            </span>
 
                             <button
                               type="button"
@@ -807,7 +841,7 @@ function Feed() {
                                 ? "Requested"
                                 : isRequesting
                                 ? "Sending..."
-                                : "Request"}
+                                : "Request Help"}
                             </button>
                           </div>
                         </div>

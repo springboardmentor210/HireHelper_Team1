@@ -1,5 +1,5 @@
-import FilterButton from "./FilterButton";
 import "../styles/Requests.css";
+
 const IncomingRequestTabs = ({
   activeTab,
   setActiveTab,
@@ -9,63 +9,63 @@ const IncomingRequestTabs = ({
     {
       id: "incoming",
       label: "Incoming",
-      count: counts.incoming,
+      count: counts.incoming ?? 0,
+      showCount: true,
     },
     {
       id: "accepted",
       label: "Accepted",
-      count: counts.accepted,
+      count: counts.accepted ?? 0,
+      showCount: true,
     },
     {
       id: "declined",
       label: "Declined",
-      count: counts.declined,
+      count: counts.declined ?? 0,
+      showCount: true,
     },
     {
       id: "archived",
       label: "Archived",
-      count: counts.archived,
+      count: counts.archived ?? 0,
+      showCount: false,
     },
   ];
 
   return (
-  <div className="request-tabs-container">
-    <div className="tabs-list">
-      {tabs.map((tab) => {
-        const isActive = activeTab === tab.id;
+    <div className="incoming-request-tabs-container">
+      <div className="incoming-tabs-list">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
 
-        return (
-          <button
-            key={tab.id}
-            type="button"
-            className={`tab-btn ${isActive ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <span className="tab-label">
-              {tab.label}
-            </span>
-
-            <span
-              className={`tab-count-badge ${
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              className={`incoming-tab-btn ${
                 isActive ? "active" : ""
               }`}
+              onClick={() => setActiveTab(tab.id)}
             >
-              {tab.count}
-            </span>
-          </button>
-        );
-      })}
-    </div>
+              <span className="incoming-tab-label">
+                {tab.label}
+              </span>
 
-    <div className="filter-button-wrapper">
-      <FilterButton
-        onClick={() => {
-          console.log("Filter clicked");
-        }}
-      />
+              {tab.showCount && (
+                <span
+                  className={`incoming-tab-count ${
+                    isActive ? "active" : ""
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default IncomingRequestTabs;

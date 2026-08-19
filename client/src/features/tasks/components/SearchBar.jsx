@@ -48,7 +48,7 @@ export default function SearchBar({ value, onChange, onNotificationClick }) {
         onClick={handleBellClick}
         aria-label="Notifications"
       >
-        <Bell size={28} className="bell-icon" />
+        <Bell size={18} className="bell-icon" />
         {unreadCount > 0 && (
           <span className="notification-badge-dot">{unreadCount}</span>
         )}

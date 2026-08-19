@@ -1,59 +1,65 @@
-import "../styles/Dashboard.css";
-
+import React from "react";
+import { Link } from "react-router-dom";
 import {
-  FaCheckCircle,
-  FaClipboardList,
-} from "react-icons/fa";
+  CheckCircle2,
+  Wallet,
+  UserPlus,
+} from "lucide-react";
+import { returningUserData } from "../data/dashboardData";
+import "./RecentActivity.css";
 
 export default function RecentActivity({ activities = [] }) {
-  const getIcon = (type) => {
-    switch (type) {
-      case "task_created":
-        return <FaClipboardList />;
+  const displayActivities = activities.length > 0 ? activities : returningUserData.recentActivity;
 
+  const renderIcon = (type) => {
+    switch (type) {
+      case "payment":
+        return <Wallet size={20} className="activity-icon-svg payment" />;
+      case "request":
+        return <UserPlus size={20} className="activity-icon-svg request" />;
+      case "accepted":
+      case "completed":
       default:
-        return <FaCheckCircle />;
+        return <CheckCircle2 size={20} className="activity-icon-svg success" />;
     }
   };
 
-  const formatTime = (date) => {
-    if (!date) return "";
-
-    return new Date(date).toLocaleString("en-IN", {
-      day: "numeric",
-      month: "short",
-      hour: "numeric",
-      minute: "2-digit",
-    });
+  const getTimeText = (activity) => {
+    if (activity.time) return activity.time;
+    if (activity.text?.includes("Mita")) return "20 minutes ago";
+    if (activity.text?.includes("Payment")) return "2 hours ago";
+    if (activity.text?.includes("Garden")) return "Yesterday";
+    if (activity.text?.includes("painting")) return "Yesterday";
+    return "2 hours ago";
   };
 
   return (
-    <section className="dashboard-card">
+    <section className="dashboard-card recent-activity-card">
       <div className="card-header">
-        <h2 className="section-title">Recent Activity</h2>
-        <span>View all</span>
+        <h2 className="card-title">Recent Activity</h2>
+        <Link to="/notifications" className="view-all-link">
+          View all
+        </Link>
       </div>
 
-      <div className="activity-list">
-        {activities.length === 0 ? (
-          <p className="empty-dashboard-message">
-            No recent activity
-          </p>
-        ) : (
-          activities.map((activity) => (
-            <div key={activity.id} className="activity-item">
-              <div className="activity-icon">
-                {getIcon(activity.type)}
-              </div>
-
-              <div className="activity-content">
-                <p>{activity.message}</p>
-                <small>{formatTime(activity.createdAt)}</small>
-              </div>
+      <div className="recent-activity-list">
+        {displayActivities.map((activity, index) => (
+          <div key={activity.id || index} className="recent-activity-item">
+            <div className="recent-activity-icon-box">
+              {renderIcon(activity.type)}
             </div>
-          ))
-        )}
+
+            <div className="recent-activity-content">
+              <p className="recent-activity-text">
+                {activity.text || activity.message}
+              </p>
+              <span className="recent-activity-time">
+                {getTimeText(activity)}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
-}
+}
