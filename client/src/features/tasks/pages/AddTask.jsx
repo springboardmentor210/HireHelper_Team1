@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
-import api from "../../../config/api";
 import { createTask } from "../../../services/taskService";
 import "./AddTask.css";
 import {
@@ -54,6 +53,8 @@ export default function AddTask() {
       ...previous,
       [name]: value,
     }));
+
+    setError("");
   };
 
   const handleImageChange = (event) => {
@@ -66,6 +67,11 @@ export default function AddTask() {
     if (!file.type.startsWith("image/")) {
       setError("Please select a valid image.");
       return;
+    }
+
+    // Revoke the previous preview URL before creating a new one.
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
     }
 
     // Store the REAL File object.
@@ -88,7 +94,6 @@ export default function AddTask() {
     setImagePreview(null);
   };
 
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -103,9 +108,21 @@ export default function AddTask() {
       return;
     }
 
+    // Start date validation
+    if (
+      formData.startDate &&
+      formData.startDate < today
+    ) {
+      setError(
+        "Start date cannot be earlier than today."
+      );
+      return;
+    }
+
     // End date validation
     if (
       formData.endDate &&
+      formData.startDate &&
       formData.endDate < formData.startDate
     ) {
       setError(
@@ -116,8 +133,11 @@ export default function AddTask() {
 
     // Same date -> end time must be later
     if (
+      formData.endDate &&
+      formData.startDate &&
       formData.endDate === formData.startDate &&
       formData.endTime &&
+      formData.startTime &&
       formData.endTime <= formData.startTime
     ) {
       setError(
@@ -139,84 +159,19 @@ export default function AddTask() {
     setLoading(true);
 
     try {
-      if (typeof createTask === "function") {
-        await createTask({
-          ...formData,
+      /*
+       * createTask is the single task-creation path.
+       *
+       * No undefined lat/lng variables are sent here.
+       * The task service is responsible for constructing
+       * the request expected by the backend.
+       */
+      await createTask({
+        ...formData,
 
-          // IMPORTANT:
-          // Send the actual File object, NOT imagePreview.
-          image: image,
-        });
-      } else {
-        // Fallback API request
-        const taskData = new FormData();
-
-        taskData.append(
-          "title",
-          formData.title.trim()
-        );
-
-        taskData.append(
-          "description",
-          formData.description.trim()
-        );
-
-        taskData.append(
-          "location",
-          formData.location.trim()
-        );
-
-        if (formData.budget) {
-          taskData.append(
-            "price",
-            formData.budget
-          );
-        }
-
-        if (formData.startDate) {
-          taskData.append(
-            "startDate",
-            formData.startDate
-          );
-        }
-
-        if (formData.startTime) {
-          taskData.append(
-            "startTime",
-            formData.startTime
-          );
-        }
-
-        taskData.append(
-          "category",
-          formData.category
-        );
-
-        if (formData.endDate) {
-          taskData.append(
-            "endDate",
-            formData.endDate
-          );
-        }
-
-        if (formData.endTime) {
-          taskData.append(
-            "endTime",
-            formData.endTime
-          );
-        }
-
-        // Send coordinates
-        taskData.append("lat", lat);
-        taskData.append("lng", lng);
-
-        // Send actual image file
-        if (image instanceof File) {
-          taskData.append("image", image);
-        }
-
-        await api.post("/tasks", taskData);
-      }
+        // Send the actual File object, NOT imagePreview.
+        image,
+      });
 
       alert("Task created successfully!");
 
@@ -227,86 +182,52 @@ export default function AddTask() {
         err
       );
 
-      // Location permission denied
-      if (err?.code === 1) {
-        setError(
-          "Location permission was denied. Please allow location access to create a task."
-        );
-      }
-
-      // Location unavailable
-      else if (err?.code === 2) {
-        setError(
-          "Unable to determine your location. Please try again."
-        );
-      }
-
-      // Location timeout
-      else if (err?.code === 3) {
-        setError(
-          "Location request timed out. Please try again."
-        );
-      }
-
-      // Browser does not support location
-      else if (
-        err?.code === "NOT_SUPPORTED"
-      ) {
-        setError(
-          "Location services are not supported by this browser."
-        );
-      }
-
-      // Authentication error
-      else if (
-        err?.response?.status === 401
-      ) {
-        setError(
-          "Access Denied: Please log in to create a task."
-        );
-      }
-
-      // Backend error
-      else {
-        setError(
-          err?.response?.data?.message ||
-            "Failed to create task. Please try again."
-        );
-      }
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to create task. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="add-task-page">
+    <div className="app-layout">
       <Sidebar />
 
-      <main className="add-task-main">
-        <header className="add-task-topbar">
-          <div className="topbar-headings">
-            <h1>Add Task</h1>
+      <main className="main-content">
+        <div className="add-task-page">
 
-            <p>
-              Create a task and find someone to help you
-            </p>
-          </div>
-
-
-        </header>
-
-        <section className="add-task-content">
-          <div className="add-task-card">
-            <div className="form-heading">
-              <h2>Add New Task</h2>
+          <div className="add-task-header">
+            <div>
+              <h1>Add Task</h1>
 
               <p>
-                Create a task and find someone to help you
+                Create a task and find someone
+                to help you.
               </p>
             </div>
+          </div>
 
-            <form onSubmit={handleSubmit}>
-              {/* Task Title */}
+          {error && (
+            <div className="add-task-error">
+              {error}
+            </div>
+          )}
+
+          <form
+            className="add-task-form"
+            onSubmit={handleSubmit}
+          >
+
+            {/* =========================
+                BASIC INFORMATION
+            ========================= */}
+
+            <div className="card">
+              <h2>Task Details</h2>
+
               <div className="form-group">
                 <label htmlFor="title">
                   Task Title
@@ -318,18 +239,11 @@ export default function AddTask() {
                   type="text"
                   value={formData.title}
                   onChange={handleChange}
-                  maxLength={100}
-                  placeholder="e.g., Help moving furniture"
-                  autoComplete="off"
-                  required
+                  placeholder="What do you need help with?"
+                  disabled={loading}
                 />
-
-                <span className="character-count">
-                  {formData.title.length}/100
-                </span>
               </div>
 
-              {/* Description */}
               <div className="form-group">
                 <label htmlFor="description">
                   Description
@@ -340,61 +254,93 @@ export default function AddTask() {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  maxLength={1000}
-                  placeholder="Describe what help you need, any requirements, and what you'll provide."
-                  autoComplete="off"
-                  required
+                  placeholder="Describe what needs to be done..."
+                  rows={5}
+                  disabled={loading}
                 />
-
-                <span className="character-count">
-                  {formData.description.length}/1000
-                </span>
               </div>
 
-              {/* Budget */}
               <div className="form-group">
-                <label htmlFor="budget">
-                  Budget (₹)
+                <label htmlFor="category">
+                  Category
                 </label>
 
-                <div className="input-with-prefix">
-                  <span className="input-prefix">₹</span>
-                  <input
-                    id="budget"
-                    name="budget"
-                    type="number"
-                    value={formData.budget}
-                    onChange={handleChange}
-                    placeholder="e.g., 1200"
-                    min="0"
-                  />
-                </div>
+                <select
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  disabled={loading}
+                >
+                  <option value="">
+                    Select a category
+                  </option>
+
+                  {categories.map(
+                    (category) => (
+                      <option
+                        key={category.value}
+                        value={category.value}
+                      >
+                        {category.label}
+                      </option>
+                    )
+                  )}
+                </select>
               </div>
 
-              {/* Location */}
               <div className="form-group">
                 <label htmlFor="location">
+                  <FiMapPin />
                   Location
                 </label>
 
-                <div className="input-with-icon">
-                  <input
-                    id="location"
-                    name="location"
-                    type="text"
-                    value={formData.location}
-                    onChange={handleChange}
-                    placeholder="e.g., Downtown Seattle, WA or Bellevue, WA"
-                    autoComplete="street-address"
-                    required
-                  />
-
-                  <FiMapPin className="input-icon" />
-                </div>
+                <input
+                  id="location"
+                  name="location"
+                  type="text"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="Where should the task be done?"
+                  disabled={loading}
+                />
               </div>
+            </div>
 
-              {/* Date and Time */}
-              <div className="date-time-grid">
+            {/* =========================
+                BUDGET
+            ========================= */}
+
+            <div className="card">
+              <h2>Budget</h2>
+
+              <div className="form-group">
+                <label htmlFor="budget">
+                  Budget
+                </label>
+
+                <input
+                  id="budget"
+                  name="budget"
+                  type="number"
+                  min="0"
+                  value={formData.budget}
+                  onChange={handleChange}
+                  placeholder="Enter your budget"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            {/* =========================
+                SCHEDULE
+            ========================= */}
+
+            <div className="card">
+              <h2>Schedule</h2>
+
+              <div className="form-row">
+
                 <div className="form-group">
                   <label htmlFor="startDate">
                     Start Date
@@ -407,6 +353,7 @@ export default function AddTask() {
                     min={today}
                     value={formData.startDate}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                 </div>
 
@@ -421,12 +368,17 @@ export default function AddTask() {
                     type="time"
                     value={formData.startTime}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                 </div>
 
+              </div>
+
+              <div className="form-row">
+
                 <div className="form-group">
                   <label htmlFor="endDate">
-                    End Date (Optional)
+                    End Date
                   </label>
 
                   <input
@@ -434,16 +386,18 @@ export default function AddTask() {
                     name="endDate"
                     type="date"
                     min={
-                      formData.startDate || today
+                      formData.startDate ||
+                      today
                     }
                     value={formData.endDate}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="endTime">
-                    End Time (Optional)
+                    End Time
                   </label>
 
                   <input
@@ -452,124 +406,104 @@ export default function AddTask() {
                     type="time"
                     value={formData.endTime}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                 </div>
+
               </div>
+            </div>
 
-              {/* Category */}
-              <div className="form-group">
-                <label htmlFor="category">
-                  Category
-                </label>
+            {/* =========================
+                IMAGE
+            ========================= */}
 
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">
-                    Select a category
-                  </option>
+            <div className="card">
+              <h2>Task Image</h2>
 
-                  {categories.map((category) => (
-                    <option
-                      key={category.value}
-                      value={category.value}
+              <div className="image-upload-area">
+
+                {!imagePreview ? (
+                  <label
+                    htmlFor="task-image"
+                    className="image-upload-label"
+                  >
+                    <FiUploadCloud size={32} />
+
+                    <span>
+                      Upload an image
+                    </span>
+
+                    <small>
+                      JPG, PNG or other image
+                      formats
+                    </small>
+
+                    <input
+                      id="task-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={
+                        handleImageChange
+                      }
+                      disabled={loading}
+                    />
+                  </label>
+                ) : (
+                  <div className="image-preview-wrapper">
+
+                    <img
+                      src={imagePreview}
+                      alt="Task preview"
+                      className="image-preview"
+                    />
+
+                    <button
+                      type="button"
+                      className="remove-image-button"
+                      onClick={removeImage}
+                      disabled={loading}
+                      aria-label="Remove image"
                     >
-                      {category.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                      <FiX />
+                    </button>
 
-              {/* Image */}
-              <div className="form-group">
-                <label htmlFor="taskImage">
-                  Task Image (Optional)
-                </label>
-
-                <div className="image-upload-area">
-                  {imagePreview ? (
-                    <div className="image-preview-wrapper">
-                      <img
-                        src={imagePreview}
-                        alt="Task preview"
-                        className="task-image-preview"
-                      />
-
-                      <button
-                        type="button"
-                        className="remove-image"
-                        onClick={removeImage}
-                        aria-label="Remove image"
-                      >
-                        <FiX />
-                      </button>
-                    </div>
-                  ) : (
-                    <label
-                      className="upload-placeholder"
-                      htmlFor="taskImage"
-                    >
-                      <FiUploadCloud className="upload-icon" />
-
-                      <div className="upload-text">
-                        <span className="upload-link">
-                          Upload a file
-                        </span>{" "}
-                        or drag and drop
-                      </div>
-
-                      <span className="upload-hint">
-                        PNG, JPG, GIF up to 10MB
-                      </span>
-
-                      <input
-                        id="taskImage"
-                        name="image"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        hidden
-                      />
-                    </label>
-                  )}
-                </div>
-
-                {error && (
-                  <p className="form-error">
-                    {error}
-                  </p>
+                  </div>
                 )}
-              </div>
 
-              {/* Buttons */}
-              <div className="form-actions">
-                <button
-                  type="submit"
-                  className="post-task-button"
-                  disabled={loading}
-                >
-                  {loading
-                    ? "Posting..."
-                    : "Post Task"}
-                </button>
-
-                <button
-                  type="button"
-                  className="cancel-task-button"
-                  onClick={() =>
-                    navigate("/mytasks")
-                  }
-                >
-                  Cancel
-                </button>
               </div>
-            </form>
-          </div>
-        </section>
+            </div>
+
+            {/* =========================
+                ACTIONS
+            ========================= */}
+
+            <div className="add-task-actions">
+
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={() =>
+                  navigate("/mytasks")
+                }
+                disabled={loading}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="submit-task-button"
+                disabled={loading}
+              >
+                {loading
+                  ? "Creating..."
+                  : "Create Task"}
+              </button>
+
+            </div>
+
+          </form>
+        </div>
       </main>
     </div>
   );

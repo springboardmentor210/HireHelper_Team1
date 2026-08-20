@@ -297,7 +297,6 @@
    ========================================================================== */
 
 /*
- * Small rectangle (card) behind the whole Sort / Distance / Price / Filter
  * row, matching the Figma reference. All controls sit flush inside it
  * rather than each having its own separate pill background.
  *
@@ -354,85 +353,6 @@
 
 .filter-bar select:focus {
   box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.05);
-}
-
-/* ==========================================================================
-   DISTANCE TOOLBAR
-   ========================================================================== */
-
-/*
- * Distance now behaves like the other filter-bar selects: it sits inline,
- * flush inside the shared rectangle. The old Figma spec (height: 50px,
- * width: 1100px, own white background/shadow) is intentionally NOT used
- * anymore — that fixed 1100px width was blowing out .filter-bar and
- * pushing the whole row off-screen.
- */
-
-.filter-bar .distance-toolbar {
-  height: 36px;
-  width: auto;
-  min-height: 36px;
-
-  padding: 8px 10px;
-
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm, 8px);
-  box-shadow: none;
-
-  box-sizing: border-box;
-
-  color: var(--color-text-primary, #111111);
-
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-  outline: none;
-
-  transition: background 0.15s ease;
-}
-
-.filter-bar .distance-toolbar:hover {
-  background: #f5f5f3;
-  box-shadow: none;
-}
-
-.filter-bar .distance-toolbar:focus {
-  border: none;
-  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.05);
-}
-
-/* ==========================================================================
-   RESET BUTTON
-   ========================================================================== */
-
-.filter-btn {
-  margin-left: auto;
-
-  min-height: 36px;
-
-  padding: 8px 16px;
-
-  border: 1px solid var(--color-border, #e8e8e8);
-  border-radius: var(--radius-sm, 10px);
-
-  background: var(--color-surface, #ffffff);
-  color: var(--color-text-primary, #111111);
-
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.filter-btn:hover {
-  background: #f5f5f3;
-  border-color: var(--color-border-hover, #d0d0ce);
 }
 
 /* ==========================================================================
@@ -990,9 +910,6 @@
     grid-template-columns: 1fr;
   }
 
-  .filter-btn {
-    margin-left: 0;
-  }
 }
 
 /* ==========================================================================
@@ -1049,16 +966,6 @@
   .filter-bar select {
     flex: 1;
     min-width: 100px;
-  }
-
-  .filter-bar .distance-toolbar {
-    width: auto;
-    min-width: 0;
-    height: 36px;
-  }
-
-  .filter-btn {
-    width: 100%;
   }
 
   .feed-content {

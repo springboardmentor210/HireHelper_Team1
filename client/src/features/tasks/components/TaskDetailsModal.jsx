@@ -1,9 +1,16 @@
 import React from "react";
-import { FiX, FiMapPin, FiCalendar, FiClock, FiUsers } from "react-icons/fi";
+import {
+  FiX,
+  FiMapPin,
+  FiCalendar,
+  FiClock,
+  FiUsers,
+} from "react-icons/fi";
 import "./TaskDetailsModal.css";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:5000";
 
 const categoryDisplayMap = {
   moving: "Moving",
@@ -22,10 +29,14 @@ function getCategoryLabel(category) {
   if (!category) return "Other";
 
   return (
-    categoryDisplayMap[String(category).toLowerCase()] ||
+    categoryDisplayMap[
+      String(category).toLowerCase()
+    ] ||
     String(category)
       .replace(/_/g, " ")
-      .replace(/\b\w/g, (letter) => letter.toUpperCase())
+      .replace(/\b\w/g, (letter) =>
+        letter.toUpperCase()
+      )
   );
 }
 
@@ -40,7 +51,9 @@ function getImageUrl(image) {
     return image;
   }
 
-  const cleanPath = image.startsWith("/") ? image : `/${image}`;
+  const cleanPath = image.startsWith("/")
+    ? image
+    : `/${image}`;
 
   return `${API_BASE_URL}${cleanPath}`;
 }
@@ -72,10 +85,15 @@ function formatStatus(status) {
 
   return String(status)
     .replace(/_/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    .replace(/\b\w/g, (letter) =>
+      letter.toUpperCase()
+    );
 }
 
-export default function TaskDetailsModal({ task, onClose }) {
+export default function TaskDetailsModal({
+  task,
+  onClose,
+}) {
   if (!task) {
     return null;
   }
@@ -89,11 +107,14 @@ export default function TaskDetailsModal({ task, onClose }) {
 
   const imageUrl = getImageUrl(imageSource);
 
+  /*
+   * applicantsCount from the backend is the
+   * authoritative applicant count.
+   */
   const applicantsCount =
-    task.applicants ??
-    task.applicantsCount ??
-    task.applicantCount ??
-    0;
+    Number.isFinite(Number(task.applicantsCount))
+      ? Number(task.applicantsCount)
+      : 0;
 
   const price =
     task.price ??
@@ -102,7 +123,9 @@ export default function TaskDetailsModal({ task, onClose }) {
 
   const status = formatStatus(task.status);
 
-  const category = getCategoryLabel(task.category);
+  const category = getCategoryLabel(
+    task.category
+  );
 
   return (
     <div
@@ -112,7 +135,9 @@ export default function TaskDetailsModal({ task, onClose }) {
     >
       <div
         className="task-details-modal"
-        onClick={(event) => event.stopPropagation()}
+        onClick={(event) =>
+          event.stopPropagation()
+        }
         role="dialog"
         aria-modal="true"
         aria-labelledby="task-details-title"
@@ -133,7 +158,8 @@ export default function TaskDetailsModal({ task, onClose }) {
               alt={task.title || "Task"}
               className="task-details-image"
               onError={(event) => {
-                event.currentTarget.style.display = "none";
+                event.currentTarget.style.display =
+                  "none";
               }}
             />
           </div>
@@ -147,7 +173,8 @@ export default function TaskDetailsModal({ task, onClose }) {
               </span>
 
               <h2 id="task-details-title">
-                {task.title || "Untitled Task"}
+                {task.title ||
+                  "Untitled Task"}
               </h2>
             </div>
 
@@ -163,14 +190,18 @@ export default function TaskDetailsModal({ task, onClose }) {
           </div>
 
           <div className="task-details-price">
-            ₹{Number(price || 0).toLocaleString("en-IN")}
+            ₹
+            {Number(price || 0).toLocaleString(
+              "en-IN"
+            )}
           </div>
 
           <div className="task-details-section">
             <h3>Description</h3>
 
             <p>
-              {task.description || "No description provided."}
+              {task.description ||
+                "No description provided."}
             </p>
           </div>
 
@@ -180,8 +211,10 @@ export default function TaskDetailsModal({ task, onClose }) {
 
               <div>
                 <span>Location</span>
+
                 <strong>
-                  {task.location || "Not specified"}
+                  {task.location ||
+                    "Not specified"}
                 </strong>
               </div>
             </div>
@@ -191,6 +224,7 @@ export default function TaskDetailsModal({ task, onClose }) {
 
               <div>
                 <span>Start Date</span>
+
                 <strong>
                   {formatDate(
                     task.startDate ||
@@ -206,6 +240,7 @@ export default function TaskDetailsModal({ task, onClose }) {
 
               <div>
                 <span>Start Time</span>
+
                 <strong>
                   {formatTime(
                     task.startTime ||
@@ -220,6 +255,7 @@ export default function TaskDetailsModal({ task, onClose }) {
 
               <div>
                 <span>Applicants</span>
+
                 <strong>
                   {applicantsCount}
                 </strong>
@@ -227,16 +263,21 @@ export default function TaskDetailsModal({ task, onClose }) {
             </div>
           </div>
 
-          {(task.endDate || task.endTime) && (
+          {(task.endDate ||
+            task.endTime) && (
             <div className="task-details-section task-details-schedule">
               <h3>End Schedule</h3>
 
               <p>
                 {task.endDate
-                  ? formatDate(task.endDate)
+                  ? formatDate(
+                      task.endDate
+                    )
                   : "No end date"}{" "}
                 {task.endTime
-                  ? `at ${formatTime(task.endTime)}`
+                  ? `at ${formatTime(
+                      task.endTime
+                    )}`
                   : ""}
               </p>
             </div>

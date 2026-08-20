@@ -2,10 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import TaskMenu from "./TaskMenu";
 
-const FALLBACK_AVATAR =
-  "https://i.pravatar.cc/40?img=1";
-
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:5000";
 
 export default function TaskCard({
   task,
@@ -79,21 +78,71 @@ export default function TaskCard({
     task.time ||
     "";
 
-  const realApplicants =
-    Array.isArray(applicants)
-      ? applicants
-      : [];
+  /*
+   * Applicants are used only for displaying
+   * the actual requester avatars.
+   *
+   * The authoritative applicant count comes
+   * from the task returned by the backend.
+   */
+  const realApplicants = Array.isArray(applicants)
+    ? applicants
+    : [];
+
+  const visibleApplicants =
+    realApplicants.slice(0, 3);
 
   const applicantCount =
-    realApplicants.length;
+    Number.isFinite(Number(task?.applicantsCount))
+      ? Number(task.applicantsCount)
+      : 0;
 
   const applicantCountLabel =
     applicantCount === 1
       ? "1 Applicant"
       : `${applicantCount} Applicants`;
 
-  const visibleApplicants =
-    realApplicants.slice(0, 3);
+  /*
+   * Convert a stored profile-picture path
+   * into a usable browser URL.
+   */
+  const getProfileImageUrl = (profilePicture) => {
+    if (!profilePicture) {
+      return "";
+    }
+
+    if (
+      profilePicture.startsWith("http://") ||
+      profilePicture.startsWith("https://") ||
+      profilePicture.startsWith("data:")
+    ) {
+      return profilePicture;
+    }
+
+    const cleanPath =
+      profilePicture.startsWith("/")
+        ? profilePicture
+        : `/${profilePicture}`;
+
+    return `${API_BASE_URL}${cleanPath}`;
+  };
+
+  /*
+   * Build initials when the applicant does not
+   * have a profile picture.
+   */
+  const getInitials = (firstName, lastName) => {
+    const first =
+      firstName?.trim()?.charAt(0) || "";
+
+    const last =
+      lastName?.trim()?.charAt(0) || "";
+
+    const initials =
+      `${first}${last}`.toUpperCase();
+
+    return initials || "A";
+  };
 
   return (
     <div className="task-card-item">
@@ -209,49 +258,57 @@ export default function TaskCard({
                     request?.requester ||
                     {};
 
+                  const firstName =
+                    requester.firstName ||
+                    "";
+
+                  const lastName =
+                    requester.lastName ||
+                    "";
+
                   const fullName =
-                    `${requester.firstName || ""} ${
-                      requester.lastName || ""
-                    }`.trim() ||
+                    `${firstName} ${lastName}`
+                      .trim() ||
                     "Applicant";
 
                   const profilePicture =
-                    requester.profilePicture
-                      ? requester.profilePicture.startsWith(
-                          "http"
-                        )
-                        ? requester.profilePicture
-                        : `${API_BASE_URL.replace(
-                            "/api",
-                            ""
-                          )}${
-                            requester.profilePicture.startsWith(
-                              "/"
-                            )
-                              ? requester.profilePicture
-                              : `/${requester.profilePicture}`
-                          }`
-                      : FALLBACK_AVATAR;
+                    getProfileImageUrl(
+                      requester.profilePicture
+                    );
 
-                  return (
+                  const initials =
+                    getInitials(
+                      firstName,
+                      lastName
+                    );
+
+                  return profilePicture ? (
                     <img
                       key={
                         request?._id ||
                         index
                       }
-                      src={
-                        profilePicture
-                      }
+                      src={profilePicture}
                       alt={fullName}
                       title={fullName}
                       className="stack-avatar"
-                      onError={(
-                        event
-                      ) => {
-                        event.currentTarget.src =
-                          FALLBACK_AVATAR;
+                      onError={(event) => {
+                        event.currentTarget.style.display =
+                          "none";
                       }}
                     />
+                  ) : (
+                    <div
+                      key={
+                        request?._id ||
+                        index
+                      }
+                      className="stack-avatar avatar-initials"
+                      title={fullName}
+                      aria-label={fullName}
+                    >
+                      {initials}
+                    </div>
                   );
                 }
               )}
