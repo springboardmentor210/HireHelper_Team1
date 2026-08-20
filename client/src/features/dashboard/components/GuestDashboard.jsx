@@ -68,7 +68,7 @@ export default function GuestDashboard() {
             <button
               type="button"
               className="primary-btn"
-              onClick={() => navigate("/feed")}
+              onClick={() => navigate("/register")}
             >
               Find Tasks
               <FaArrowRight />
