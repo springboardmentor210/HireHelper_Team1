@@ -49,27 +49,6 @@ body {
   margin-top: 4px;
 }
 
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.search-icon {
-  width: 18px;
-  height: 18px;
-  opacity: 0.5;
-}
-
-.search-bar input {
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 14px;
-  color: #999;
-  font-family: 'Inter', sans-serif;
-}
-
 .notification-bell {
   position: relative;
   display: flex;

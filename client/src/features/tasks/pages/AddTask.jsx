@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
 import api from "../../../config/api";
 import { createTask } from "../../../services/taskService";
-import SearchBar from "../../tasks/components/SearchBar";
 import "./AddTask.css";
 import {
   FiMapPin,
@@ -26,8 +25,6 @@ const categories = [
 export default function AddTask() {
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
-
-  const [search, setSearch] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -295,13 +292,7 @@ export default function AddTask() {
             </p>
           </div>
 
-          <SearchBar
-            value={search}
-            onChange={setSearch}
-            onNotificationClick={() =>
-              navigate("/notifications")
-            }
-          />
+
         </header>
 
         <section className="add-task-content">

@@ -14,7 +14,6 @@ import { getProfileImageUrl } from "../../../utils/profileImage";
 import "./Settings.css";
 
 import avatarImg from "../../../assets/settings-image/Ellipse 77.png";
-import searchImg from "../../../assets/settings-image/search-interface-symbol (2) 1.png";
 
 /*
  * Convert a date into a human-readable relative time.
@@ -621,19 +620,6 @@ export default function Settings() {
           </div>
 
           <div className="topbar-right">
-
-            <div className="search-bar">
-              <img
-                src={searchImg}
-                alt="Search"
-                className="search-icon"
-              />
-
-              <input
-                type="text"
-                placeholder="Search tasks..."
-              />
-            </div>
 
             <div className="notification-bell">
               <Bell
