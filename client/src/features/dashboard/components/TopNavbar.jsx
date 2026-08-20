@@ -19,6 +19,8 @@ export default function TopNavbar({ user }) {
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
   const notifRef = useRef(null);
   const { unreadCount } = useNotifications() || { unreadCount: 0 };
 
@@ -28,9 +30,21 @@ export default function TopNavbar({ user }) {
         setNotifOpen(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+
+    const query = search.trim();
+
+    if (query) {
+      navigate(`/feed?search=${encodeURIComponent(query)}`);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -53,7 +67,7 @@ export default function TopNavbar({ user }) {
 
       {/* Right - Search and Actions */}
       <div className="navbar-right">
-        <div className="search-box">
+        <form className="search-box" onSubmit={handleSearch}>
           <FiSearch className="search-icon" />
 
           <input
@@ -62,14 +76,17 @@ export default function TopNavbar({ user }) {
             type="text"
             placeholder="Search..."
             aria-label="Search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
           />
-        </div>
+        </form>
 
         {/* Messages */}
         <button
           type="button"
           className="icon-btn"
           aria-label="Messages"
+          onClick={() => navigate("/chat")}
         >
           <FiMessageCircle />
         </button>

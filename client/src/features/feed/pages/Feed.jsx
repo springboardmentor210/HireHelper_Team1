@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
 import SearchBar from "../../tasks/components/SearchBar";
 import { MapPin, Clock, ChevronDown, Heart } from "lucide-react";
@@ -17,7 +17,11 @@ import {
 import "../styles/Feed.css";
 
 function Feed() {
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(
+    searchParams.get("search") || ""
+  );
+
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sort, setSort] = useState("newest");
 
