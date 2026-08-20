@@ -565,6 +565,57 @@ export default function MyTasks() {
     );
 
   // ============================================================
+  // UPDATE TASK STATUS
+  // ============================================================
+
+  const handleUpdateStatus =
+    useCallback(
+      async (taskId, status) => {
+        if (!taskId) {
+          console.error(
+            "Cannot update task status: missing task ID."
+          );
+
+          return;
+        }
+
+        if (!status) {
+          console.error(
+            "Cannot update task status: missing status."
+          );
+
+          return;
+        }
+
+        try {
+          setError("");
+
+          await taskService.updateTaskStatus(
+            taskId,
+            status
+          );
+
+          // Reload tasks, statistics, and applicants
+          // so the UI reflects the latest database state.
+          await loadData();
+        } catch (err) {
+          console.error(
+            "Update task status failed:",
+            err
+          );
+
+          setError(
+            err?.response?.data
+              ?.message ||
+              err?.message ||
+              "Failed to update task status. Please try again."
+          );
+        }
+      },
+      [loadData]
+    );
+
+  // ============================================================
   // VIEW TASK DETAILS
   // ============================================================
 
@@ -690,6 +741,9 @@ export default function MyTasks() {
             }
             onDelete={
               handleDelete
+            }
+            onUpdateStatus={
+              handleUpdateStatus
             }
           />
         )}

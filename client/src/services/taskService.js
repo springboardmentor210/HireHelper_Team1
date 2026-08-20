@@ -103,8 +103,13 @@ export const mapTaskData = (task) => {
   };
 };
 
+// ============================================================
 // GET /api/tasks/my-tasks
-export const getMyTasks = async (params = {}) => {
+// ============================================================
+
+export const getMyTasks = async (
+  params = {}
+) => {
   const { data } = await api.get(
     "/tasks/my-tasks",
     { params }
@@ -141,19 +146,31 @@ export const getMyTasks = async (params = {}) => {
   };
 };
 
+// ============================================================
 // GET /api/tasks
 // Delegates to getMyTasks for My Tasks views
-export const getTasks = async (params = {}) => {
+// ============================================================
+
+export const getTasks = async (
+  params = {}
+) => {
   const result =
     await getMyTasks(params);
 
   return result.tasks;
 };
 
+// ============================================================
 // GET /api/tasks/:id
-export const getTaskById = async (id) => {
+// ============================================================
+
+export const getTaskById = async (
+  id
+) => {
   const { data } =
-    await api.get(`/tasks/${id}`);
+    await api.get(
+      `/tasks/${id}`
+    );
 
   const task =
     data?.data || data;
@@ -161,8 +178,13 @@ export const getTaskById = async (id) => {
   return mapTaskData(task);
 };
 
+// ============================================================
 // POST /api/tasks
-export const createTask = async (payload) => {
+// ============================================================
+
+export const createTask = async (
+  payload
+) => {
   const todayDate =
     new Date()
       .toISOString()
@@ -269,7 +291,10 @@ export const createTask = async (payload) => {
   return mapTaskData(task);
 };
 
+// ============================================================
 // PATCH /api/tasks/:id
+// ============================================================
+
 export const updateTask = async (
   id,
   payload
@@ -286,8 +311,33 @@ export const updateTask = async (
   return mapTaskData(task);
 };
 
+// ============================================================
+// PATCH /api/tasks/:id/status
+// ============================================================
+
+export const updateTaskStatus = async (
+  id,
+  status
+) => {
+  const { data } =
+    await api.patch(
+      `/tasks/${id}/status`,
+      { status }
+    );
+
+  const task =
+    data?.data || data;
+
+  return mapTaskData(task);
+};
+
+// ============================================================
 // DELETE /api/tasks/:id
-export const deleteTask = async (id) => {
+// ============================================================
+
+export const deleteTask = async (
+  id
+) => {
   const { data } =
     await api.delete(
       `/tasks/${id}`
@@ -296,7 +346,10 @@ export const deleteTask = async (id) => {
   return data?.data || data;
 };
 
+// ============================================================
 // GET /api/tasks/statistics
+// ============================================================
+
 export const getStatistics =
   async () => {
     const result =
@@ -305,9 +358,14 @@ export const getStatistics =
     return result.stats;
   };
 
+// ============================================================
 // GET /api/tasks/feed
+// ============================================================
+
 export const getFeedTasks =
-  async (params = {}) => {
+  async (
+    params = {}
+  ) => {
     const { data } =
       await api.get(
         "/tasks/feed",

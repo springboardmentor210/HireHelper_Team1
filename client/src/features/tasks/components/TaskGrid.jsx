@@ -2,32 +2,27 @@ import React from "react";
 import TaskCard from "./TaskCard";
 
 export default function TaskGrid({
-  tasks,
+  tasks = [],
   applicantsByTask = {},
   onViewDetails,
   onDelete,
+  onUpdateStatus,
 }) {
   return (
-    <div className="task-grid-container">
+    <div className="tasks-grid">
       {tasks.map((task) => {
-        const taskId =
-          task?._id ||
-          task?.id;
-
-        const applicants =
-          applicantsByTask[
-            String(taskId)
-          ] || [];
+        const taskId = task?._id || task?.id;
 
         return (
           <TaskCard
             key={taskId}
             task={task}
-            applicants={applicants}
-            onViewDetails={
-              onViewDetails
+            applicants={
+              applicantsByTask[String(taskId)] || []
             }
+            onViewDetails={onViewDetails}
             onDelete={onDelete}
+            onUpdateStatus={onUpdateStatus}
           />
         );
       })}
