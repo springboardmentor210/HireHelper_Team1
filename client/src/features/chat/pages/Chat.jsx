@@ -13,7 +13,17 @@ import {
   markConversationAsRead,
 } from "../services/chat.service";
 
-const SOCKET_URL = "http://localhost:5001";
+// =========================================================
+// SOCKET.IO SERVER URL
+// =========================================================
+
+const SOCKET_URL =
+  import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace(
+        /\/api\/?$/,
+        ""
+      )
+    : "http://localhost:5000";
 
 export default function Chat() {
   const navigate = useNavigate();
@@ -123,7 +133,9 @@ export default function Chat() {
           );
 
         if (requestedConversation) {
-          setSelectedConversation(requestedConversation);
+          setSelectedConversation(
+            requestedConversation
+          );
         } else {
           setSelectedConversation(null);
 
@@ -257,12 +269,12 @@ export default function Chat() {
     const token = localStorage.getItem("token");
 
     const socket = io(SOCKET_URL, {
-  transports: ["polling", "websocket"],
-  upgrade: true,
-  auth: {
-    token,
-  },
-});
+      transports: ["polling", "websocket"],
+      upgrade: true,
+      auth: {
+        token,
+      },
+    });
 
     // -------------------------------------------------------
     // CONNECT
