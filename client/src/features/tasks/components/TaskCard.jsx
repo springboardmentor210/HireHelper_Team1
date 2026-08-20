@@ -39,12 +39,13 @@ export default function TaskCard({
 
   const formattedPrice =
     typeof task.price === "number"
-      ? `₹${task.price.toLocaleString()}`
+      ? `₹${task.price.toLocaleString("en-IN")}`
       : typeof task.budget === "number"
-      ? `₹${task.budget.toLocaleString()}`
-      : typeof task.price === "string" && task.price.startsWith("₹")
+      ? `₹${task.budget.toLocaleString("en-IN")}`
+      : typeof task.price === "string" &&
+        task.price.startsWith("₹")
       ? task.price
-      : `₹${task.price ?? task.budget ?? 500}`;
+      : `₹${task.price ?? task.budget ?? 0}`;
 
   // Get the image from the backend response
   const rawTaskImage =
@@ -57,27 +58,46 @@ export default function TaskCard({
     ? rawTaskImage.startsWith("http")
       ? rawTaskImage
       : `${API_BASE_URL}${
-          rawTaskImage.startsWith("/") ? rawTaskImage : `/${rawTaskImage}`
+          rawTaskImage.startsWith("/")
+            ? rawTaskImage
+            : `/${rawTaskImage}`
         }`
     : "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&q=80";
 
   const displayDate = task.startDate || task.date || "";
   const displayTime = task.startTime || task.time || "";
 
-  const stackBadge =
-    task.title === "Furniture Assembly"
-      ? "+3"
-      : task.title === "Garden Cleanup"
-      ? "+7"
-      : "+4";
+  // ============================================================
+  // REAL APPLICANT COUNT FROM BACKEND
+  // ============================================================
 
-  const applicantCountLabel = `+${
-    task.applicants ?? task.applicantsCount ?? 0
-  } Applicants`;
+  const applicantCount =
+    Number(
+      task.applicants ??
+        task.applicantsCount ??
+        task.applicantCount ??
+        0
+    ) || 0;
+
+  const applicantCountLabel =
+    applicantCount === 1
+      ? "1 Applicant"
+      : `${applicantCount} Applicants`;
+
+  // Only show avatars when real applicants exist.
+  // We currently use placeholder images because the task
+  // response contains the applicant count, but not individual
+  // applicant profiles.
+  const visibleAvatarCount = Math.min(
+    applicantCount,
+    defaultAvatars.length
+  );
 
   return (
     <div className="task-card-item">
-      {/* Image Header with Status Overlay */}
+      {/* ======================================================
+          IMAGE HEADER WITH STATUS
+      ====================================================== */}
       <div className="card-image-header">
         <img
           src={taskImage}
@@ -94,7 +114,9 @@ export default function TaskCard({
         </span>
       </div>
 
-      {/* Card Content Body */}
+      {/* ======================================================
+          CARD CONTENT
+      ====================================================== */}
       <div className="card-body-content">
         {/* Title and Price */}
         <div className="card-title-price-row">
@@ -133,22 +155,23 @@ export default function TaskCard({
           {task.description || ""}
         </p>
 
-        {/* Card Footer */}
+        {/* ====================================================
+            CARD FOOTER
+        ==================================================== */}
         <div className="card-footer-row">
+          {/* Applicants */}
           <div className="applicants-group">
             <div className="avatar-stack">
-              {defaultAvatars.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt="Applicant"
-                  className="stack-avatar"
-                />
-              ))}
-
-              <span className="stack-more">
-                {stackBadge}
-              </span>
+              {defaultAvatars
+                .slice(0, visibleAvatarCount)
+                .map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt="Applicant"
+                    className="stack-avatar"
+                  />
+                ))}
             </div>
 
             <span className="applicants-count-label">
@@ -156,6 +179,7 @@ export default function TaskCard({
             </span>
           </div>
 
+          {/* Actions */}
           <div className="card-actions-right">
             <button
               type="button"

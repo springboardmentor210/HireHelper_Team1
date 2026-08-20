@@ -23,12 +23,14 @@ export default function MyTasks() {
 
   const [tasks, setTasks] = useState([]);
 
+  // Stats now start at zero.
+  // Real values are loaded from the backend.
   const [stats, setStats] = useState({
-    active: 12,
-    inProgress: 5,
-    completed: 84,
-    totalApplicants: 23,
-    totalEarnings: 2340,
+    active: 0,
+    inProgress: 0,
+    completed: 0,
+    totalApplicants: 0,
+    totalEarnings: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -82,6 +84,15 @@ export default function MyTasks() {
       );
 
       setTasks([]);
+
+      // Reset stats if loading fails instead of showing fake values.
+      setStats({
+        active: 0,
+        inProgress: 0,
+        completed: 0,
+        totalApplicants: 0,
+        totalEarnings: 0,
+      });
     } finally {
       setLoading(false);
     }
