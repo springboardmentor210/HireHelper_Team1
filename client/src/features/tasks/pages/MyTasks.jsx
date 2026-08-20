@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../../../components/layout/Sidebar";
@@ -16,15 +17,57 @@ import EmptyState from "../components/EmptyState";
 import TaskDetailsModal from "../components/TaskDetailsModal";
 
 import * as taskService from "../../../services/taskService";
+import {
+  getIncomingRequests,
+} from "../../../services/requestService";
+
 import "../Styles/MyTasks.css";
 
 export default function MyTasks() {
   const navigate = useNavigate();
 
+  // ============================================================
+  // TASK STATE
+  // ============================================================
+
   const [tasks, setTasks] = useState([]);
 
-  // Stats now start at zero.
-  // Real values are loaded from the backend.
+  // ============================================================
+  // APPLICANT STATE
+  // ============================================================
+
+  /*
+   * applicantsByTask stores applicants grouped by
+   * their task ID.
+   *
+   * Example:
+   *
+   * {
+   *   "task123": [
+   *     {
+   *       _id: "request1",
+   *       requester: {
+   *         firstName: "John",
+   *         lastName: "Doe",
+   *         profilePicture: "..."
+   *       }
+   *     }
+   *   ],
+   *
+   *   "task456": [
+   *     ...
+   *   ]
+   * }
+   */
+  const [
+    applicantsByTask,
+    setApplicantsByTask,
+  ] = useState({});
+
+  // ============================================================
+  // STATISTICS
+  // ============================================================
+
   const [stats, setStats] = useState({
     active: 0,
     inProgress: 0,
@@ -33,193 +76,435 @@ export default function MyTasks() {
     totalEarnings: 0,
   });
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  // ============================================================
+  // UI STATE
+  // ============================================================
 
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [loading, setLoading] =
+    useState(true);
 
-  const [filters, setFilters] = useState({
-    status: "all",
-    category: "all",
-    sort: "newest",
-  });
+  const [error, setError] =
+    useState("");
 
-  const [detailModalTask, setDetailModalTask] = useState(null);
+  const [search, setSearch] =
+    useState("");
+
+  const [
+    debouncedSearch,
+    setDebouncedSearch,
+  ] = useState("");
+
+  const [filters, setFilters] =
+    useState({
+      status: "all",
+      category: "all",
+      sort: "newest",
+    });
+
+  const [
+    detailModalTask,
+    setDetailModalTask,
+  ] = useState(null);
+
+  // ============================================================
+  // SEARCH DEBOUNCE
+  // ============================================================
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(search.trim().toLowerCase());
+      setDebouncedSearch(
+        search.trim().toLowerCase()
+      );
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () =>
+      clearTimeout(timer);
   }, [search]);
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError("");
+  // ============================================================
+  // LOAD TASKS + APPLICANTS
+  // ============================================================
 
-      const data = await taskService.getMyTasks();
+  const loadData = useCallback(
+    async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-      const receivedTasks = Array.isArray(data?.tasks)
-        ? data.tasks
-        : [];
+        // ------------------------------------------------------
+        // Load user's tasks
+        // ------------------------------------------------------
 
-      setTasks(receivedTasks);
+        const taskData =
+          await taskService.getMyTasks();
 
-      if (data?.stats) {
-        setStats((previousStats) => ({
-          ...previousStats,
-          ...data.stats,
-        }));
+        const receivedTasks =
+          Array.isArray(
+            taskData?.tasks
+          )
+            ? taskData.tasks
+            : [];
+
+        setTasks(receivedTasks);
+
+        if (taskData?.stats) {
+          setStats(
+            (previousStats) => ({
+              ...previousStats,
+              ...taskData.stats,
+            })
+          );
+        }
+
+        // ------------------------------------------------------
+        // Load incoming requests
+        // ------------------------------------------------------
+
+        /*
+         * We intentionally request "all" statuses here.
+         *
+         * This allows the task card to represent every
+         * applicant/request associated with the task rather
+         * than only pending requests.
+         */
+        const requestResponse =
+          await getIncomingRequests({
+            status: "all",
+            limit: 50,
+          });
+
+        const requestData =
+          requestResponse?.data ||
+          {};
+
+        const incomingRequests =
+          Array.isArray(
+            requestData?.requests
+          )
+            ? requestData.requests
+            : [];
+
+        // ------------------------------------------------------
+        // Group applicants by task ID
+        // ------------------------------------------------------
+
+        const groupedApplicants =
+          {};
+
+        incomingRequests.forEach(
+          (request) => {
+            const taskId =
+              request?.task?._id ||
+              request?.task?.id ||
+              request?.task;
+
+            if (!taskId) {
+              return;
+            }
+
+            const taskKey =
+              String(taskId);
+
+            if (
+              !groupedApplicants[
+                taskKey
+              ]
+            ) {
+              groupedApplicants[
+                taskKey
+              ] = [];
+            }
+
+            /*
+             * Only keep requests that have
+             * an actual requester.
+             */
+            if (
+              request?.requester
+            ) {
+              groupedApplicants[
+                taskKey
+              ].push(request);
+            }
+          }
+        );
+
+        setApplicantsByTask(
+          groupedApplicants
+        );
+      } catch (err) {
+        console.error(
+          "Failed to load My Tasks:",
+          err
+        );
+
+        setError(
+          err?.response?.data
+            ?.message ||
+            err?.message ||
+            "Failed to load tasks. Please try again."
+        );
+
+        setTasks([]);
+
+        setApplicantsByTask({});
+
+        setStats({
+          active: 0,
+          inProgress: 0,
+          completed: 0,
+          totalApplicants: 0,
+          totalEarnings: 0,
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to load My Tasks:", err);
+    },
+    []
+  );
 
-      setError(
-        err?.response?.data?.message ||
-          err?.message ||
-          "Failed to load tasks. Please try again."
-      );
-
-      setTasks([]);
-
-      // Reset stats if loading fails instead of showing fake values.
-      setStats({
-        active: 0,
-        inProgress: 0,
-        completed: 0,
-        totalApplicants: 0,
-        totalEarnings: 0,
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // ============================================================
+  // INITIAL LOAD
+  // ============================================================
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const categories = useMemo(() => {
-    const uniqueCategories = tasks
-      .map((task) => task?.category)
-      .filter(Boolean)
-      .map((category) => String(category));
+  // ============================================================
+  // CATEGORIES
+  // ============================================================
 
-    return [...new Set(uniqueCategories)].sort();
+  const categories = useMemo(() => {
+    const uniqueCategories =
+      tasks
+        .map(
+          (task) =>
+            task?.category
+        )
+        .filter(Boolean)
+        .map((category) =>
+          String(category)
+        );
+
+    return [
+      ...new Set(
+        uniqueCategories
+      ),
+    ].sort();
   }, [tasks]);
+
+  // ============================================================
+  // FILTER + SORT TASKS
+  // ============================================================
 
   const filteredTasks = useMemo(() => {
     let result = [...tasks];
 
-    if (filters.status !== "all") {
-      result = result.filter((task) => {
-        const taskStatus = String(
-          task?.status || ""
-        ).toLowerCase();
+    // --------------------------------------------------------
+    // STATUS FILTER
+    // --------------------------------------------------------
 
-        return (
-          taskStatus ===
-          String(filters.status).toLowerCase()
+    if (
+      filters.status !== "all"
+    ) {
+      result =
+        result.filter(
+          (task) => {
+            const taskStatus =
+              String(
+                task?.status || ""
+              ).toLowerCase();
+
+            return (
+              taskStatus ===
+              String(
+                filters.status
+              ).toLowerCase()
+            );
+          }
         );
-      });
     }
 
-    if (filters.category !== "all") {
-      result = result.filter((task) => {
-        const taskCategory = String(
-          task?.category || ""
-        ).toLowerCase();
+    // --------------------------------------------------------
+    // CATEGORY FILTER
+    // --------------------------------------------------------
 
-        return (
-          taskCategory ===
-          String(filters.category).toLowerCase()
+    if (
+      filters.category !== "all"
+    ) {
+      result =
+        result.filter(
+          (task) => {
+            const taskCategory =
+              String(
+                task?.category || ""
+              ).toLowerCase();
+
+            return (
+              taskCategory ===
+              String(
+                filters.category
+              ).toLowerCase()
+            );
+          }
         );
-      });
     }
+
+    // --------------------------------------------------------
+    // SEARCH
+    // --------------------------------------------------------
 
     if (debouncedSearch) {
-      result = result.filter((task) => {
-        const title = String(
-          task?.title || ""
-        ).toLowerCase();
+      result =
+        result.filter(
+          (task) => {
+            const title =
+              String(
+                task?.title || ""
+              ).toLowerCase();
 
-        const description = String(
-          task?.description || ""
-        ).toLowerCase();
+            const description =
+              String(
+                task?.description ||
+                  ""
+              ).toLowerCase();
 
-        const category = String(
-          task?.category || ""
-        ).toLowerCase();
+            const category =
+              String(
+                task?.category || ""
+              ).toLowerCase();
 
-        const location = String(
-          task?.location || ""
-        ).toLowerCase();
+            const location =
+              String(
+                task?.location || ""
+              ).toLowerCase();
 
-        return (
-          title.includes(debouncedSearch) ||
-          description.includes(debouncedSearch) ||
-          category.includes(debouncedSearch) ||
-          location.includes(debouncedSearch)
+            return (
+              title.includes(
+                debouncedSearch
+              ) ||
+              description.includes(
+                debouncedSearch
+              ) ||
+              category.includes(
+                debouncedSearch
+              ) ||
+              location.includes(
+                debouncedSearch
+              )
+            );
+          }
         );
-      });
     }
 
-    if (filters.sort === "newest") {
-      result.sort((a, b) => {
-        const dateA = new Date(
-          a?.createdAt || a?.created_at || 0
-        ).getTime();
+    // --------------------------------------------------------
+    // NEWEST
+    // --------------------------------------------------------
 
-        const dateB = new Date(
-          b?.createdAt || b?.created_at || 0
-        ).getTime();
+    if (
+      filters.sort === "newest"
+    ) {
+      result.sort((a, b) => {
+        const dateA =
+          new Date(
+            a?.createdAt ||
+              a?.created_at ||
+              0
+          ).getTime();
+
+        const dateB =
+          new Date(
+            b?.createdAt ||
+              b?.created_at ||
+              0
+          ).getTime();
 
         return dateB - dateA;
       });
     }
 
-    if (filters.sort === "oldest") {
-      result.sort((a, b) => {
-        const dateA = new Date(
-          a?.createdAt || a?.created_at || 0
-        ).getTime();
+    // --------------------------------------------------------
+    // OLDEST
+    // --------------------------------------------------------
 
-        const dateB = new Date(
-          b?.createdAt || b?.created_at || 0
-        ).getTime();
+    if (
+      filters.sort === "oldest"
+    ) {
+      result.sort((a, b) => {
+        const dateA =
+          new Date(
+            a?.createdAt ||
+              a?.created_at ||
+              0
+          ).getTime();
+
+        const dateB =
+          new Date(
+            b?.createdAt ||
+              b?.created_at ||
+              0
+          ).getTime();
 
         return dateA - dateB;
       });
     }
 
-    if (filters.sort === "budget-high") {
+    // --------------------------------------------------------
+    // BUDGET HIGH
+    // --------------------------------------------------------
+
+    if (
+      filters.sort ===
+      "budget-high"
+    ) {
       result.sort((a, b) => {
-        const budgetA = Number(
-          a?.budget || a?.price || 0
-        );
+        const budgetA =
+          Number(
+            a?.budget ||
+              a?.price ||
+              0
+          );
 
-        const budgetB = Number(
-          b?.budget || b?.price || 0
-        );
+        const budgetB =
+          Number(
+            b?.budget ||
+              b?.price ||
+              0
+          );
 
-        return budgetB - budgetA;
+        return (
+          budgetB - budgetA
+        );
       });
     }
 
-    if (filters.sort === "budget-low") {
+    // --------------------------------------------------------
+    // BUDGET LOW
+    // --------------------------------------------------------
+
+    if (
+      filters.sort ===
+      "budget-low"
+    ) {
       result.sort((a, b) => {
-        const budgetA = Number(
-          a?.budget || a?.price || 0
-        );
+        const budgetA =
+          Number(
+            a?.budget ||
+              a?.price ||
+              0
+          );
 
-        const budgetB = Number(
-          b?.budget || b?.price || 0
-        );
+        const budgetB =
+          Number(
+            b?.budget ||
+              b?.price ||
+              0
+          );
 
-        return budgetA - budgetB;
+        return (
+          budgetA - budgetB
+        );
       });
     }
 
@@ -230,65 +515,100 @@ export default function MyTasks() {
     debouncedSearch,
   ]);
 
-  const handleDelete = useCallback(
-    async (taskId) => {
-      if (!taskId) {
-        console.error(
-          "Cannot delete task: missing task ID."
-        );
-        return;
-      }
+  // ============================================================
+  // DELETE TASK
+  // ============================================================
 
-      const confirmed = window.confirm(
-        "Are you sure you want to delete this task?"
+  const handleDelete =
+    useCallback(
+      async (taskId) => {
+        if (!taskId) {
+          console.error(
+            "Cannot delete task: missing task ID."
+          );
+
+          return;
+        }
+
+        const confirmed =
+          window.confirm(
+            "Are you sure you want to delete this task?"
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+        try {
+          setError("");
+
+          await taskService.deleteTask(
+            taskId
+          );
+
+          await loadData();
+        } catch (err) {
+          console.error(
+            "Delete task failed:",
+            err
+          );
+
+          setError(
+            err?.response?.data
+              ?.message ||
+              err?.message ||
+              "Failed to delete task. Please try again."
+          );
+        }
+      },
+      [loadData]
+    );
+
+  // ============================================================
+  // VIEW TASK DETAILS
+  // ============================================================
+
+  const handleViewDetails =
+    useCallback(
+      (task) => {
+        setDetailModalTask(task);
+      },
+      []
+    );
+
+  // ============================================================
+  // CLOSE DETAILS MODAL
+  // ============================================================
+
+  const closeDetailsModal =
+    useCallback(() => {
+      setDetailModalTask(null);
+    }, []);
+
+  // ============================================================
+  // NOTIFICATIONS
+  // ============================================================
+
+  const handleNotificationClick =
+    useCallback(() => {
+      navigate(
+        "/notifications"
       );
+    }, [navigate]);
 
-      if (!confirmed) {
-        return;
-      }
-
-      try {
-        setError("");
-
-        await taskService.deleteTask(taskId);
-
-        await loadData();
-      } catch (err) {
-        console.error(
-          "Delete task failed:",
-          err
-        );
-
-        setError(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to delete task. Please try again."
-        );
-      }
-    },
-    [loadData]
-  );
-
-  const handleViewDetails = useCallback(
-    (task) => {
-      setDetailModalTask(task);
-    },
-    []
-  );
-
-  const closeDetailsModal = useCallback(() => {
-    setDetailModalTask(null);
-  }, []);
-
-  const handleNotificationClick = useCallback(() => {
-    navigate("/notifications");
-  }, [navigate]);
+  // ============================================================
+  // RENDER
+  // ============================================================
 
   return (
     <div className="my-tasks-layout">
       <Sidebar />
 
       <main className="my-tasks-main-content">
+        {/* ==================================================
+            HEADER
+        ================================================== */}
+
         <header className="my-tasks-header">
           <div className="header-titles">
             <h1 className="main-page-title">
@@ -296,7 +616,8 @@ export default function MyTasks() {
             </h1>
 
             <p className="main-page-subtitle">
-              Manage every task you've created.
+              Manage every task
+              you've created.
             </p>
           </div>
 
@@ -309,7 +630,17 @@ export default function MyTasks() {
           />
         </header>
 
-        <StatsCards stats={stats} />
+        {/* ==================================================
+            STATISTICS
+        ================================================== */}
+
+        <StatsCards
+          stats={stats}
+        />
+
+        {/* ==================================================
+            FILTERS
+        ================================================== */}
 
         <FilterBar
           filters={filters}
@@ -317,12 +648,18 @@ export default function MyTasks() {
           categories={categories}
         />
 
+        {/* ==================================================
+            ERROR
+        ================================================== */}
+
         {error && (
           <div
             className="error-banner"
             role="alert"
           >
-            <span>{error}</span>
+            <span>
+              {error}
+            </span>
 
             <button
               type="button"
@@ -333,23 +670,41 @@ export default function MyTasks() {
           </div>
         )}
 
+        {/* ==================================================
+            TASK CONTENT
+        ================================================== */}
+
         {loading ? (
           <LoadingSkeleton />
-        ) : filteredTasks.length === 0 ? (
+        ) : filteredTasks.length ===
+          0 ? (
           <EmptyState />
         ) : (
           <TaskGrid
             tasks={filteredTasks}
-            onViewDetails={handleViewDetails}
-            onDelete={handleDelete}
+            applicantsByTask={
+              applicantsByTask
+            }
+            onViewDetails={
+              handleViewDetails
+            }
+            onDelete={
+              handleDelete
+            }
           />
         )}
       </main>
 
+      {/* ====================================================
+          DETAILS MODAL
+      ==================================================== */}
+
       {detailModalTask && (
         <TaskDetailsModal
           task={detailModalTask}
-          onClose={closeDetailsModal}
+          onClose={
+            closeDetailsModal
+          }
         />
       )}
     </div>
