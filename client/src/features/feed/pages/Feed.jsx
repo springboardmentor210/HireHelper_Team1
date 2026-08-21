@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Sidebar from "../../../components/layout/Sidebar";
 import SearchBar from "../../tasks/components/SearchBar";
-import { MapPin, Clock, ChevronDown, Heart } from "lucide-react";
+import { MapPin, Clock, Heart } from "lucide-react";
 import { getFeedTasks } from "../../../services/taskService";
 import {
   createRequest,
@@ -38,13 +38,6 @@ function Feed() {
   const [requestingTaskId, setRequestingTaskId] = useState(null);
   const [error, setError] = useState("");
 
-  const [showMoreCategories, setShowMoreCategories] = useState(false);
-
-  const [userLocation, setUserLocation] = useState({
-    lat: null,
-    lng: null,
-  });
-
   const navigate = useNavigate();
 
   const categories = [
@@ -57,12 +50,6 @@ function Feed() {
     { label: "Pet Care", value: "pet_care", icon: "🐾" },
   ];
 
-  const moreCategories = [
-    { label: "Tech", value: "tech_help", icon: "💻" },
-    { label: "Car Care", value: "car_care", icon: "🚗" },
-    { label: "Other", value: "other", icon: "📋" },
-  ];
-
   // Get backend origin from environment configuration.
   const getBackendOrigin = () => {
     const apiUrl =
@@ -73,30 +60,6 @@ function Feed() {
     } catch {
       return window.location.origin;
     }
-  };
-
-  // Ask for location only when Distance sorting is selected.
-  const getUserLocation = () => {
-    if (!navigator.geolocation) {
-      setError("Location services are not supported by this browser.");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      },
-      () => {
-        // Location denial should not break the Feed.
-        setUserLocation({
-          lat: null,
-          lng: null,
-        });
-      }
-    );
   };
 
   // ---------------------------------------------------------
@@ -219,15 +182,6 @@ function Feed() {
           params.category = selectedCategory;
         }
 
-        if (
-          sort === "distance" &&
-          userLocation.lat !== null &&
-          userLocation.lng !== null
-        ) {
-          params.lat = userLocation.lat;
-          params.lng = userLocation.lng;
-        }
-
         const tasks = await getFeedTasks(params);
 
         setFeedTasks(Array.isArray(tasks) ? tasks : []);
@@ -250,21 +204,13 @@ function Feed() {
     selectedCategory,
     search,
     sort,
-    userLocation.lat,
-    userLocation.lng,
   ]);
 
   // ---------------------------------------------------------
   // SORTING
   // ---------------------------------------------------------
   const handleSortChange = (event) => {
-    const value = event.target.value;
-
-    setSort(value);
-
-    if (value === "distance") {
-      getUserLocation();
-    }
+    setSort(event.target.value);
   };
 
   // ---------------------------------------------------------
@@ -272,7 +218,6 @@ function Feed() {
   // ---------------------------------------------------------
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
-    setShowMoreCategories(false);
   };
 
   // ---------------------------------------------------------
@@ -494,51 +439,6 @@ function Feed() {
             </button>
           ))}
 
-          {/* More dropdown */}
-          <div className="more-category-wrapper">
-            <button
-              type="button"
-              className="category-btn more-category-btn"
-              onClick={() =>
-                setShowMoreCategories(
-                  (previous) => !previous
-                )
-              }
-              aria-expanded={showMoreCategories}
-            >
-              More
-
-              <ChevronDown
-                size={15}
-                className={
-                  showMoreCategories
-                    ? "more-chevron open"
-                    : "more-chevron"
-                }
-              />
-            </button>
-
-            {showMoreCategories && (
-              <div className="more-category-menu">
-                {moreCategories.map((category) => (
-                  <button
-                    key={category.value}
-                    type="button"
-                    className={
-                      selectedCategory === category.value
-                        ? "more-category-item selected"
-                        : "more-category-item"
-                    }
-                    onClick={() =>
-                      handleCategoryChange(category.value)
-                    }
-                  >
-                    {category.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Filters */}
@@ -556,20 +456,6 @@ function Feed() {
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
-          </select>
-
-          <select
-            value={sort === "distance" ? "distance" : ""}
-            onChange={handleSortChange}
-            aria-label="Sort tasks by distance"
-          >
-            <option value="" disabled>
-              Distance
-            </option>
-
-            <option value="distance">
-              Distance
-            </option>
           </select>
 
           <select
@@ -593,23 +479,7 @@ function Feed() {
             </option>
           </select>
 
-          <button
-            type="button"
-            className="filter-btn"
-            onClick={() => {
-              setSelectedCategory("all");
-              setSearch("");
-              setSort("newest");
-              setShowMoreCategories(false);
 
-              setUserLocation({
-                lat: null,
-                lng: null,
-              });
-            }}
-          >
-            Reset
-          </button>
         </div>
 
         <section className="feed-content">

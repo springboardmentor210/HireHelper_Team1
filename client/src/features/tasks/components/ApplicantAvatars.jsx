@@ -1,62 +1,66 @@
 import React from "react";
 
-const FALLBACK_AVATAR =
-  "https://i.pravatar.cc/40?img=1";
-
 export default function ApplicantAvatars({
   applicants = [],
+  applicantCount = 0,
 }) {
-  const visibleApplicants =
-    Array.isArray(applicants)
-      ? applicants.slice(0, 3)
-      : [];
+  const visibleApplicants = Array.isArray(applicants)
+    ? applicants.slice(0, 3)
+    : [];
 
-  const applicantCount =
-    Array.isArray(applicants)
-      ? applicants.length
-      : 0;
+  const count = Number.isFinite(Number(applicantCount))
+    ? Number(applicantCount)
+    : 0;
 
   return (
     <div className="applicant-avatars">
       <div className="avatar-stack">
-        {visibleApplicants.map(
-          (request, index) => {
-            const requester =
-              request?.requester || {};
+        {visibleApplicants.map((request, index) => {
+          const requester = request?.requester || {};
 
-            const fullName =
-              `${requester.firstName || ""} ${
-                requester.lastName || ""
-              }`.trim() ||
-              "Applicant";
+          const fullName =
+            `${requester.firstName || ""} ${
+              requester.lastName || ""
+            }`.trim() || "Applicant";
 
-            const profilePicture =
-              requester.profilePicture ||
-              FALLBACK_AVATAR;
+          const initials = fullName
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((name) => name.charAt(0))
+            .join("")
+            .slice(0, 2)
+            .toUpperCase();
 
-            return (
-              <img
-                key={
-                  request?._id ||
-                  index
-                }
-                src={profilePicture}
-                alt={fullName}
-                className="avatar"
-                onError={(event) => {
-                  event.currentTarget.src =
-                    FALLBACK_AVATAR;
-                }}
-              />
-            );
-          }
-        )}
+          const profilePicture =
+            requester.profilePicture || "";
+
+          return profilePicture ? (
+            <img
+              key={request?._id || index}
+              src={profilePicture}
+              alt={fullName}
+              className="avatar"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div
+              key={request?._id || index}
+              className="avatar avatar-initials"
+              title={fullName}
+              aria-label={fullName}
+            >
+              {initials}
+            </div>
+          );
+        })}
       </div>
 
       <span className="applicant-count">
-        {applicantCount === 1
+        {count === 1
           ? "1 Applicant"
-          : `${applicantCount} Applicants`}
+          : `${count} Applicants`}
       </span>
     </div>
   );

@@ -3,7 +3,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Eye, EyeOff, Bell } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 import Sidebar from "../../../components/layout/Sidebar";
@@ -619,21 +619,6 @@ export default function Settings() {
             </p>
           </div>
 
-          <div className="topbar-right">
-
-            <div className="notification-bell">
-              <Bell
-                fill="#fbbf24"
-                stroke="none"
-                size={24}
-              />
-
-              <span className="notification-dot">
-                1
-              </span>
-            </div>
-
-          </div>
         </header>
 
         {/* =========================
