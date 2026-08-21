@@ -83,22 +83,6 @@ export default function GuestDashboard() {
             </button>
           </div>
 
-          <div className="hero-features">
-            <div className="feature-item">
-              <FaCheckCircle />
-              <span>Trusted Helpers</span>
-            </div>
-
-            <div className="feature-item">
-              <FaShieldAlt />
-              <span>Secure Payments</span>
-            </div>
-
-            <div className="feature-item">
-              <FaStar />
-              <span>Ratings & Reviews</span>
-            </div>
-          </div>
         </div>
 
         <div className="hero-right">
@@ -210,9 +194,6 @@ export default function GuestDashboard() {
           </div>
         </div>
 
-        <span className="learn-more">
-          Learn more about safety →
-        </span>
       </section>
 
       {/* ================= Dynamic Statistics ================= */}
