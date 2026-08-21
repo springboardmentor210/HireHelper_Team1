@@ -257,11 +257,11 @@ const IncomingRequestCard = ({
           <div className="task-title-row">
 
             <h4>
-              {task.title ||
+              {task?.title ||
                 "Untitled Task"}
             </h4>
 
-            {task.category && (
+            {task?.category && (
               <span className="task-category">
                 {task.category}
               </span>
